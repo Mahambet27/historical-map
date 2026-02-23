@@ -1,0 +1,126 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "akzhar",
+        "name": "Ақжар округі",
+        "shortDescription": "Ақжар ауылдық округі.",
+        "fullDescription": "## Ақжар округі\n\n### Қысқаша\nБұл округ туралы толық ақпарат кейін толтырылады.\n\n### Құрамы\n- Ауылдар: кейін толтырылады\n\n### Туристке\n- Қалай жетуге болады: кейін толтырылады\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.6, 47.55] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "aksuat",
+        "name": "Ақсуат округі",
+        "shortDescription": "Ақсуат ауылдық округі.",
+        "fullDescription": "## Ақсуат округі\n\nАқпарат кейін толтырылады.\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.56, 47.61] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "zhanaauyl",
+        "name": "Жанаауыл округі",
+        "shortDescription": "Жанаауыл ауылдық округі.",
+        "fullDescription": "## Жанаауыл округі\n\nАқпарат кейін толтырылады.\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.7, 47.75] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "zhetiaral",
+        "name": "Жетіарал округі",
+        "shortDescription": "Жетіарал ауылдық округі.",
+        "fullDescription": "## Жетіарал округі\n\nАқпарат кейін толтырылады.\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.9, 47.85] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "kabanbai",
+        "name": "Қабанбай округі",
+        "shortDescription": "Қабанбай ауылдық округі.",
+        "fullDescription": "## Қабанбай округі\n\nАқпарат кейін толтырылады.\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.3, 47.7] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "karasu",
+        "name": "Қарасу округі",
+        "shortDescription": "Қарасу ауылдық округі.",
+        "fullDescription": "## Қарасу округі\n\nАқпарат кейін толтырылады.\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.95, 47.55] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "kuygan",
+        "name": "Құйған округі",
+        "shortDescription": "Құйған ауылдық округі.",
+        "fullDescription": "## Құйған округі\n\nАқпарат кейін толтырылады.\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [84.1, 47.65] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "kumkol",
+        "name": "Құмкөл округі",
+        "shortDescription": "Құмкөл ауылдық округі.",
+        "fullDescription": "## Құмкөл округі\n\nАқпарат кейін толтырылады.\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.2, 47.95] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "manyrak",
+        "name": "Маңырақ округі",
+        "shortDescription": "Маңырақ ауылдық округі.",
+        "fullDescription": "## Маңырақ округі\n\nАқпарат кейін толтырылады.\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.85, 47.4] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "tugyl",
+        "name": "Тұғыл округі",
+        "shortDescription": "Тұғыл ауылдық округі.",
+        "fullDescription": "## Тұғыл округі\n\nАқпарат кейін толтырылады.\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [84.25, 47.95] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "oyshylyk",
+        "name": "Ойшылық округі",
+        "shortDescription": "Ойшылық ауылдық округі.",
+        "fullDescription": "## Ойшылық округі\n\nАқпарат кейін толтырылады.\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.45, 47.85] }
+    }
+  ]
+}

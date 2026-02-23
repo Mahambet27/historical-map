@@ -1,0 +1,438 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "akzhar",
+        "name": "Акжар",
+        "shortDescription": "Ақжар-Шығыс Қазақстан облысы, Тарбағатай ауданындағы ауыл. Қазіргі таңда Тарбағатай ауданың және Ақжар ауылдық округінің орталығы болып табылады.",
+       "fullDescription": "**Ақжар ауылы** – еліміздің Шығыс өңірінің оңтүстік-шығысында, Тарбағатай тауы жоталары мен Зайсан қазаншұңқырының арасында орналасқан іргелі, үлкен ауыл. Ол Тарбағатай ауданының ең ірі елді мекені болып саналады және **1997 жылға дейін аудан орталығы** болған.\n\nАуыл атауы батыс бөлігінде орналасқан **ақ топырақтан түзілген Ақжар жотасына** байланысты қойылған. Шежірелік деректерге сүйенсек, бұл өңірді Орта жүздің Найман тайпасынан тараған **Байжігіт бабаның** ұлдары – **Жұмық пен Саты** әулеттерінің ұрпақтары мекендеген.\n\nБұл қасиетті мекен – **Қаракерей Қабанбай батыр** мен **Саты ұлы ер Дәулетбай батырдың** ат тұяғы тиген тарихи жер. Ауыл маңындағы жайылыммен ағатын **Қандысу өзені** жайлы аңызда, жоңғар шапқыншылығы кезіндегі қанды шайқастардан кейін өзен суы қанға боялып аққандықтан осылай аталған делінеді.\n\n**Тарихы мен қалыптасуы**\n\nАқжар ауылының тарихы **1928 жылдан** бастау алады. Осы жылы Аудандық Кеңес атқару комитетінің шешімімен аудан орталығы **«Культпункт – Ақжар»** деп бекітілген. Содан бері тоқсан жылға жуық уақыт ішінде ауыл аудан өмірінде жетекші орын алып, оның әлеуметтік-экономикалық дамуына зор үлес қосып келеді.\n\n**Білім мен руханият**\n\nАуылда **үш орта мектеп**, **екі спорт мектебі**, **музыка және өнер мектептері** жұмыс істейді. Солардың ішінде **1927 жылы құрылған Абай атындағы орта мектептің** орны ерекше. Бұл білім ордасынан елге танымал тұлғалар түлеп ұшты. Олардың қатарында **Халық қаһарманы Қасым Қайсенов**, **Халық мұғалімі Қанипа Бітібаева**, **Ленин орденінің иегері Смағзам Шомбин** бар.\n\n**Мәдениет пен өнер**\n\nАқжар ауылы – мәдениеті мен рухани деңгейі жоғары елді мекен. **1962 жылы құрылған «Ақжар халық театры»** республикалық байқауда I орын алып, **1963 жылы Мәскеу қаласындағы Кремль сахнасында** өнер көрсетті. Бұл – Одақ орталығында өнер көрсеткен **тұңғыш селолық театр** ретінде тарихта қалды.\n\n**Дін, табиғат және өндіріс**\n\nАуылдың көркі – **«Байжігіт баба» атындағы мешіт**, ол 1995–1999 жылдары халық қаражатына салынған. Тарбағатай өңірі пайдалы қазбаларға бай, соның ішінде Ақжар аймағындағы **бентонит балшығы** ерекше маңызға ие. Бұл жоба облыстың индустриялық-инновациялық даму картасына енгізілген.\n\n**Қоғамдық өмір мен жетістіктер**\n\nАқжар ауылы бірнеше мәрте **«Үздік ауыл»**, **«Үлгілі ауыл»** атақтарына ие болды. **2015 жылы** Дәулетбай батырдың 310 жылдығына арналған еңселі ескерткіш бой көтеріп, республикалық деңгейде айтыс пен бәйге өткізілді.\n\nОсылайша, Ақжар ауылы – тарихы терең, рухани бай, мәдениеті жоғары, болашағы зор елді мекен.",
+       "images":[]
+      },
+      "geometry": { "type": "Point", "coordinates": [83.675578, 47.584725] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "akmektp",
+        "name": "Акмектеп",
+        "shortDescription": "Село Акмектеп.",
+        "fullDescription": "## Акмектеп\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.436759, 47.844028] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "asusai",
+        "name": "Асусай",
+        "shortDescription": "Село Асусай.",
+        "fullDescription": "## Асусай\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.753737, 47.2554662] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "akhmetbulak",
+        "name": "Ахметбулак",
+        "shortDescription": "Село Ахметбулак.",
+        "fullDescription": "## Ахметбулак\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [84.188491, 47.046037] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "baitogas",
+        "name": "Байтогас",
+        "shortDescription": "Село Байтогас.",
+        "fullDescription": "## Байтогас\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.822124, 47.882755] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "dauletbay",
+        "name": "Даулетбай",
+        "shortDescription": "Село Даулетбай.",
+        "fullDescription": "## Даулетбай\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.951161, 47.338468] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "zhalanash",
+        "name": "Жаланаш",
+        "shortDescription": "Село Жаланаш.",
+        "fullDescription": "## Жаланаш\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.291903, 47.330560] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "zhambyl",
+        "name": "Жамбыл",
+        "shortDescription": "Село Жамбыл.",
+        "fullDescription": "## Жамбыл\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.508892, 47.560834] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "zhanaauyl",
+        "name": "Жанаауыл",
+        "shortDescription": "Село Жанаауыл.",
+        "fullDescription": "## Жанаауыл\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [84.115858, 47.218597] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "zhanalyk",
+        "name": "Жаналык",
+        "shortDescription": "Село Жаналык.",
+        "fullDescription": "## Жаналык\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.802255, 47.514621] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "zhanatalap",
+        "name": "Жанаталап",
+        "shortDescription": "Село Жанаталап.",
+        "fullDescription": "## Жанаталап\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [84.049649, 47.110743] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "zhanatileu",
+        "name": "Жанатилеу",
+        "shortDescription": "Село Жанатилеу.",
+        "fullDescription": "## Жанатилеу\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.677266, 47.609004] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "zhangyztal",
+        "name": "Жангызтал",
+        "shortDescription": "Село Жангызтал.",
+        "fullDescription": "## Жангызтал\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.610259, 47.545481] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "zhetiaral",
+        "name": "Жетыарал",
+        "shortDescription": "Село Жетыарал.",
+        "fullDescription": "## Жетыарал\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.734019, 47.484299] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "zholkurylys",
+        "name": "Жолкурылыс",
+        "shortDescription": "Село Жолкурылыс.",
+        "fullDescription": "## Жолкурылыс\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [84.061534, 47.528323] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "kabanbai",
+        "name": "Кабанбай",
+        "shortDescription": "Село Кабанбай.",
+        "fullDescription": "## Кабанбай\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.574775, 47.867608] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "kazakhstan",
+        "name": "Казахстан",
+        "shortDescription": "Село Казахстан.",
+        "fullDescription": "## Казахстан\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.710387, 47.858167] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "kamysty",
+        "name": "Камысты",
+        "shortDescription": "Село Камысты.",
+        "fullDescription": "## Камысты\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.664102, 47.357164] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "karaoi",
+        "name": "Караой",
+        "shortDescription": "Село Караой.Аксуатский район Абай область",
+        "fullDescription": "## Караой\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.050755, 47.983772] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "karasu",
+        "name": "Карасу",
+        "shortDescription": "Село Карасу.",
+        "fullDescription": "## Карасу\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.440934, 47.746664] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "kokbastau",
+        "name": "Кокбастау",
+        "shortDescription": "Село Кокбастау (Аксуатский район Абай область).",
+        "fullDescription": "## Кокбастау\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [82.839501, 47.460129] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "kuygan",
+        "name": "Куйган",
+        "shortDescription": "Село Куйган.",
+        "fullDescription": "## Куйган\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.535787, 47.454079] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "kumgol",
+        "name": "Кумголь",
+        "shortDescription": "Село Кумголь.АКсуатский район Область Абай",
+        "fullDescription": "## Кумголь\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [82.937928, 47.569277] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "kyzylzhuldyz",
+        "name": "Кызылжулдыз",
+        "shortDescription": "Село Кызылжулдыз.АКсуатский район Область Абай",
+        "fullDescription": "## Кызылжулдыз\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [82.942567, 47.767811] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "manyrak",
+        "name": "Манырак",
+        "shortDescription": "Село Манырак.",
+        "fullDescription": "## Манырак\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.860297, 47.434587] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "otegen",
+        "name": "Отеген",
+        "shortDescription": "Село Отеген.",
+        "fullDescription": "## Отеген\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.422441, 47.869091] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "saryolen",
+        "name": "Сарыолен",
+        "shortDescription": "Село Сарыолен.",
+        "fullDescription": "## Сарыолен\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [84.086239, 47.282293] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "tauke",
+        "name": "Тауке",
+        "shortDescription": "Село Тауке.",
+        "fullDescription": "## Тауке\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.520427, 47.849436] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "tugyl",
+        "name": "Тугыл",
+        "shortDescription": "Село Тугыл.",
+        "fullDescription": "## Тугыл\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [84.208664, 47.725301] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "shengeldi",
+        "name": "Шенгельды",
+        "shortDescription": "Село Шенгельды.",
+        "fullDescription": "## Шенгельды\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.654402, 47.854212] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "sholakkorda",
+        "name": "Шолакорда",
+        "shortDescription": "Село Шолакорда.",
+        "fullDescription": "## Шолакорда\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.417357, 47.688128] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "shorga",
+        "name": "Шорга",
+        "shortDescription": "Село Шорга.",
+        "fullDescription": "## Шорга\n\n(добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.576272, 47.927404] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "kargyba",
+        "name": "Каргыба",
+        "shortDescription": "Аул Каргыба (ранее Социал).АКсуатский район Область Абай",
+        "fullDescription": "## Каргыба\n\n### Прежнее название\n- До 1993 года: Социал\n\n(остальное добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [82.836508, 47.738225] }
+    },
+
+
+     {
+      "type": "Feature",
+      "properties": {
+        "id": "qyzylkesik",
+        "name": "Кызылкесик",
+        "shortDescription": "Аул кызылкесик",
+        "fullDescription": "## Каргыба\n\n### Прежнее название\n- До 1993 года: Социал\n\n(остальное добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.606403, 47.421718] }
+    },
+
+
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "qarabulaq",
+        "name": "Карабулак",
+        "shortDescription": "Аул кызылкесик",
+        "fullDescription": "## Каргыба\n\n### Прежнее название\n- До 1993 года: Социал\n\n(остальное добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [84.689414, 47.551255] }
+    },
+
+
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "Карамерген",
+        "name": "Карамерген",
+        "shortDescription": "Аул кызылкесик",
+        "fullDescription": "## Каргыба\n\n### Прежнее название\n- До 1993 года: Социал\n\n(остальное добавишь позже)\n",
+       "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [83.607145, 47.902855] }
+    },
+
+
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "Аксуат",
+        "name": "Аксуат",
+        "shortDescription": "Аул кызылкесик",
+        "fullDescription": "## Каргыба\n\n### Прежнее название\n- До 1993 года: Социал\n\n(остальное добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [82.812707, 47.765157] }
+    },
+
+
+
+
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "Екпин",
+        "name": "Екпин",
+        "shortDescription": "Аул кызылкесик",
+        "fullDescription": "## Каргыба\n\n### Прежнее название\n- До 1993 года: Социал\n\n(остальное добавишь позже)\n",
+        "images": []
+      },
+      "geometry": { "type": "Point", "coordinates": [82.734540, 47.783457] }
+    }
+
+
+  ]
+
+}

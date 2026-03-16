@@ -4,7 +4,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 
 import settlements from "./data/settlements.json";
 import places from "./data/places.json";
-import { tarbagataiGeojson, zaysanGeojson } from "./data/regionContours";
+import { tarbagataiGeojson, zaysanGeojson } from "./data/regionContours.js";
 import {
   normalizeName,
   isLngLatOk,
@@ -35,6 +35,7 @@ export default function MapView() {
   const [tourIndex, setTourIndex] = useState(0);
   const [slideIndex, setSlideIndex] = useState(0);
   const [showGallery, setShowGallery] = useState(false);
+  const [routeExists, setRouteExists] = useState(false);
 
   useEffect(() => {
     setSlideIndex(0);
@@ -91,16 +92,37 @@ export default function MapView() {
 
   const clearMarkers = () => clearMarkersList(markersRef);
 
+  const syncRouteExists = () => {
+    const map = mapRef.current;
+    if (!map || !mapLoadedRef.current) {
+      setRouteExists(false);
+      return;
+    }
+
+    try {
+      const src = map.getSource("driving-route");
+      if (!src || !src._data) {
+        setRouteExists(false);
+        return;
+      }
+      const data = src._data;
+      setRouteExists(Array.isArray(data?.features) && data.features.length > 0);
+    } catch {
+      setRouteExists(false);
+    }
+  };
+
   const isTarbagataiVisible = () => {
     const map = mapRef.current;
-    if (!map) return false;
+    if (!map || !mapLoadedRef.current) return false;
+    if (!map.getLayer("tarbagatai-fill")) return false;
     const v = map.getLayoutProperty("tarbagatai-fill", "visibility");
     return v !== "none";
   };
 
   const hideTarbagatai = () => {
     const map = mapRef.current;
-    if (!map) return;
+    if (!map || !mapLoadedRef.current) return;
     ["tarbagatai-fill", "tarbagatai-outline", "tarbagatai-glow"].forEach((id) => {
       if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", "none");
     });
@@ -108,7 +130,7 @@ export default function MapView() {
 
   const showTarbagataiAndFit = () => {
     const map = mapRef.current;
-    if (!map) return;
+    if (!map || !mapLoadedRef.current) return;
 
     ["tarbagatai-fill", "tarbagatai-outline", "tarbagatai-glow"].forEach((id) => {
       if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", "visible");
@@ -121,7 +143,7 @@ export default function MapView() {
 
   const hideZaysan = () => {
     const map = mapRef.current;
-    if (!map) return;
+    if (!map || !mapLoadedRef.current) return;
     ["zaysan-fill", "zaysan-outline", "zaysan-glow"].forEach((id) => {
       if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", "none");
     });
@@ -129,7 +151,7 @@ export default function MapView() {
 
   const showZaysanAndFit = () => {
     const map = mapRef.current;
-    if (!map) return;
+    if (!map || !mapLoadedRef.current) return;
 
     ["zaysan-fill", "zaysan-outline", "zaysan-glow"].forEach((id) => {
       if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", "visible");
@@ -142,7 +164,7 @@ export default function MapView() {
 
   const ensureDrivingRouteLayer = () => {
     const map = mapRef.current;
-    if (!map) return;
+    if (!map || !mapLoadedRef.current) return;
 
     if (!map.getSource("driving-route")) {
       map.addSource("driving-route", {
@@ -176,7 +198,7 @@ export default function MapView() {
 
   const clearDrivingRoute = () => {
     const map = mapRef.current;
-    if (!map) return;
+    if (!map || !mapLoadedRef.current) return;
 
     const src = map.getSource("driving-route");
     if (src) src.setData({ type: "FeatureCollection", features: [] });
@@ -184,11 +206,13 @@ export default function MapView() {
     if (tarbagataiWasVisibleBeforeRouteRef.current) {
       showTarbagataiAndFit();
     }
+
+    syncRouteExists();
   };
 
   const buildDrivingRoute = async (from, to) => {
     const map = mapRef.current;
-    if (!map || !isLngLatOk(from) || !isLngLatOk(to)) return;
+    if (!map || !mapLoadedRef.current || !isLngLatOk(from) || !isLngLatOk(to)) return;
 
     ensureDrivingRouteLayer();
 
@@ -249,15 +273,8 @@ export default function MapView() {
 
     const bounds = getBoundsFromCoords(route.geometry.coordinates);
     if (bounds) map.fitBounds(bounds, { padding: 80, duration: 900 });
-  };
 
-  const hasRouteOnMap = () => {
-    const map = mapRef.current;
-    if (!map) return false;
-    const src = map.getSource("driving-route");
-    if (!src) return false;
-    const data = src._data;
-    return Array.isArray(data?.features) && data.features.length > 0;
+    syncRouteExists();
   };
 
   const openTarbagataiFromMap = (placeData = null) => {
@@ -302,7 +319,7 @@ export default function MapView() {
 
   const openPlace = (p, opts = {}) => {
     const map = mapRef.current;
-    if (!map) return;
+    if (!map || !mapLoadedRef.current) return;
 
     const coords = p?.coords;
     if (!isLngLatOk(coords)) return;
@@ -366,12 +383,15 @@ export default function MapView() {
 
   const resetView = () => {
     const map = mapRef.current;
-    if (!map) return;
+    if (!map || !mapLoadedRef.current) return;
 
     clearDrivingRoute();
     hideTarbagatai();
     hideZaysan();
+    clearMarkers();
     setSelected(null);
+    setTourOn(false);
+    setTourIndex(0);
 
     map.flyTo({ ...initialView, speed: 0.9, curve: 1.4, essential: true });
   };
@@ -535,6 +555,7 @@ export default function MapView() {
       }
 
       ensureDrivingRouteLayer();
+      syncRouteExists();
 
       if (mode === "history") drawHistoricalMarkers(filteredPlaces);
     });
@@ -546,6 +567,7 @@ export default function MapView() {
       }
 
       if (mode !== "now") return;
+      if (!mapLoadedRef.current) return;
 
       const box = [
         [e.point.x - 6, e.point.y - 6],
@@ -615,18 +637,15 @@ export default function MapView() {
     if (mode !== "history") {
       setTourOn(false);
       setTourIndex(0);
+      clearMarkers();
+      return;
     }
 
-    if (mode === "history") {
-      drawHistoricalMarkers(filteredPlaces);
-    } else {
-      clearMarkers();
-    }
+    drawHistoricalMarkers(filteredPlaces);
   }, [mode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!mapLoadedRef.current) return;
-
     if (mode === "history") {
       setTourOn(false);
       setTourIndex(0);
@@ -657,14 +676,6 @@ export default function MapView() {
     hideZaysan();
   };
 
-  const routeExists = useMemo(() => {
-    try {
-      return hasRouteOnMap();
-    } catch {
-      return false;
-    }
-  }, [selected?.name, mode, selectedEra, query]);
-
   return (
     <>
       <div ref={mapContainerRef} style={{ width: "100vw", height: "100vh" }} />
@@ -687,7 +698,10 @@ export default function MapView() {
         }}
       >
         <button
-          onClick={() => setMode("now")}
+          onClick={() => {
+            setSelected(null);
+            setMode("now");
+          }}
           style={{
             padding: "8px 12px",
             borderRadius: 10,
@@ -702,7 +716,10 @@ export default function MapView() {
         </button>
 
         <button
-          onClick={() => setMode("history")}
+          onClick={() => {
+            setSelected(null);
+            setMode("history");
+          }}
           style={{
             padding: "8px 12px",
             borderRadius: 10,
@@ -717,14 +734,7 @@ export default function MapView() {
         </button>
 
         <button
-          onClick={() => {
-            clearDrivingRoute();
-            hideTarbagatai();
-            hideZaysan();
-            setSelected(null);
-            const map = mapRef.current;
-            if (map) map.flyTo({ ...initialView, speed: 0.9, curve: 1.4, essential: true });
-          }}
+          onClick={resetView}
           style={{
             padding: "8px 12px",
             borderRadius: 10,
@@ -738,9 +748,7 @@ export default function MapView() {
         </button>
 
         <button
-          onClick={() => {
-            clearDrivingRoute();
-          }}
+          onClick={clearDrivingRoute}
           style={{
             padding: "8px 12px",
             borderRadius: 10,
@@ -772,7 +780,6 @@ export default function MapView() {
                 color: tourOn ? "#fff" : "#111",
                 fontWeight: 700,
               }}
-              title="Кезекпен көрсету"
             >
               {tourOn ? "Экскурсия қосулы" : "Экскурсия"}
             </button>
@@ -889,8 +896,12 @@ export default function MapView() {
           <div style={{ overflowY: "auto" }}>
             {filteredPlaces.map((p, idx) => {
               const n = normalizeName(p?.name);
-              const isTar = n === normalizeName("Тарбағатай тауы") || n === normalizeName("Тарбагатай тауы");
-              const isZaysan = n === normalizeName("Зайсан көлі") || n === normalizeName("Зайсан коли");
+              const isTar =
+                n === normalizeName("Тарбағатай тауы") ||
+                n === normalizeName("Тарбагатай тауы");
+              const isZaysan =
+                n === normalizeName("Зайсан көлі") ||
+                n === normalizeName("Зайсан коли");
 
               return (
                 <div
@@ -916,7 +927,6 @@ export default function MapView() {
                     borderBottom: "1px solid rgba(0,0,0,0.06)",
                     background: tourOn && idx === tourIndex ? "rgba(0,0,0,0.06)" : "transparent",
                   }}
-                  title="Көрсету"
                 >
                   <div style={{ fontWeight: 900 }}>{p.name || "Атауы жоқ"}</div>
                   <div style={{ fontSize: 12, opacity: 0.7, marginTop: 3 }}>
@@ -928,7 +938,9 @@ export default function MapView() {
             })}
 
             {filteredPlaces.length === 0 && (
-              <div style={{ padding: 12, opacity: 0.7, fontSize: 13 }}>Ештеңе табылмады.</div>
+              <div style={{ padding: 12, opacity: 0.7, fontSize: 13 }}>
+                Ештеңе табылмады.
+              </div>
             )}
           </div>
         </div>
@@ -959,7 +971,9 @@ export default function MapView() {
             onChange={(e) => setSelectedEra(Number(e.target.value))}
             style={{ width: "100%" }}
           />
-          <div style={{ textAlign: "center", marginTop: 6, fontWeight: 800 }}>{eras[selectedEra]}</div>
+          <div style={{ textAlign: "center", marginTop: 6, fontWeight: 800 }}>
+            {eras[selectedEra]}
+          </div>
         </div>
       )}
 
@@ -1002,7 +1016,6 @@ export default function MapView() {
                       fontWeight: 800,
                       background: "#fff",
                     }}
-                    title="Google Maps навигация"
                   >
                     Навигация (Google)
                   </a>
@@ -1020,7 +1033,6 @@ export default function MapView() {
                       background: "#fff",
                       fontWeight: 800,
                     }}
-                    title="Координатты көшіру"
                   >
                     Көшіру
                   </button>
@@ -1042,7 +1054,6 @@ export default function MapView() {
                         background: "#fff",
                         fontWeight: 800,
                       }}
-                      title="GPS тұрған жерден автожолмен маршрут"
                     >
                       Маршрут (GPS)
                     </button>
@@ -1050,7 +1061,7 @@ export default function MapView() {
 
                   {routeExists && (
                     <button
-                      onClick={() => clearDrivingRoute()}
+                      onClick={clearDrivingRoute}
                       style={{
                         padding: "8px 10px",
                         borderRadius: 10,
@@ -1059,7 +1070,6 @@ export default function MapView() {
                         background: "#fff",
                         fontWeight: 800,
                       }}
-                      title="Маршрутты өшіру"
                     >
                       Маршрутты өшіру
                     </button>
@@ -1079,13 +1089,14 @@ export default function MapView() {
                 cursor: "pointer",
                 fontSize: 18,
               }}
-              title="Жабу"
             >
               ✕
             </button>
           </div>
 
-          <div style={{ marginTop: 12, fontSize: 14, lineHeight: 1.4 }}>{selected.short}</div>
+          <div style={{ marginTop: 12, fontSize: 14, lineHeight: 1.4 }}>
+            {selected.short}
+          </div>
 
           <details style={{ marginTop: 12 }}>
             <summary style={{ cursor: "pointer", fontWeight: 800 }}>Толығырақ</summary>
@@ -1114,7 +1125,6 @@ export default function MapView() {
                       background: "#fff",
                       fontWeight: 800,
                     }}
-                    title="Суреттерді көрсету"
                   >
                     {showGallery ? "Суреттерді жабу" : "Суреттер"} ({selected.images.length})
                   </button>
@@ -1164,7 +1174,6 @@ export default function MapView() {
                           fontWeight: 900,
                           lineHeight: "36px",
                         }}
-                        title="Алдыңғы"
                       >
                         ‹
                       </button>
@@ -1189,7 +1198,6 @@ export default function MapView() {
                           fontWeight: 900,
                           lineHeight: "36px",
                         }}
-                        title="Келесі"
                       >
                         ›
                       </button>
@@ -1228,7 +1236,6 @@ export default function MapView() {
                             cursor: "pointer",
                             background: i === slideIndex ? "#111" : "#cfcfcf",
                           }}
-                          title={`Сурет ${i + 1}`}
                         />
                       ))}
                     </div>

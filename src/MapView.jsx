@@ -12,6 +12,7 @@ import {
   getBoundsFromCoords,
   clearMarkersList,
 } from "./utils/mapHelpers";
+import ObjectPresentation from "./ObjectPresentation";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
@@ -24,6 +25,11 @@ export default function MapView() {
 
   const userLocRef = useRef(null);
   const userMarkerRef = useRef(null);
+  const routeAnimationMarkerRef = useRef(null);
+  const routeAbortRef = useRef(null);
+  const selectedRef = useRef(null);
+  const routeAnimationRef = useRef(null);
+  const routeExistsRef = useRef(false);
 
   const tarbagataiWasVisibleBeforeRouteRef = useRef(false);
 
@@ -36,11 +42,38 @@ export default function MapView() {
   const [slideIndex, setSlideIndex] = useState(0);
   const [showGallery, setShowGallery] = useState(false);
   const [routeExists, setRouteExists] = useState(false);
+  const [routeLoading, setRouteLoading] = useState(false);
+  const [routeInfo, setRouteInfo] = useState(null);
+  const [showModelViewer, setShowModelViewer] = useState(false);
 
   useEffect(() => {
+    selectedRef.current = selected;
     setSlideIndex(0);
     setShowGallery(false);
-  }, [selected?.name]);
+    setShowModelViewer(false);
+  }, [selected]);
+
+  useEffect(() => {
+    routeExistsRef.current = routeExists;
+  }, [routeExists]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.customElements?.get("model-viewer")) return;
+
+    const existing = document.querySelector('script[data-model-viewer="true"]');
+    if (existing) return;
+
+    const script = document.createElement("script");
+    script.type = "module";
+    script.src = "https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js";
+    script.dataset.modelViewer = "true";
+    document.head.appendChild(script);
+
+    return () => {
+      // Скрипт оставляем в документе, чтобы не дергать повторно.
+    };
+  }, []);
 
   const eras = useMemo(
     () => ["Қола дәуірі", "Сақ дәуірі", "Түркі кезеңі", "Қазақ хандығы", "КСРО", ""],
@@ -196,21 +229,126 @@ export default function MapView() {
     }
   };
 
-  const clearDrivingRoute = () => {
+  const stopRouteAnimation = () => {
+    if (routeAnimationRef.current) {
+      cancelAnimationFrame(routeAnimationRef.current);
+      routeAnimationRef.current = null;
+    }
+    if (routeAnimationMarkerRef.current) {
+      routeAnimationMarkerRef.current.remove();
+      routeAnimationMarkerRef.current = null;
+    }
+  };
+
+  const clearDrivingRoute = ({ restoreRegion = true } = {}) => {
     const map = mapRef.current;
-    if (!map || !mapLoadedRef.current) return;
+
+    if (routeAbortRef.current) {
+      routeAbortRef.current.abort();
+      routeAbortRef.current = null;
+    }
+
+    stopRouteAnimation();
+    setRouteLoading(false);
+    setRouteInfo(null);
+
+    if (!map || !mapLoadedRef.current) {
+      setRouteExists(false);
+      return;
+    }
 
     const src = map.getSource("driving-route");
     if (src) src.setData({ type: "FeatureCollection", features: [] });
 
-    if (tarbagataiWasVisibleBeforeRouteRef.current) {
+    if (restoreRegion && tarbagataiWasVisibleBeforeRouteRef.current) {
       showTarbagataiAndFit();
     }
 
     syncRouteExists();
   };
 
-  const buildDrivingRoute = async (from, to) => {
+  const animateRoute = (coords) => {
+    const map = mapRef.current;
+    if (!map || !Array.isArray(coords) || coords.length < 2) return;
+
+    stopRouteAnimation();
+
+    const maxPoints = 180;
+    const stepSize = Math.max(1, Math.ceil(coords.length / maxPoints));
+    const sampled = coords.filter((_, idx) => idx % stepSize === 0);
+    if (sampled[sampled.length - 1] !== coords[coords.length - 1]) {
+      sampled.push(coords[coords.length - 1]);
+    }
+
+    routeAnimationMarkerRef.current = new mapboxgl.Marker({ color: "#ff0000" })
+      .setLngLat(sampled[0])
+      .addTo(map);
+
+    let index = 0;
+    let lastTs = 0;
+    const speedMs = 140;
+
+    const tick = (ts) => {
+      if (!routeAnimationMarkerRef.current) return;
+
+      if (!lastTs) lastTs = ts;
+      const diff = ts - lastTs;
+
+      if (diff >= speedMs) {
+        index += 1;
+        lastTs = ts;
+
+        if (index >= sampled.length) {
+          return;
+        }
+
+        routeAnimationMarkerRef.current.setLngLat(sampled[index]);
+      }
+
+      routeAnimationRef.current = requestAnimationFrame(tick);
+    };
+
+    routeAnimationRef.current = requestAnimationFrame(tick);
+  };
+
+  const getCurrentUserLocation = () => {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        reject(new Error("Бұл браузерде GPS/Geolocation қолдауы жоқ."));
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lng = pos.coords.longitude;
+          const lat = pos.coords.latitude;
+          const coords = [lng, lat];
+          userLocRef.current = coords;
+
+          const map = mapRef.current;
+          if (map && mapLoadedRef.current) {
+            if (!userMarkerRef.current) {
+              userMarkerRef.current = new mapboxgl.Marker({ color: "#1b74e4" })
+                .setLngLat(coords)
+                .addTo(map);
+            } else {
+              userMarkerRef.current.setLngLat(coords);
+            }
+          }
+
+          resolve(coords);
+        },
+        (error) => reject(error),
+        {
+          enableHighAccuracy: true,
+          timeout: 12000,
+          maximumAge: 15000,
+        }
+      );
+    });
+  };
+
+  const buildDrivingRoute = async (from, to, options = {}) => {
     const map = mapRef.current;
     if (!map || !mapLoadedRef.current || !isLngLatOk(from) || !isLngLatOk(to)) return;
 
@@ -220,11 +358,26 @@ export default function MapView() {
     hideTarbagatai();
     hideZaysan();
 
+    if (routeAbortRef.current) {
+      routeAbortRef.current.abort();
+    }
+
+    stopRouteAnimation();
+    setRouteLoading(true);
+    setRouteInfo(null);
+
+    const controller = new AbortController();
+    routeAbortRef.current = controller;
+
     const src = map.getSource("driving-route");
     if (src) src.setData({ type: "FeatureCollection", features: [] });
 
     const token = import.meta.env.VITE_MAPBOX_TOKEN;
     if (!token) {
+      if (routeAbortRef.current === controller) {
+        routeAbortRef.current = null;
+        setRouteLoading(false);
+      }
       alert("VITE_MAPBOX_TOKEN жоқ (.env тексер).");
       return;
     }
@@ -234,47 +387,63 @@ export default function MapView() {
       `${from[0]},${from[1]};${to[0]},${to[1]}` +
       `?geometries=geojson&overview=full&steps=false&access_token=${token}`;
 
-    let res;
     try {
-      res = await fetch(url);
-    } catch (e) {
-      console.error(e);
-      alert("Интернет/желіні тексеріңіз (Directions API сұранысы өтпеді).");
-      return;
+      const res = await fetch(url, { signal: controller.signal });
+
+      if (!res.ok) {
+        const txt = await res.text().catch(() => "");
+        console.error("Directions API error:", res.status, txt);
+        alert(
+          `Маршрут салынбады. HTTP ${res.status}\n` +
+            `Егер 401/403 болса — Mapbox token restrictions (localhost / vercel) тексер.`
+        );
+        return;
+      }
+
+      const data = await res.json();
+      const route = data?.routes?.[0];
+      if (!route?.geometry?.coordinates?.length) {
+        alert("Маршрут табылмады.");
+        return;
+      }
+
+      const routeSource = map.getSource("driving-route");
+      if (!routeSource) return;
+
+      routeSource.setData({
+        type: "FeatureCollection",
+        features: [
+          {
+            type: "Feature",
+            properties: {},
+            geometry: route.geometry,
+          },
+        ],
+      });
+
+      setRouteInfo({
+        distanceKm: Number(route.distance || 0) / 1000,
+        durationMin: Number(route.duration || 0) / 60,
+      });
+
+      if (options.fit !== false) {
+        const bounds = getBoundsFromCoords(route.geometry.coordinates);
+        if (bounds) map.fitBounds(bounds, { padding: 80, duration: 900 });
+      }
+
+      animateRoute(route.geometry.coordinates);
+      syncRouteExists();
+    } catch (error) {
+      if (error?.name !== "AbortError") {
+        console.error(error);
+        alert("Интернет/желіні тексеріңіз (Directions API сұранысы өтпеді).");
+      }
+    } finally {
+      if (routeAbortRef.current === controller) {
+        routeAbortRef.current = null;
+        setRouteLoading(false);
+      }
     }
-
-    if (!res.ok) {
-      const txt = await res.text().catch(() => "");
-      console.error("Directions API error:", res.status, txt);
-      alert(
-        `Маршрут салынбады. HTTP ${res.status}\n` +
-          `Егер 401/403 болса — Mapbox token restrictions (localhost / vercel) тексер.`
-      );
-      return;
-    }
-
-    const data = await res.json();
-    const route = data?.routes?.[0];
-    if (!route?.geometry?.coordinates?.length) {
-      alert("Маршрут табылмады.");
-      return;
-    }
-
-    map.getSource("driving-route").setData({
-      type: "FeatureCollection",
-      features: [
-        {
-          type: "Feature",
-          properties: {},
-          geometry: route.geometry,
-        },
-      ],
-    });
-
-    const bounds = getBoundsFromCoords(route.geometry.coordinates);
-    if (bounds) map.fitBounds(bounds, { padding: 80, duration: 900 });
-
-    syncRouteExists();
   };
 
   const openTarbagataiFromMap = (placeData = null) => {
@@ -294,6 +463,9 @@ export default function MapView() {
         "Бұл аймақ — шамамен белгіленген контур. Тарбағатай — табиғи, тарихи және мәдени маңызы жоғары өңір.",
       images: Array.isArray(placeData?.images) ? placeData.images : [],
       regionType: "tarbagatai",
+      model3d: placeData?.model3d || "",
+      modelPoster: placeData?.modelPoster || "",
+      modelViewerUrl: placeData?.modelViewerUrl || "",
     });
   };
 
@@ -314,6 +486,9 @@ export default function MapView() {
         "Зайсан көлі — Шығыс Қазақстандағы тарихи және табиғи маңызы жоғары ірі көл.",
       images: Array.isArray(placeData?.images) ? placeData.images : [],
       regionType: "zaysan",
+      model3d: placeData?.model3d || "",
+      modelPoster: placeData?.modelPoster || "",
+      modelViewerUrl: placeData?.modelViewerUrl || "",
     });
   };
 
@@ -350,12 +525,15 @@ export default function MapView() {
     });
 
     setSelected({
-      type: "Тарихи нысан",
+      type: p?.type || "Тарихи нысан",
       name: p?.name || "Атауы жоқ",
       coords,
       short: p?.shortDescription || "Қысқаша ақпарат жоқ.",
       full: p?.fullDescription || "Толық ақпарат жоқ.",
       images: Array.isArray(p?.images) ? p.images : [],
+      model3d: p?.model3d || "",
+      modelPoster: p?.modelPoster || "",
+      modelViewerUrl: p?.modelViewerUrl || "",
     });
   };
 
@@ -421,14 +599,20 @@ export default function MapView() {
       geo.on("geolocate", (pos) => {
         const lng = pos.coords.longitude;
         const lat = pos.coords.latitude;
-        userLocRef.current = [lng, lat];
+        const currentCoords = [lng, lat];
+        userLocRef.current = currentCoords;
 
         if (!userMarkerRef.current) {
           userMarkerRef.current = new mapboxgl.Marker({ color: "#1b74e4" })
-            .setLngLat([lng, lat])
+            .setLngLat(currentCoords)
             .addTo(map);
         } else {
-          userMarkerRef.current.setLngLat([lng, lat]);
+          userMarkerRef.current.setLngLat(currentCoords);
+        }
+
+        const activeSelected = selectedRef.current;
+        if (activeSelected?.coords && routeExistsRef.current) {
+          buildDrivingRoute(currentCoords, activeSelected.coords, { fit: false });
         }
       });
 
@@ -445,6 +629,12 @@ export default function MapView() {
       } catch (e) {
         console.warn("Terrain disabled:", e);
       }
+
+      map.setFog({
+        range: [-1, 2],
+        color: "rgba(255,255,255,0.9)",
+        "horizon-blend": 0.1,
+      });
 
       if (!map.getLayer("sky")) {
         map.addLayer({
@@ -502,7 +692,9 @@ export default function MapView() {
         map.on("click", "tarbagatai-fill", () => {
           blockNextMapClickRef.current = true;
           openTarbagataiFromMap();
-          setTimeout(() => (blockNextMapClickRef.current = false), 0);
+          setTimeout(() => {
+            blockNextMapClickRef.current = false;
+          }, 0);
         });
       }
 
@@ -550,7 +742,9 @@ export default function MapView() {
         map.on("click", "zaysan-fill", () => {
           blockNextMapClickRef.current = true;
           openZaysanFromMap();
-          setTimeout(() => (blockNextMapClickRef.current = false), 0);
+          setTimeout(() => {
+            blockNextMapClickRef.current = false;
+          }, 0);
         });
       }
 
@@ -620,10 +814,16 @@ export default function MapView() {
         short: props.shortDescription || "Қысқаша ақпарат жоқ.",
         full: props.fullDescription || "Толық ақпарат жоқ.",
         images: Array.isArray(props.images) ? props.images : [],
+        model3d: props.model3d || "",
+        modelPoster: props.modelPoster || "",
+        modelViewerUrl: props.modelViewerUrl || "",
       });
     });
 
-    return () => map.remove();
+    return () => {
+      clearDrivingRoute({ restoreRegion: false });
+      map.remove();
+    };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -672,8 +872,23 @@ export default function MapView() {
 
   const closeSelected = () => {
     setSelected(null);
+    setShowModelViewer(false);
     hideTarbagatai();
     hideZaysan();
+  };
+
+  const has3D = Boolean(selected?.model3d || selected?.modelViewerUrl);
+
+  const openRouteFromUserPosition = async () => {
+    if (!selected?.coords || routeLoading) return;
+
+    try {
+      const currentCoords = await getCurrentUserLocation();
+      await buildDrivingRoute(currentCoords, selected.coords);
+    } catch (error) {
+      console.error(error);
+      alert("GPS орнын алу мүмкін болмады. Браузерден геолокацияға рұқсат беріңіз.");
+    }
   };
 
   return (
@@ -1039,23 +1254,19 @@ export default function MapView() {
 
                   {!routeExists && (
                     <button
-                      onClick={() => {
-                        if (!userLocRef.current) {
-                          alert("Алдымен GPS қос: оң жақтағы геолокация батырмасын бас (top-right).");
-                          return;
-                        }
-                        buildDrivingRoute(userLocRef.current, selected.coords);
-                      }}
+                      onClick={openRouteFromUserPosition}
+                      disabled={routeLoading}
                       style={{
                         padding: "8px 10px",
                         borderRadius: 10,
                         border: "1px solid #ddd",
-                        cursor: "pointer",
-                        background: "#fff",
+                        cursor: routeLoading ? "wait" : "pointer",
+                        background: routeLoading ? "#f3f3f3" : "#fff",
+                        opacity: routeLoading ? 0.75 : 1,
                         fontWeight: 800,
                       }}
                     >
-                      Маршрут (GPS)
+                      {routeLoading ? "Маршрут жүктелуде..." : "Маршрут (GPS)"}
                     </button>
                   )}
 
@@ -1074,6 +1285,28 @@ export default function MapView() {
                       Маршрутты өшіру
                     </button>
                   )}
+
+                  {has3D && (
+                    <button
+                      onClick={() => setShowModelViewer(true)}
+                      style={{
+                        padding: "8px 10px",
+                        borderRadius: 10,
+                        border: "1px solid #ddd",
+                        cursor: "pointer",
+                        background: "#fff",
+                        fontWeight: 800,
+                      }}
+                    >
+                      3D көрсету
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {routeInfo && (
+                <div style={{ marginTop: 10, fontSize: 12, opacity: 0.8 }}>
+                  Қашықтық: <b>{routeInfo.distanceKm.toFixed(1)} км</b> · Уақыт: <b>{Math.round(routeInfo.durationMin)} мин</b>
                 </div>
               )}
             </div>
@@ -1094,9 +1327,7 @@ export default function MapView() {
             </button>
           </div>
 
-          <div style={{ marginTop: 12, fontSize: 14, lineHeight: 1.4 }}>
-            {selected.short}
-          </div>
+          <div style={{ marginTop: 12, fontSize: 14, lineHeight: 1.4 }}>{selected.short}</div>
 
           <details style={{ marginTop: 12 }}>
             <summary style={{ cursor: "pointer", fontWeight: 800 }}>Толығырақ</summary>
@@ -1245,6 +1476,13 @@ export default function MapView() {
             </div>
           </details>
         </div>
+      )}
+
+      {showModelViewer && selected && (
+        <ObjectPresentation
+          place={selected}
+          onClose={() => setShowModelViewer(false)}
+        />
       )}
     </>
   );

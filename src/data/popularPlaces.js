@@ -1,0 +1,490 @@
+export const popularPlaces = [
+  {
+    id: "popular-yasawi-mausoleum",
+    name: "Қожа Ахмет Ясауи кесенесі",
+    type: "Тарихи ескерткіш",
+    coords: [68.271, 43.297],
+    era: 5,
+    shortDescription: "Түркістандағы ЮНЕСКО мұрасы, Әмір Темір дәуірінің ең әйгілі сәулет ескерткіштерінің бірі.",
+    fullDescription:
+      "Қожа Ахмет Ясауи кесенесі XIV ғасырдың соңында салынған және Түркістанның рухани орталығы ретінде танылған. Кесене түркі әлемінің діни, мәдени және сәулеттік тарихын көрсетеді.",
+    images: [],
+    translations: {
+      ru: {
+        name: "Мавзолей Ходжи Ахмеда Ясави",
+        type: "Исторический памятник",
+        short: "Объект ЮНЕСКО в Туркестане и один из главных памятников эпохи Амира Темира.",
+        full: "Мавзолей Ходжи Ахмеда Ясави был возведен в конце XIV века и стал духовным символом Туркестана. Памятник показывает связь религиозной, культурной и архитектурной истории тюркского мира.",
+      },
+      en: {
+        name: "Mausoleum of Khoja Ahmed Yasawi",
+        type: "Historical monument",
+        short: "A UNESCO site in Turkistan and one of the great Timurid monuments of Kazakhstan.",
+        full: "The Mausoleum of Khoja Ahmed Yasawi was built in the late 14th century and remains a spiritual symbol of Turkistan. It reflects the religious, cultural, and architectural history of the Turkic world.",
+      },
+    },
+  },
+  {
+    id: "popular-otrar",
+    name: "Отырар қалашығы",
+    type: "Археологиялық орын",
+    coords: [68.308, 42.852],
+    era: 5,
+    shortDescription: "Ұлы Жібек жолындағы ірі ортағасырлық қала орны.",
+    fullDescription:
+      "Отырар ортағасырлық Қазақстандағы сауда, қолөнер және білім орталықтарының бірі болды. Қала орны Жібек жолы бойындағы өркениеттер байланысын түсінуге көмектеседі.",
+    images: [],
+    translations: {
+      ru: {
+        name: "Городище Отрар",
+        type: "Археологический объект",
+        short: "Крупный средневековый город на Великом шелковом пути.",
+        full: "Отрар был одним из центров торговли, ремесла и знаний в средневековом Казахстане. Городище помогает увидеть связи цивилизаций на маршрутах Великого шелкового пути.",
+      },
+      en: {
+        name: "Otrar Settlement",
+        type: "Archaeological site",
+        short: "A major medieval city on the Silk Road.",
+        full: "Otrar was a center of trade, craft, and learning in medieval Kazakhstan. The site helps explain how Silk Road cities connected cultures across Central Asia.",
+      },
+    },
+  },
+  {
+    id: "popular-tamgaly",
+    name: "Таңбалы петроглифтері",
+    type: "Жартастағы суреттер",
+    coords: [75.535, 43.802],
+    era: 5,
+    shortDescription: "Қола дәуірінен бастап салынған мыңдаған жартас суреттері бар ЮНЕСКО нысаны.",
+    fullDescription:
+      "Таңбалы шатқалындағы петроглифтер ежелгі адамдардың дүниетанымы, салт-дәстүрі және күнделікті өмірі туралы дерек береді. Бұл Қазақстандағы ең танымал археологиялық кешендердің бірі.",
+    images: [],
+    translations: {
+      ru: {
+        name: "Петроглифы Тамгалы",
+        type: "Наскальные рисунки",
+        short: "Объект ЮНЕСКО с тысячами изображений от бронзового века и позднее.",
+        full: "Петроглифы Тамгалы рассказывают о мировоззрении, обрядах и быте древних людей. Это один из самых известных археологических комплексов Казахстана.",
+      },
+      en: {
+        name: "Tamgaly Petroglyphs",
+        type: "Rock art",
+        short: "A UNESCO rock-art landscape with thousands of images from the Bronze Age onward.",
+        full: "The Tamgaly petroglyphs reveal ancient beliefs, rituals, and everyday life. The site is one of Kazakhstan's best-known archaeological landscapes.",
+      },
+    },
+  },
+  {
+    id: "popular-ulytau",
+    name: "Ұлытау",
+    type: "Тарихи-мәдени өңір",
+    coords: [66.92, 48.65],
+    era: 5,
+    shortDescription: "Қазақ даласының саяси және рухани тарихымен байланысты қасиетті аймақ.",
+    fullDescription:
+      "Ұлытау өңірі хандық дәуір, көшпелі мәдениет және ұлттық тарихи жадпен тығыз байланысты. Мұнда көне қорымдар, кесенелер және дала өркениетінің іздері сақталған.",
+    images: [],
+    translations: {
+      ru: {
+        name: "Улытау",
+        type: "Историко-культурный регион",
+        short: "Сакральный регион, связанный с политической и духовной историей степи.",
+        full: "Улытау связан с эпохой ханств, кочевой культурой и исторической памятью Казахстана. В регионе сохранились древние некрополи, мавзолеи и следы степной цивилизации.",
+      },
+      en: {
+        name: "Ulytau",
+        type: "Historical and cultural region",
+        short: "A sacred region tied to the political and spiritual history of the Kazakh steppe.",
+        full: "Ulytau is associated with khanate history, nomadic culture, and national memory. Ancient cemeteries, mausoleums, and traces of steppe civilization are preserved here.",
+      },
+    },
+  },
+  {
+    id: "popular-berel",
+    name: "Берел қорғандары",
+    type: "Археологиялық кешен",
+    coords: [86.43, 49.36],
+    era: 5,
+    shortDescription: "Алтайдағы сақ дәуірінің әйгілі патша қорғандары.",
+    fullDescription:
+      "Берел қорғандары ерте көшпелілер мәдениетін, жылқы әбзелдерін және Алтайдағы сақ дәуірінің жерлеу дәстүрлерін зерттеуде маңызды орын алады.",
+    images: [],
+    translations: {
+      ru: {
+        name: "Берельские курганы",
+        type: "Археологический комплекс",
+        short: "Известные царские курганы сакской эпохи в Алтае.",
+        full: "Берельские курганы важны для изучения культуры ранних кочевников, конского снаряжения и погребальных традиций сакской эпохи Алтая.",
+      },
+      en: {
+        name: "Berel Burial Mounds",
+        type: "Archaeological complex",
+        short: "Famous Saka-period royal burial mounds in the Altai.",
+        full: "The Berel burial mounds are important for studying early nomadic culture, horse equipment, and Saka-period burial traditions in the Altai.",
+      },
+    },
+  },
+  {
+    id: "popular-medeu",
+    name: "Медеу және Шымбұлақ",
+    type: "Туристік орын",
+    coords: [77.058, 43.157],
+    era: 5,
+    shortDescription: "Алматы маңындағы ең танымал тау туризмі аймағы.",
+    fullDescription:
+      "Медеу мұз айдыны мен Шымбұлақ тау курорты Іле Алатауының баурайында орналасқан. Бұл аймақ қалаға жақын табиғат, спорт және тауға серуендеу үшін танымал.",
+    images: [],
+    translations: {
+      ru: {
+        name: "Медеу и Шымбулак",
+        type: "Туристическое место",
+        short: "Самая известная горная туристическая зона рядом с Алматы.",
+        full: "Каток Медеу и горный курорт Шымбулак расположены в предгорьях Иле Алатау. Это популярное место для спорта, прогулок и знакомства с природой рядом с городом.",
+      },
+      en: {
+        name: "Medeu and Shymbulak",
+        type: "Tourist destination",
+        short: "The best-known mountain tourism area near Almaty.",
+        full: "Medeu skating rink and Shymbulak mountain resort sit in the foothills of the Ile Alatau. The area is popular for sport, hiking, and easy access to mountain nature.",
+      },
+    },
+  },
+  {
+    id: "popular-burabay",
+    name: "Бурабай ұлттық паркі",
+    type: "Ұлттық парк",
+    coords: [70.2521, 53.0874],
+    era: 5,
+    protectedAreaId: "burabay",
+    shortDescription: "Көлдері, қарағайлы ормандары және гранитті жартастарымен танымал курорттық аймақ.",
+    fullDescription:
+      "Бурабай ұлттық паркі Солтүстік Қазақстандағы ең танымал табиғи-туристік аймақтардың бірі. Картадағы жасыл контур парктің шамамен орналасу аймағын көрсетеді.",
+    images: [],
+    translations: {
+      ru: {
+        name: "Национальный парк Бурабай",
+        type: "Национальный парк",
+        short: "Курортная зона с озерами, сосновыми лесами и гранитными скалами.",
+        full: "Национальный парк Бурабай является одной из самых популярных природных зон Северного Казахстана. Зеленый контур на карте показывает примерную область парка.",
+      },
+      en: {
+        name: "Burabay National Park",
+        type: "National park",
+        short: "A resort landscape of lakes, pine forests, and granite hills.",
+        full: "Burabay National Park is one of northern Kazakhstan's most popular natural destinations. The green contour on the map shows the approximate park area.",
+      },
+    },
+  },
+  {
+    id: "popular-charyn",
+    name: "Шарын каньоны",
+    type: "Ұлттық парк",
+    coords: [79.07, 43.356],
+    era: 5,
+    protectedAreaId: "charyn",
+    shortDescription: "Қызыл жартастары мен аңғарларымен танымал Қазақстандағы ең әйгілі каньон.",
+    fullDescription:
+      "Шарын ұлттық паркі ерекше геологиялық пішіндерімен және Қамалдар аңғарымен белгілі. Контур парктің шамамен қорғалатын аймағын көрсетеді.",
+    images: [],
+    translations: {
+      ru: {
+        name: "Чарынский каньон",
+        type: "Национальный парк",
+        short: "Самый известный каньон Казахстана с красными скалами и живописными долинами.",
+        full: "Чарынский национальный парк известен необычными геологическими формами и Долиной замков. Контур показывает примерную охраняемую территорию парка.",
+      },
+      en: {
+        name: "Charyn Canyon",
+        type: "National park",
+        short: "Kazakhstan's best-known canyon, famous for red cliffs and dramatic valleys.",
+        full: "Charyn National Park is known for unusual geological formations and the Valley of Castles. The contour marks the park's approximate protected area.",
+      },
+    },
+  },
+  {
+    id: "popular-kolsai",
+    name: "Көлсай көлдері",
+    type: "Ұлттық парк",
+    coords: [78.324, 42.944],
+    era: 5,
+    protectedAreaId: "kolsai",
+    shortDescription: "Тянь-Шань тауларындағы көлдер жүйесі және танымал жаяу маршруттар аймағы.",
+    fullDescription:
+      "Көлсай көлдері ұлттық паркі тау көлдері, орман белдеуі және Қайыңды көлі арқылы танымал. Контур қорғалатын аймақтың шамамен шекарасын береді.",
+    images: [],
+    translations: {
+      ru: {
+        name: "Кольсайские озера",
+        type: "Национальный парк",
+        short: "Система горных озер Тянь-Шаня и популярная зона пеших маршрутов.",
+        full: "Национальный парк Кольсайские озера известен горными озерами, лесными склонами и озером Каинды. Контур показывает примерные границы охраняемой территории.",
+      },
+      en: {
+        name: "Kolsai Lakes",
+        type: "National park",
+        short: "A Tien Shan mountain-lake system and a popular hiking area.",
+        full: "Kolsai Lakes National Park is known for mountain lakes, forested slopes, and nearby Kaindy Lake. The contour shows the approximate protected area.",
+      },
+    },
+  },
+  {
+    id: "popular-kaindy",
+    name: "Қайыңды көлі",
+    type: "Туристік орын",
+    coords: [78.468, 42.984],
+    era: 5,
+    protectedAreaId: "kolsai",
+    shortDescription: "Су ішінде қалған шыршаларымен танымал ерекше тау көлі.",
+    fullDescription:
+      "Қайыңды көлі жер сілкінісінен кейін пайда болған табиғи бөгет нәтижесінде қалыптасқан. Көлдің басты белгісі - судан шығып тұрған ағаш діңдері.",
+    images: [],
+    translations: {
+      ru: {
+        name: "Озеро Каинды",
+        type: "Туристическое место",
+        short: "Необычное горное озеро, известное затопленными елями.",
+        full: "Озеро Каинды образовалось после природной запруды, возникшей в результате землетрясения. Его узнаваемый образ - стволы деревьев, выступающие из воды.",
+      },
+      en: {
+        name: "Kaindy Lake",
+        type: "Tourist destination",
+        short: "A striking mountain lake known for submerged spruce trees.",
+        full: "Kaindy Lake formed after a natural dam created by an earthquake. Its signature view is the trunks of trees rising from the water.",
+      },
+    },
+  },
+  {
+    id: "popular-altyn-emel",
+    name: "Алтын-Емел ұлттық паркі",
+    type: "Ұлттық парк",
+    coords: [78.67, 44.17],
+    era: 5,
+    protectedAreaId: "altyn-emel",
+    shortDescription: "Әншіқұм, Ақтау таулары және дала ландшафттарымен әйгілі ұлттық парк.",
+    fullDescription:
+      "Алтын-Емел ұлттық паркі табиғи әртүрлілігімен, Әншіқұм құмтөбесімен және Ақтау-Катутау тауларымен танымал. Контур парктің шамамен аумағын көрсетеді.",
+    images: [],
+    translations: {
+      ru: {
+        name: "Национальный парк Алтын-Эмель",
+        type: "Национальный парк",
+        short: "Нацпарк с Поющим барханом, горами Актау и степными ландшафтами.",
+        full: "Алтын-Эмель известен природным разнообразием, Поющим барханом и горами Актау-Катутау. Контур показывает примерную территорию парка.",
+      },
+      en: {
+        name: "Altyn-Emel National Park",
+        type: "National park",
+        short: "A national park known for the Singing Dune, Aktau hills, and steppe landscapes.",
+        full: "Altyn-Emel is famous for natural diversity, the Singing Dune, and the Aktau-Katutau hills. The contour shows the park's approximate area.",
+      },
+    },
+  },
+  {
+    id: "popular-korgalzhyn",
+    name: "Қорғалжын қорығы",
+    type: "Қорық",
+    coords: [69.31, 50.58],
+    era: 5,
+    protectedAreaId: "korgalzhyn",
+    shortDescription: "Теңіз-Қорғалжын көлдер жүйесі және қоқиқаздарымен белгілі қорық.",
+    fullDescription:
+      "Қорғалжын мемлекеттік табиғи қорығы дала мен сулы-батпақты алқаптарды қорғайды. Бұл құстар миграциясы үшін аса маңызды халықаралық аймақ.",
+    images: [],
+    translations: {
+      ru: {
+        name: "Коргалжынский заповедник",
+        type: "Заповедник",
+        short: "Охраняемая зона озер Тенгиз-Коргалжын, известная фламинго.",
+        full: "Коргалжынский государственный природный заповедник охраняет степные и водно-болотные экосистемы. Это важнейшая международная территория для миграции птиц.",
+      },
+      en: {
+        name: "Korgalzhyn Nature Reserve",
+        type: "Nature reserve",
+        short: "A Tengiz-Korgalzhyn wetland area known for flamingos.",
+        full: "Korgalzhyn State Nature Reserve protects steppe and wetland ecosystems. It is an internationally important area for bird migration.",
+      },
+    },
+  },
+  {
+    id: "popular-aksu-zhabagly",
+    name: "Ақсу-Жабағылы қорығы",
+    type: "Қорық",
+    coords: [70.61, 42.38],
+    era: 5,
+    protectedAreaId: "aksu-zhabagly",
+    shortDescription: "Қазақстандағы ең көне қорықтардың бірі, Батыс Тянь-Шань табиғатын қорғайды.",
+    fullDescription:
+      "Ақсу-Жабағылы қорығы тау шатқалдары, қызғалдақтар және сирек жануарлар мекені ретінде белгілі. Ол Батыс Тянь-Шаньның табиғи мұрасын сақтайды.",
+    images: [],
+    translations: {
+      ru: {
+        name: "Заповедник Аксу-Жабаглы",
+        type: "Заповедник",
+        short: "Один из старейших заповедников Казахстана, охраняющий природу Западного Тянь-Шаня.",
+        full: "Аксу-Жабаглы известен горными ущельями, тюльпанами и редкими видами животных. Он сохраняет природное наследие Западного Тянь-Шаня.",
+      },
+      en: {
+        name: "Aksu-Zhabagly Nature Reserve",
+        type: "Nature reserve",
+        short: "One of Kazakhstan's oldest reserves, protecting the Western Tien Shan.",
+        full: "Aksu-Zhabagly is known for mountain canyons, tulips, and rare wildlife. It protects the natural heritage of the Western Tien Shan.",
+      },
+    },
+  },
+  {
+    id: "popular-naurzum",
+    name: "Наурызым қорығы",
+    type: "Қорық",
+    coords: [64.55, 51.6],
+    era: 5,
+    protectedAreaId: "naurzum",
+    shortDescription: "Дала, көл және қарағайлы орман экожүйелерін қорғайтын ЮНЕСКО аумағы.",
+    fullDescription:
+      "Наурызым қорығы дала белдеуі, көлдер және Наурызым қарағайлы орманы арқылы ерекшеленеді. Бұл Солтүстік Қазақстан табиғатын түсінуге маңызды орын.",
+    images: [],
+    translations: {
+      ru: {
+        name: "Наурзумский заповедник",
+        type: "Заповедник",
+        short: "Территория ЮНЕСКО, охраняющая степи, озера и сосновые леса.",
+        full: "Наурзумский заповедник выделяется степными ландшафтами, озерами и Наурзумским бором. Это важное место для понимания природы Северного Казахстана.",
+      },
+      en: {
+        name: "Naurzum Nature Reserve",
+        type: "Nature reserve",
+        short: "A UNESCO-listed area protecting steppe, lakes, and pine forests.",
+        full: "Naurzum Nature Reserve is known for steppe landscapes, lakes, and the Naurzum pine forest. It is important for understanding northern Kazakhstan's nature.",
+      },
+    },
+  },
+  {
+    id: "popular-katon-karagay",
+    name: "Катонқарағай ұлттық паркі",
+    type: "Ұлттық парк",
+    coords: [85.6, 49.15],
+    era: 5,
+    protectedAreaId: "katon-karagay",
+    shortDescription: "Қазақстан Алтайындағы ең ірі әрі көркем ұлттық парктердің бірі.",
+    fullDescription:
+      "Катонқарағай ұлттық паркі Алтай таулары, ормандар, өзен аңғарлары және биіктаулы табиғатымен белгілі. Контур парктің шамамен аумағын көрсетеді.",
+    images: [],
+    translations: {
+      ru: {
+        name: "Катон-Карагайский национальный парк",
+        type: "Национальный парк",
+        short: "Один из крупнейших и красивейших национальных парков Казахстанского Алтая.",
+        full: "Катон-Карагайский национальный парк известен горами Алтая, лесами, речными долинами и высокогорной природой. Контур показывает примерную территорию парка.",
+      },
+      en: {
+        name: "Katon-Karagay National Park",
+        type: "National park",
+        short: "One of the largest and most scenic national parks of the Kazakh Altai.",
+        full: "Katon-Karagay National Park is known for the Altai mountains, forests, river valleys, and alpine landscapes. The contour shows the approximate park area.",
+      },
+    },
+  },
+  {
+    id: "popular-ile-alatau",
+    name: "Іле Алатауы ұлттық паркі",
+    type: "Ұлттық парк",
+    coords: [77.05, 43.08],
+    era: 5,
+    protectedAreaId: "ile-alatau",
+    shortDescription: "Алматыны қоршап тұрған тау табиғатын сақтайтын ұлттық парк.",
+    fullDescription:
+      "Іле Алатауы ұлттық паркі мұздықтар, шатқалдар, орман белдеуі және қалаға жақын тау маршруттарымен танымал. Контур қорғалатын аумақтың шамамен шекарасын көрсетеді.",
+    images: [],
+    translations: {
+      ru: {
+        name: "Иле-Алатауский национальный парк",
+        type: "Национальный парк",
+        short: "Нацпарк, сохраняющий горную природу вокруг Алматы.",
+        full: "Иле-Алатауский национальный парк известен ледниками, ущельями, лесным поясом и горными маршрутами рядом с городом. Контур показывает примерные границы охраняемой территории.",
+      },
+      en: {
+        name: "Ile-Alatau National Park",
+        type: "National park",
+        short: "A national park preserving the mountain nature around Almaty.",
+        full: "Ile-Alatau National Park is known for glaciers, gorges, forests, and mountain routes near the city. The contour shows the approximate protected area.",
+      },
+    },
+  },
+  {
+    id: "popular-ustyurt",
+    name: "Үстірт қорығы",
+    type: "Қорық",
+    coords: [54.1, 43.75],
+    era: 5,
+    protectedAreaId: "ustyurt",
+    shortDescription: "Маңғыстаудағы шөлді үстірт, жарқабақтар және сирек жануарлар мекені.",
+    fullDescription:
+      "Үстірт қорығы шөл экожүйесін, үстірт жарқабақтарын және сирек кездесетін жануарларды қорғау үшін құрылған. Бұл Маңғыстаудың ерекше табиғи аймақтарының бірі.",
+    images: [],
+    translations: {
+      ru: {
+        name: "Устюртский заповедник",
+        type: "Заповедник",
+        short: "Пустынное плато Мангистау с чинками и редкими животными.",
+        full: "Устюртский заповедник создан для охраны пустынной экосистемы, плато и редких видов животных. Это одна из наиболее необычных природных зон Мангистау.",
+      },
+      en: {
+        name: "Ustyurt Nature Reserve",
+        type: "Nature reserve",
+        short: "A Mangystau desert plateau with cliffs and rare wildlife.",
+        full: "Ustyurt Nature Reserve protects desert ecosystems, plateau cliffs, and rare animals. It is one of Mangystau's most distinctive natural areas.",
+      },
+    },
+  },
+  {
+    id: "popular-bozzhyra",
+    name: "Бозжыра шатқалы",
+    type: "Туристік орын",
+    coords: [54.07, 43.43],
+    era: 5,
+    protectedAreaId: "ustyurt",
+    shortDescription: "Маңғыстаудың ақ жартастарымен танымал ең әсерлі көріністерінің бірі.",
+    fullDescription:
+      "Бозжыра шатқалы Үстірт үстіртінің шетіндегі ақ борлы жартастарымен әйгілі. Бұл Қазақстандағы ең фотогенді табиғи орындардың бірі саналады.",
+    images: [],
+    translations: {
+      ru: {
+        name: "Урочище Бозжыра",
+        type: "Туристическое место",
+        short: "Один из самых впечатляющих пейзажей Мангистау с белыми скалами.",
+        full: "Бозжыра известна белыми меловыми скалами на краю плато Устюрт. Это одно из самых фотогеничных природных мест Казахстана.",
+      },
+      en: {
+        name: "Bozzhyra Tract",
+        type: "Tourist destination",
+        short: "One of Mangystau's most dramatic landscapes, famous for white cliffs.",
+        full: "Bozzhyra is known for white chalk cliffs on the edge of the Ustyurt plateau. It is one of Kazakhstan's most photogenic natural places.",
+      },
+    },
+  },
+  {
+    id: "popular-bayanaul",
+    name: "Баянауыл ұлттық паркі",
+    type: "Ұлттық парк",
+    coords: [75.7, 50.8],
+    era: 5,
+    protectedAreaId: "bayanaul",
+    shortDescription: "Павлодар облысындағы көлдер, таулар және ормандарымен белгілі ұлттық парк.",
+    fullDescription:
+      "Баянауыл ұлттық паркі гранитті таулар, көлдер және қарағайлы ормандар арқылы ерекшеленеді. Контур парктің шамамен қорғалатын аумағын көрсетеді.",
+    images: [],
+    translations: {
+      ru: {
+        name: "Баянаульский национальный парк",
+        type: "Национальный парк",
+        short: "Нацпарк в Павлодарской области, известный озерами, горами и лесами.",
+        full: "Баянаульский национальный парк выделяется гранитными горами, озерами и сосновыми лесами. Контур показывает примерную охраняемую территорию парка.",
+      },
+      en: {
+        name: "Bayanaul National Park",
+        type: "National park",
+        short: "A national park in Pavlodar Region known for lakes, hills, and forests.",
+        full: "Bayanaul National Park is known for granite hills, lakes, and pine forests. The contour shows the approximate protected area.",
+      },
+    },
+  },
+];

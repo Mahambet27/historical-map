@@ -4,7 +4,11 @@ import "mapbox-gl/dist/mapbox-gl.css";
 
 import settlements from "./data/settlements.json";
 import places from "./data/places.json";
+import { additionalEraPlaces } from "./data/eraPlaces.js";
+import { historicalBorderContours } from "./data/historicalBorders.js";
+import { popularPlaces } from "./data/popularPlaces.js";
 import { tarbagataiGeojson, zaysanGeojson } from "./data/regionContours.js";
+import { protectedAreaContours } from "./data/protectedAreas.js";
 import {
   normalizeName,
   isLngLatOk,
@@ -13,13 +17,233 @@ import {
   clearMarkersList,
 } from "./utils/mapHelpers";
 import ObjectPresentation from "./ObjectPresentation";
+import AiAssistant from "./ui/AiAssistant";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
+
+const getPlaceType = (place) => place?.type || "Тарихи нысан";
+
+const hasPlaceMedia = (place) => {
+  return Boolean(
+    (Array.isArray(place?.images) && place.images.length > 0) ||
+      place?.model3d ||
+      place?.modelViewerUrl
+  );
+};
+
+const escapeHtml = (value) =>
+  String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+const distanceKm = (from, to) => {
+  if (!isLngLatOk(from) || !isLngLatOk(to)) return Number.POSITIVE_INFINITY;
+
+  const toRad = (value) => (Number(value) * Math.PI) / 180;
+  const earthRadiusKm = 6371;
+  const dLat = toRad(to[1] - from[1]);
+  const dLng = toRad(to[0] - from[0]);
+  const lat1 = toRad(from[1]);
+  const lat2 = toRad(to[1]);
+
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+
+  return earthRadiusKm * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+};
+
+const smoothMapEasing = (t) => {
+  return t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
+};
+
+const smoothCameraOptions = {
+  duration: 1500,
+  easing: smoothMapEasing,
+  essential: true,
+};
+
+const smoothFitOptions = {
+  duration: 1400,
+  easing: smoothMapEasing,
+  essential: true,
+};
+
+const POPULAR_ERA = 5;
+const PROTECTED_AREA_LAYER_IDS = [
+  "protected-areas-glow",
+  "protected-areas-fill",
+  "protected-areas-outline",
+];
+const HISTORICAL_BORDER_LAYER_IDS = [
+  "historical-borders-fill",
+  "historical-borders-outline",
+  "historical-borders-label",
+];
+
+const uiText = {
+  kk: {
+    language: "Тіл",
+    settings: "Баптаулар",
+    currentMap: "Карта қазір",
+    historyMap: "Тарихи карта",
+    resetView: "← Жалпы көрініс",
+    clearRoute: "Маршрутты өшіру",
+    tour: "Экскурсия",
+    tourOn: "Экскурсия қосулы",
+    previous: "← Алдыңғы",
+    next: "Келесі →",
+    stop: "Тоқтату",
+    search: "Іздеу",
+    searchPlaceholder: "Атауы немесе сипаттамасы...",
+    allTypes: "Барлық түрлер",
+    mediaOnly: "Фото немесе 3D бар нысандар",
+    clearFilters: "Фильтрді тазалау",
+    found: "Табылды",
+    media: "Медиа",
+    noResults: "Ештеңе табылмады.",
+    era: "Эпоха",
+    legend: "Карта легендасы",
+    historicalObject: "Тарихи нысан",
+    gpsRoute: "GPS маршруты",
+    regionContour: "Аймақ контуры",
+    historicalBorder: "Тарихи шекара",
+    protectedArea: "Қорық немесе ұлттық парк",
+    mediaObject: "Фото немесе модель бар",
+    coordinates: "Коорд",
+    navigation: "Навигация (Google)",
+    copy: "Көшіру",
+    routeGps: "Маршрут (GPS)",
+    routeLoading: "Маршрут жүктелуде...",
+    show3d: "3D көрсету",
+    nearby: "Жақын жерлер",
+    nearest: "Ең жақын нысандар",
+    distance: "Қашықтық",
+    time: "Уақыт",
+    min: "мин",
+    more: "Толығырақ",
+    images: "Суреттер",
+    closeImages: "Суреттерді жабу",
+  },
+  ru: {
+    language: "Язык",
+    settings: "Настройки",
+    currentMap: "Карта сейчас",
+    historyMap: "Историческая карта",
+    resetView: "← Общий вид",
+    clearRoute: "Убрать маршрут",
+    tour: "Экскурсия",
+    tourOn: "Экскурсия включена",
+    previous: "← Назад",
+    next: "Дальше →",
+    stop: "Стоп",
+    search: "Поиск",
+    searchPlaceholder: "Название или описание...",
+    allTypes: "Все типы",
+    mediaOnly: "Только с фото или 3D",
+    clearFilters: "Сбросить фильтры",
+    found: "Найдено",
+    media: "Медиа",
+    noResults: "Ничего не найдено.",
+    era: "Эпоха",
+    legend: "Легенда карты",
+    historicalObject: "Исторический объект",
+    gpsRoute: "GPS-маршрут",
+    regionContour: "Контур региона",
+    historicalBorder: "Историческая граница",
+    protectedArea: "Заповедник или нацпарк",
+    mediaObject: "Есть фото или модель",
+    coordinates: "Коорд",
+    navigation: "Навигация (Google)",
+    copy: "Копировать",
+    routeGps: "Маршрут (GPS)",
+    routeLoading: "Маршрут загружается...",
+    show3d: "Показать 3D",
+    nearby: "Ближайшие места",
+    nearest: "Ближайшие объекты",
+    distance: "Расстояние",
+    time: "Время",
+    min: "мин",
+    more: "Подробнее",
+    images: "Фото",
+    closeImages: "Закрыть фото",
+  },
+  en: {
+    language: "Language",
+    settings: "Settings",
+    currentMap: "Current map",
+    historyMap: "Historical map",
+    resetView: "← Overview",
+    clearRoute: "Clear route",
+    tour: "Tour",
+    tourOn: "Tour is on",
+    previous: "← Previous",
+    next: "Next →",
+    stop: "Stop",
+    search: "Search",
+    searchPlaceholder: "Name or description...",
+    allTypes: "All types",
+    mediaOnly: "Only with photos or 3D",
+    clearFilters: "Clear filters",
+    found: "Found",
+    media: "Media",
+    noResults: "Nothing found.",
+    era: "Era",
+    legend: "Map legend",
+    historicalObject: "Historical object",
+    gpsRoute: "GPS route",
+    regionContour: "Region contour",
+    historicalBorder: "Historical border",
+    protectedArea: "Reserve or national park",
+    mediaObject: "Has photo or model",
+    coordinates: "Coords",
+    navigation: "Navigation (Google)",
+    copy: "Copy",
+    routeGps: "Route (GPS)",
+    routeLoading: "Loading route...",
+    show3d: "Show 3D",
+    nearby: "Nearby places",
+    nearest: "Nearest objects",
+    distance: "Distance",
+    time: "Time",
+    min: "min",
+    more: "More",
+    images: "Images",
+    closeImages: "Close images",
+  },
+};
+
+const languageNames = {
+  kk: "Қазақша",
+  ru: "Русский",
+  en: "English",
+};
+
+const localizePlace = (place, language) => {
+  if (!place) return place;
+
+  const translation = place.translations?.[language];
+  if (!translation) return place;
+
+  return {
+    ...place,
+    type: translation.type || place.type,
+    name: translation.name || place.name,
+    short: translation.short || place.short,
+    full: translation.full || place.full,
+    shortDescription: translation.short || place.shortDescription,
+    fullDescription: translation.full || place.fullDescription,
+  };
+};
 
 export default function MapView() {
   const mapRef = useRef(null);
   const mapContainerRef = useRef(null);
   const markersRef = useRef([]);
+  const hoverPopupRef = useRef(null);
   const mapLoadedRef = useRef(false);
   const blockNextMapClickRef = useRef(false);
 
@@ -34,9 +258,13 @@ export default function MapView() {
   const tarbagataiWasVisibleBeforeRouteRef = useRef(false);
 
   const [mode, setMode] = useState("now");
+  const [language, setLanguage] = useState("kk");
+  const [showSettings, setShowSettings] = useState(false);
   const [selectedEra, setSelectedEra] = useState(0);
   const [selected, setSelected] = useState(null);
   const [query, setQuery] = useState("");
+  const [selectedType, setSelectedType] = useState("all");
+  const [onlyWithMedia, setOnlyWithMedia] = useState(false);
   const [tourOn, setTourOn] = useState(false);
   const [tourIndex, setTourIndex] = useState(0);
   const [slideIndex, setSlideIndex] = useState(0);
@@ -45,12 +273,14 @@ export default function MapView() {
   const [routeLoading, setRouteLoading] = useState(false);
   const [routeInfo, setRouteInfo] = useState(null);
   const [showModelViewer, setShowModelViewer] = useState(false);
+  const [showNearby, setShowNearby] = useState(false);
 
   useEffect(() => {
     selectedRef.current = selected;
     setSlideIndex(0);
     setShowGallery(false);
     setShowModelViewer(false);
+    setShowNearby(false);
   }, [selected]);
 
   useEffect(() => {
@@ -76,8 +306,16 @@ export default function MapView() {
   }, []);
 
   const eras = useMemo(
-    () => ["Қола дәуірі", "Сақ дәуірі", "Түркі кезеңі", "Қазақ хандығы", "КСРО", ""],
-    []
+    () => {
+      const labels = {
+        kk: ["Қола дәуірі", "Сақ дәуірі", "Түркі кезеңі", "Қазақ хандығы", "КСРО", "Танымал Қазақстан"],
+        ru: ["Бронзовый век", "Сакская эпоха", "Тюркский период", "Казахское ханство", "СССР", "Популярный Казахстан"],
+        en: ["Bronze Age", "Saka era", "Turkic period", "Kazakh Khanate", "USSR", "Popular Kazakhstan"],
+      };
+
+      return labels[language] || labels.kk;
+    },
+    [language]
   );
 
   const initialView = useMemo(
@@ -89,6 +327,14 @@ export default function MapView() {
     }),
     []
   );
+
+  const allPlaces = useMemo(() => {
+    return [
+      ...(Array.isArray(places) ? places : []),
+      ...(Array.isArray(additionalEraPlaces) ? additionalEraPlaces : []),
+      ...(Array.isArray(popularPlaces) ? popularPlaces : []),
+    ];
+  }, []);
 
   const settlementsByName = useMemo(() => {
     const m = new Map();
@@ -107,23 +353,57 @@ export default function MapView() {
   }, []);
 
   const eraPlaces = useMemo(() => {
-    return (Array.isArray(places) ? places : [])
+    return allPlaces
       .filter((p) => Number(p?.era) === Number(selectedEra))
       .filter((p) => isLngLatOk(p?.coords));
-  }, [selectedEra]);
+  }, [allPlaces, selectedEra]);
+
+  const placeTypes = useMemo(() => {
+    return Array.from(
+      new Set(eraPlaces.map((p) => getPlaceType(localizePlace(p, language))).filter(Boolean))
+    ).sort((a, b) => a.localeCompare(b));
+  }, [eraPlaces, language]);
+
+  useEffect(() => {
+    if (selectedType !== "all" && !placeTypes.includes(selectedType)) {
+      setSelectedType("all");
+    }
+  }, [placeTypes, selectedType]);
 
   const filteredPlaces = useMemo(() => {
     const q = normalizeName(query);
-    if (!q) return eraPlaces;
 
     return eraPlaces.filter((p) => {
-      const name = normalizeName(p?.name);
-      const short = normalizeName(p?.shortDescription);
+      const localized = localizePlace(p, language);
+      if (selectedType !== "all" && getPlaceType(localized) !== selectedType) return false;
+      if (onlyWithMedia && !hasPlaceMedia(p)) return false;
+      if (!q) return true;
+
+      const name = normalizeName(localized?.name);
+      const short = normalizeName(localized?.shortDescription);
       return name.includes(q) || short.includes(q);
     });
-  }, [eraPlaces, query]);
+  }, [eraPlaces, language, query, selectedType, onlyWithMedia]);
 
-  const clearMarkers = () => clearMarkersList(markersRef);
+  const nearbyPlaces = useMemo(() => {
+    if (!selected?.coords) return [];
+
+    return allPlaces
+      .filter((p) => p?.name && p.name !== selected.name && isLngLatOk(p?.coords))
+      .map((p) => ({ ...p, distanceKm: distanceKm(selected.coords, p.coords) }))
+      .filter((p) => Number.isFinite(p.distanceKm))
+      .sort((a, b) => a.distanceKm - b.distanceKm)
+      .slice(0, 5);
+  }, [allPlaces, selected]);
+
+  const clearMarkers = () => {
+    clearMarkersList(markersRef);
+
+    if (hoverPopupRef.current) {
+      hoverPopupRef.current.remove();
+      hoverPopupRef.current = null;
+    }
+  };
 
   const syncRouteExists = () => {
     const map = mapRef.current;
@@ -171,7 +451,7 @@ export default function MapView() {
 
     const coords = tarbagataiGeojson.features?.[0]?.geometry?.coordinates?.[0] || [];
     const bounds = getBoundsFromCoords(coords);
-    if (bounds) map.fitBounds(bounds, { padding: 70, duration: 900 });
+    if (bounds) map.fitBounds(bounds, { padding: 80, ...smoothFitOptions });
   };
 
   const hideZaysan = () => {
@@ -192,7 +472,53 @@ export default function MapView() {
 
     const coords = zaysanGeojson.features?.[0]?.geometry?.coordinates?.[0] || [];
     const bounds = getBoundsFromCoords(coords);
-    if (bounds) map.fitBounds(bounds, { padding: 70, duration: 900 });
+    if (bounds) map.fitBounds(bounds, { padding: 80, ...smoothFitOptions });
+  };
+
+  const setProtectedAreasVisible = (visible) => {
+    const map = mapRef.current;
+    if (!map || !mapLoadedRef.current) return;
+
+    PROTECTED_AREA_LAYER_IDS.forEach((id) => {
+      if (map.getLayer(id)) {
+        map.setLayoutProperty(id, "visibility", visible ? "visible" : "none");
+      }
+    });
+  };
+
+  const syncProtectedAreasVisibility = () => {
+    setProtectedAreasVisible(mode === "history" && Number(selectedEra) === POPULAR_ERA);
+  };
+
+  const syncHistoricalBorders = () => {
+    const map = mapRef.current;
+    if (!map || !mapLoadedRef.current) return;
+
+    const visible = mode === "history";
+    HISTORICAL_BORDER_LAYER_IDS.forEach((id) => {
+      if (map.getLayer(id)) {
+        map.setLayoutProperty(id, "visibility", visible ? "visible" : "none");
+        map.setFilter(id, ["==", ["get", "era"], Number(selectedEra)]);
+      }
+    });
+  };
+
+  const fitPopularPlaces = () => {
+    const map = mapRef.current;
+    if (!map || !mapLoadedRef.current) return;
+
+    const coords = allPlaces
+      .filter((p) => Number(p?.era) === POPULAR_ERA)
+      .map((p) => p?.coords)
+      .filter(isLngLatOk);
+    const bounds = getBoundsFromCoords(coords);
+
+    if (bounds) {
+      map.fitBounds(bounds, {
+        padding: { top: 120, right: 260, bottom: 120, left: 380 },
+        ...smoothFitOptions,
+      });
+    }
   };
 
   const ensureDrivingRouteLayer = () => {
@@ -428,7 +754,7 @@ export default function MapView() {
 
       if (options.fit !== false) {
         const bounds = getBoundsFromCoords(route.geometry.coordinates);
-        if (bounds) map.fitBounds(bounds, { padding: 80, duration: 900 });
+        if (bounds) map.fitBounds(bounds, { padding: 90, ...smoothFitOptions });
       }
 
       animateRoute(route.geometry.coordinates);
@@ -463,6 +789,7 @@ export default function MapView() {
         "Бұл аймақ — шамамен белгіленген контур. Тарбағатай — табиғи, тарихи және мәдени маңызы жоғары өңір.",
       images: Array.isArray(placeData?.images) ? placeData.images : [],
       regionType: "tarbagatai",
+      translations: placeData?.translations || {},
       model3d: placeData?.model3d || "",
       modelPoster: placeData?.modelPoster || "",
       modelViewerUrl: placeData?.modelViewerUrl || "",
@@ -486,6 +813,7 @@ export default function MapView() {
         "Зайсан көлі — Шығыс Қазақстандағы тарихи және табиғи маңызы жоғары ірі көл.",
       images: Array.isArray(placeData?.images) ? placeData.images : [],
       regionType: "zaysan",
+      translations: placeData?.translations || {},
       model3d: placeData?.model3d || "",
       modelPoster: placeData?.modelPoster || "",
       modelViewerUrl: placeData?.modelViewerUrl || "",
@@ -519,9 +847,10 @@ export default function MapView() {
       zoom: opts.zoom ?? 13.8,
       pitch: opts.pitch ?? 75,
       bearing: opts.bearing ?? 30,
-      speed: opts.speed ?? 0.75,
-      curve: opts.curve ?? 1.5,
-      essential: true,
+      speed: opts.speed ?? 0.55,
+      curve: opts.curve ?? 1.22,
+      ...smoothCameraOptions,
+      duration: opts.duration ?? 1550,
     });
 
     setSelected({
@@ -531,6 +860,7 @@ export default function MapView() {
       short: p?.shortDescription || "Қысқаша ақпарат жоқ.",
       full: p?.fullDescription || "Толық ақпарат жоқ.",
       images: Array.isArray(p?.images) ? p.images : [],
+      translations: p?.translations || {},
       model3d: p?.model3d || "",
       modelPoster: p?.modelPoster || "",
       modelViewerUrl: p?.modelViewerUrl || "",
@@ -546,6 +876,7 @@ export default function MapView() {
     (Array.isArray(list) ? list : []).forEach((p) => {
       const coords = p?.coords;
       if (!isLngLatOk(coords)) return;
+      const pView = localizePlace(p, language);
 
       const marker = new mapboxgl.Marker({ color: "#d11" }).setLngLat(coords).addTo(map);
       marker.getElement().style.cursor = "pointer";
@@ -553,6 +884,31 @@ export default function MapView() {
       marker.getElement().addEventListener("click", (ev) => {
         ev.stopPropagation();
         openPlace(p);
+      });
+
+      marker.getElement().addEventListener("mouseenter", () => {
+        if (hoverPopupRef.current) hoverPopupRef.current.remove();
+
+        hoverPopupRef.current = new mapboxgl.Popup({
+          closeButton: false,
+          closeOnClick: false,
+          offset: 18,
+          maxWidth: "260px",
+        })
+          .setLngLat(coords)
+          .setHTML(
+            `<strong>${escapeHtml(pView?.name || "Тарихи нысан")}</strong><br/><span>${escapeHtml(
+              (pView?.shortDescription || getPlaceType(pView)).toString().slice(0, 120)
+            )}</span>`
+          )
+          .addTo(map);
+      });
+
+      marker.getElement().addEventListener("mouseleave", () => {
+        if (hoverPopupRef.current) {
+          hoverPopupRef.current.remove();
+          hoverPopupRef.current = null;
+        }
       });
 
       markersRef.current.push(marker);
@@ -567,11 +923,25 @@ export default function MapView() {
     hideTarbagatai();
     hideZaysan();
     clearMarkers();
+    syncHistoricalBorders();
+    syncProtectedAreasVisibility();
+    if (mode === "history") drawHistoricalMarkers(filteredPlaces);
     setSelected(null);
     setTourOn(false);
     setTourIndex(0);
 
-    map.flyTo({ ...initialView, speed: 0.9, curve: 1.4, essential: true });
+    if (mode === "history" && Number(selectedEra) === POPULAR_ERA) {
+      fitPopularPlaces();
+      return;
+    }
+
+    map.flyTo({
+      ...initialView,
+      speed: 0.6,
+      curve: 1.18,
+      ...smoothCameraOptions,
+      duration: 1300,
+    });
   };
 
   useEffect(() => {
@@ -582,9 +952,18 @@ export default function MapView() {
       style: "mapbox://styles/mapbox/satellite-streets-v12",
       ...initialView,
       antialias: true,
+      fadeDuration: 450,
+      scrollZoom: true,
     });
 
     mapRef.current = map;
+
+    try {
+      map.scrollZoom.setWheelZoomRate?.(1 / 900);
+      map.scrollZoom.setZoomRate?.(1 / 120);
+    } catch (error) {
+      console.warn("Smooth zoom tuning skipped:", error);
+    }
 
     map.on("load", () => {
       mapLoadedRef.current = true;
@@ -748,8 +1127,162 @@ export default function MapView() {
         });
       }
 
+      if (!map.getSource("historical-borders")) {
+        map.addSource("historical-borders", { type: "geojson", data: historicalBorderContours });
+
+        map.addLayer({
+          id: "historical-borders-fill",
+          type: "fill",
+          source: "historical-borders",
+          layout: { visibility: "none" },
+          paint: {
+            "fill-color": ["coalesce", ["get", "color"], "#f59e0b"],
+            "fill-opacity": 0.09,
+          },
+          filter: ["==", ["get", "era"], Number(selectedEra)],
+        });
+
+        map.addLayer({
+          id: "historical-borders-outline",
+          type: "line",
+          source: "historical-borders",
+          layout: { visibility: "none" },
+          paint: {
+            "line-color": ["coalesce", ["get", "color"], "#f59e0b"],
+            "line-width": 2.2,
+            "line-opacity": 0.78,
+            "line-dasharray": [2, 1.2],
+          },
+          filter: ["==", ["get", "era"], Number(selectedEra)],
+        });
+
+        map.addLayer({
+          id: "historical-borders-label",
+          type: "symbol",
+          source: "historical-borders",
+          layout: {
+            visibility: "none",
+            "text-field": ["get", "name"],
+            "text-size": 12,
+            "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+            "text-offset": [0, 0],
+            "text-anchor": "center",
+            "text-allow-overlap": false,
+          },
+          paint: {
+            "text-color": "#111827",
+            "text-halo-color": "rgba(255,255,255,0.92)",
+            "text-halo-width": 1.4,
+          },
+          filter: ["==", ["get", "era"], Number(selectedEra)],
+        });
+
+        map.on("mouseenter", "historical-borders-fill", (e) => {
+          map.getCanvas().style.cursor = "pointer";
+          const feature = e.features?.[0];
+
+          if (hoverPopupRef.current) hoverPopupRef.current.remove();
+          hoverPopupRef.current = new mapboxgl.Popup({
+            closeButton: false,
+            closeOnClick: false,
+            offset: 14,
+            maxWidth: "260px",
+          })
+            .setLngLat(e.lngLat)
+            .setHTML(`<strong>${escapeHtml(feature?.properties?.name || "Historical border")}</strong>`)
+            .addTo(map);
+        });
+
+        map.on("mouseleave", "historical-borders-fill", () => {
+          map.getCanvas().style.cursor = "";
+          if (hoverPopupRef.current) {
+            hoverPopupRef.current.remove();
+            hoverPopupRef.current = null;
+          }
+        });
+      }
+
+      if (!map.getSource("protected-areas")) {
+        map.addSource("protected-areas", { type: "geojson", data: protectedAreaContours });
+
+        map.addLayer({
+          id: "protected-areas-glow",
+          type: "line",
+          source: "protected-areas",
+          layout: { visibility: "none" },
+          paint: {
+            "line-color": ["coalesce", ["get", "color"], "#16a34a"],
+            "line-width": 12,
+            "line-opacity": 0.16,
+            "line-blur": 6,
+          },
+        });
+
+        map.addLayer({
+          id: "protected-areas-fill",
+          type: "fill",
+          source: "protected-areas",
+          layout: { visibility: "none" },
+          paint: {
+            "fill-color": ["coalesce", ["get", "color"], "#22c55e"],
+            "fill-opacity": 0.18,
+          },
+        });
+
+        map.addLayer({
+          id: "protected-areas-outline",
+          type: "line",
+          source: "protected-areas",
+          layout: { visibility: "none" },
+          paint: {
+            "line-color": ["coalesce", ["get", "color"], "#16a34a"],
+            "line-width": 2.5,
+            "line-opacity": 0.9,
+          },
+        });
+
+        map.on("mouseenter", "protected-areas-fill", (e) => {
+          map.getCanvas().style.cursor = "pointer";
+
+          const feature = e.features?.[0];
+
+          if (hoverPopupRef.current) hoverPopupRef.current.remove();
+          hoverPopupRef.current = new mapboxgl.Popup({
+            closeButton: false,
+            closeOnClick: false,
+            offset: 14,
+            maxWidth: "240px",
+          })
+            .setLngLat(e.lngLat)
+            .setHTML(`<strong>${escapeHtml(feature?.properties?.name || "Protected area")}</strong>`)
+            .addTo(map);
+        });
+
+        map.on("mouseleave", "protected-areas-fill", () => {
+          map.getCanvas().style.cursor = "";
+          if (hoverPopupRef.current) {
+            hoverPopupRef.current.remove();
+            hoverPopupRef.current = null;
+          }
+        });
+
+        map.on("click", "protected-areas-fill", (e) => {
+          const areaId = e.features?.[0]?.properties?.id;
+          const place = allPlaces.find((p) => p?.protectedAreaId === areaId);
+          if (!place) return;
+
+          blockNextMapClickRef.current = true;
+          openPlace(place);
+          setTimeout(() => {
+            blockNextMapClickRef.current = false;
+          }, 0);
+        });
+      }
+
       ensureDrivingRouteLayer();
       syncRouteExists();
+      syncHistoricalBorders();
+      syncProtectedAreasVisibility();
 
       if (mode === "history") drawHistoricalMarkers(filteredPlaces);
     });
@@ -800,9 +1333,10 @@ export default function MapView() {
         zoom: 12.3,
         pitch: 65,
         bearing: 20,
-        speed: 0.85,
-        curve: 1.4,
-        essential: true,
+        speed: 0.55,
+        curve: 1.18,
+        ...smoothCameraOptions,
+        duration: 1400,
       });
 
       const props = settlement.properties || {};
@@ -833,15 +1367,22 @@ export default function MapView() {
     clearDrivingRoute();
     hideTarbagatai();
     hideZaysan();
+    syncHistoricalBorders();
+    syncProtectedAreasVisibility();
 
     if (mode !== "history") {
+      syncHistoricalBorders();
+      setProtectedAreasVisible(false);
       setTourOn(false);
       setTourIndex(0);
       clearMarkers();
       return;
     }
 
+    syncHistoricalBorders();
+    syncProtectedAreasVisibility();
     drawHistoricalMarkers(filteredPlaces);
+    if (Number(selectedEra) === POPULAR_ERA) fitPopularPlaces();
   }, [mode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -851,15 +1392,22 @@ export default function MapView() {
       setTourIndex(0);
       hideTarbagatai();
       hideZaysan();
+      syncHistoricalBorders();
+      syncProtectedAreasVisibility();
       drawHistoricalMarkers(filteredPlaces);
+      if (Number(selectedEra) === POPULAR_ERA) fitPopularPlaces();
+    } else {
+      setProtectedAreasVisible(false);
     }
   }, [selectedEra]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!mapLoadedRef.current) return;
     if (mode !== "history") return;
+    syncHistoricalBorders();
+    syncProtectedAreasVisibility();
     drawHistoricalMarkers(filteredPlaces);
-  }, [filteredPlaces, mode]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [filteredPlaces, mode, language]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!tourOn) return;
@@ -878,6 +1426,8 @@ export default function MapView() {
   };
 
   const has3D = Boolean(selected?.model3d || selected?.modelViewerUrl);
+  const selectedView = useMemo(() => localizePlace(selected, language), [selected, language]);
+  const tr = uiText[language] || uiText.kk;
 
   const openRouteFromUserPosition = async () => {
     if (!selected?.coords || routeLoading) return;
@@ -927,7 +1477,7 @@ export default function MapView() {
             fontWeight: 700,
           }}
         >
-          Карта қазір
+          {tr.currentMap}
         </button>
 
         <button
@@ -945,8 +1495,73 @@ export default function MapView() {
             fontWeight: 700,
           }}
         >
-          Тарихи карта
+          {tr.historyMap}
         </button>
+
+        <div style={{ position: "relative" }}>
+          <button
+            type="button"
+            onClick={() => setShowSettings((value) => !value)}
+            style={{
+              padding: "8px 12px",
+              borderRadius: 10,
+              border: "1px solid #ddd",
+              cursor: "pointer",
+              background: showSettings ? "#111" : "#fff",
+              color: showSettings ? "#fff" : "#111",
+              fontWeight: 700,
+            }}
+          >
+            {tr.settings}
+          </button>
+
+          {showSettings && (
+            <div
+              style={{
+                position: "absolute",
+                top: 46,
+                left: 0,
+                width: 220,
+                background: "rgba(255,255,255,0.98)",
+                borderRadius: 12,
+                padding: 12,
+                boxShadow: "0 12px 30px rgba(0,0,0,0.22)",
+                border: "1px solid rgba(0,0,0,0.08)",
+                zIndex: 60,
+              }}
+            >
+              <label
+                style={{
+                  display: "grid",
+                  gap: 6,
+                  fontSize: 12,
+                  fontWeight: 800,
+                }}
+              >
+                {tr.language}
+                <select
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "8px 9px",
+                    borderRadius: 9,
+                    border: "1px solid #ddd",
+                    background: "#fff",
+                    fontWeight: 800,
+                    outline: "none",
+                  }}
+                >
+                  {Object.entries(languageNames).map(([code, label]) => (
+                    <option key={code} value={code}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          )}
+        </div>
 
         <button
           onClick={resetView}
@@ -959,23 +1574,25 @@ export default function MapView() {
             fontWeight: 700,
           }}
         >
-          ← Жалпы көрініс
+          {tr.resetView}
         </button>
 
-        <button
-          onClick={clearDrivingRoute}
-          style={{
-            padding: "8px 12px",
-            borderRadius: 10,
-            border: "1px solid #ddd",
-            cursor: "pointer",
-            background: "#fff",
-            fontWeight: 700,
-          }}
-          title="Маршрутты өшіру"
-        >
-          Маршрутты өшіру
-        </button>
+        {(routeExists || routeLoading) && (
+          <button
+            onClick={clearDrivingRoute}
+            style={{
+              padding: "8px 12px",
+              borderRadius: 10,
+              border: "1px solid #ddd",
+              cursor: "pointer",
+              background: "#fff",
+              fontWeight: 700,
+            }}
+            title={tr.clearRoute}
+          >
+            {tr.clearRoute}
+          </button>
+        )}
 
         {mode === "history" && (
           <>
@@ -996,7 +1613,7 @@ export default function MapView() {
                 fontWeight: 700,
               }}
             >
-              {tourOn ? "Экскурсия қосулы" : "Экскурсия"}
+              {tourOn ? tr.tourOn : tr.tour}
             </button>
 
             {tourOn && (
@@ -1016,7 +1633,7 @@ export default function MapView() {
                     fontWeight: 700,
                   }}
                 >
-                  ← Алдыңғы
+                  {tr.previous}
                 </button>
 
                 <button
@@ -1034,7 +1651,7 @@ export default function MapView() {
                     fontWeight: 700,
                   }}
                 >
-                  Келесі →
+                  {tr.next}
                 </button>
 
                 <button
@@ -1051,7 +1668,7 @@ export default function MapView() {
                     fontWeight: 700,
                   }}
                 >
-                  Тоқтату
+                  {tr.stop}
                 </button>
               </>
             )}
@@ -1080,13 +1697,13 @@ export default function MapView() {
         >
           <div style={{ padding: 12, borderBottom: "1px solid rgba(0,0,0,0.08)" }}>
             <div style={{ fontSize: 12, opacity: 0.65, marginBottom: 6 }}>
-              Іздеу (эпоха: {eras[selectedEra]})
+              {tr.search} ({tr.era.toLowerCase()}: {eras[selectedEra]})
             </div>
 
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Атауы немесе сипаттамасы..."
+              placeholder={tr.searchPlaceholder}
               style={{
                 width: "100%",
                 padding: "10px 12px",
@@ -1097,19 +1714,84 @@ export default function MapView() {
               }}
             />
 
+            <div style={{ display: "grid", gap: 8, marginTop: 10 }}>
+              <select
+                value={selectedType}
+                onChange={(e) => setSelectedType(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "9px 10px",
+                  borderRadius: 10,
+                  border: "1px solid #ddd",
+                  background: "#fff",
+                  fontSize: 13,
+                  outline: "none",
+                }}
+              >
+                <option value="all">{tr.allTypes}</option>
+                {placeTypes.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={onlyWithMedia}
+                  onChange={(e) => setOnlyWithMedia(e.target.checked)}
+                />
+                {tr.mediaOnly}
+              </label>
+
+              {(query || selectedType !== "all" || onlyWithMedia) && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQuery("");
+                    setSelectedType("all");
+                    setOnlyWithMedia(false);
+                  }}
+                  style={{
+                    padding: "8px 10px",
+                    borderRadius: 10,
+                    border: "1px solid #ddd",
+                    cursor: "pointer",
+                    background: "#fff",
+                    fontWeight: 800,
+                    textAlign: "center",
+                  }}
+                >
+                  {tr.clearFilters}
+                </button>
+              )}
+            </div>
+
             <div style={{ marginTop: 8, fontSize: 12, opacity: 0.75 }}>
-              Табылды: <b>{filteredPlaces.length}</b>
+              {tr.found}: <b>{filteredPlaces.length}</b>
+              {" · "}{tr.media}: <b>{filteredPlaces.filter(hasPlaceMedia).length}</b>
             </div>
 
             {tourOn && filteredPlaces.length > 0 && (
               <div style={{ marginTop: 6, fontSize: 12, opacity: 0.75 }}>
-                Экскурсия: <b>{tourIndex + 1}</b> / {filteredPlaces.length}
+                {tr.tour}: <b>{tourIndex + 1}</b> / {filteredPlaces.length}
               </div>
             )}
           </div>
 
           <div style={{ overflowY: "auto" }}>
             {filteredPlaces.map((p, idx) => {
+              const pView = localizePlace(p, language);
               const n = normalizeName(p?.name);
               const isTar =
                 n === normalizeName("Тарбағатай тауы") ||
@@ -1143,10 +1825,12 @@ export default function MapView() {
                     background: tourOn && idx === tourIndex ? "rgba(0,0,0,0.06)" : "transparent",
                   }}
                 >
-                  <div style={{ fontWeight: 900 }}>{p.name || "Атауы жоқ"}</div>
+                  <div style={{ fontWeight: 900 }}>{pView.name || "Атауы жоқ"}</div>
                   <div style={{ fontSize: 12, opacity: 0.7, marginTop: 3 }}>
-                    {p.shortDescription ? p.shortDescription.slice(0, 90) : "Қысқаша ақпарат жоқ."}
-                    {p.shortDescription && p.shortDescription.length > 90 ? "…" : ""}
+                    {pView.shortDescription
+                      ? pView.shortDescription.slice(0, 90)
+                      : "Қысқаша ақпарат жоқ."}
+                    {pView.shortDescription && pView.shortDescription.length > 90 ? "…" : ""}
                   </div>
                 </div>
               );
@@ -1154,9 +1838,80 @@ export default function MapView() {
 
             {filteredPlaces.length === 0 && (
               <div style={{ padding: 12, opacity: 0.7, fontSize: 13 }}>
-                Ештеңе табылмады.
+                {tr.noResults}
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {mode === "history" && (
+        <div
+          style={{
+            position: "absolute",
+            right: 16,
+            bottom: 84,
+            width: 220,
+            maxWidth: "calc(100vw - 32px)",
+            background: "rgba(255,255,255,0.92)",
+            borderRadius: 12,
+            padding: 12,
+            zIndex: 21,
+            boxShadow: "0 8px 22px rgba(0,0,0,0.18)",
+            fontFamily: "system-ui, Arial",
+            fontSize: 12,
+          }}
+        >
+          <div style={{ fontWeight: 900, fontSize: 13, marginBottom: 8 }}>{tr.legend}</div>
+          <div style={{ display: "grid", gap: 7 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ width: 12, height: 12, borderRadius: 999, background: "#d11" }} />
+              {tr.historicalObject}
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ width: 22, height: 4, borderRadius: 999, background: "#ff3b30" }} />
+              {tr.gpsRoute}
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span
+                style={{
+                  width: 14,
+                  height: 14,
+                  borderRadius: 4,
+                  border: "2px solid #0ea5e9",
+                  background: "rgba(14,165,233,0.14)",
+                }}
+              />
+              {tr.regionContour}
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span
+                style={{
+                  width: 22,
+                  height: 0,
+                  borderTop: "2px dashed #f59e0b",
+                }}
+              />
+              {tr.historicalBorder}
+            </div>
+            {Number(selectedEra) === POPULAR_ERA && (
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span
+                  style={{
+                    width: 14,
+                    height: 14,
+                    borderRadius: 4,
+                    border: "2px solid #16a34a",
+                    background: "rgba(34,197,94,0.16)",
+                  }}
+                />
+                {tr.protectedArea || "Reserve or national park"}
+              </div>
+            )}
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontWeight: 900 }}>3D</span>
+              {tr.mediaObject}
+            </div>
           </div>
         </div>
       )}
@@ -1177,7 +1932,7 @@ export default function MapView() {
             fontFamily: "system-ui, Arial",
           }}
         >
-          <div style={{ fontSize: 12, opacity: 0.65, marginBottom: 6 }}>Эпоха</div>
+          <div style={{ fontSize: 12, opacity: 0.65, marginBottom: 6 }}>{tr.era}</div>
           <input
             type="range"
             min="0"
@@ -1210,10 +1965,10 @@ export default function MapView() {
         >
           <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
             <div>
-              <div style={{ fontSize: 12, opacity: 0.65 }}>{selected.type}</div>
-              <div style={{ fontSize: 20, fontWeight: 900 }}>{selected.name}</div>
+              <div style={{ fontSize: 12, opacity: 0.65 }}>{selectedView.type}</div>
+              <div style={{ fontSize: 20, fontWeight: 900 }}>{selectedView.name}</div>
               <div style={{ fontSize: 12, opacity: 0.65, marginTop: 4 }}>
-                Коорд: {toFixed5(selected.coords?.[1])}, {toFixed5(selected.coords?.[0])}
+                {tr.coordinates}: {toFixed5(selected.coords?.[1])}, {toFixed5(selected.coords?.[0])}
               </div>
 
               {selected?.coords && (
@@ -1232,7 +1987,7 @@ export default function MapView() {
                       background: "#fff",
                     }}
                   >
-                    Навигация (Google)
+                    {tr.navigation}
                   </a>
 
                   <button
@@ -1249,7 +2004,7 @@ export default function MapView() {
                       fontWeight: 800,
                     }}
                   >
-                    Көшіру
+                    {tr.copy}
                   </button>
 
                   {!routeExists && (
@@ -1266,7 +2021,7 @@ export default function MapView() {
                         fontWeight: 800,
                       }}
                     >
-                      {routeLoading ? "Маршрут жүктелуде..." : "Маршрут (GPS)"}
+                      {routeLoading ? tr.routeLoading : tr.routeGps}
                     </button>
                   )}
 
@@ -1282,7 +2037,7 @@ export default function MapView() {
                         fontWeight: 800,
                       }}
                     >
-                      Маршрутты өшіру
+                      {tr.clearRoute}
                     </button>
                   )}
 
@@ -1298,7 +2053,24 @@ export default function MapView() {
                         fontWeight: 800,
                       }}
                     >
-                      3D көрсету
+                      {tr.show3d}
+                    </button>
+                  )}
+
+                  {nearbyPlaces.length > 0 && (
+                    <button
+                      onClick={() => setShowNearby((value) => !value)}
+                      style={{
+                        padding: "8px 10px",
+                        borderRadius: 10,
+                        border: "1px solid #ddd",
+                        cursor: "pointer",
+                        background: showNearby ? "#111" : "#fff",
+                        color: showNearby ? "#fff" : "#111",
+                        fontWeight: 800,
+                      }}
+                    >
+                      {tr.nearby}
                     </button>
                   )}
                 </div>
@@ -1306,7 +2078,54 @@ export default function MapView() {
 
               {routeInfo && (
                 <div style={{ marginTop: 10, fontSize: 12, opacity: 0.8 }}>
-                  Қашықтық: <b>{routeInfo.distanceKm.toFixed(1)} км</b> · Уақыт: <b>{Math.round(routeInfo.durationMin)} мин</b>
+                  {tr.distance}: <b>{routeInfo.distanceKm.toFixed(1)} км</b> · {tr.time}: <b>{Math.round(routeInfo.durationMin)} {tr.min}</b>
+                </div>
+              )}
+
+              {showNearby && nearbyPlaces.length > 0 && (
+                <div
+                  style={{
+                    marginTop: 10,
+                    border: "1px solid rgba(0,0,0,0.08)",
+                    borderRadius: 12,
+                    overflow: "hidden",
+                    background: "#fafafa",
+                  }}
+                >
+                  <div
+                    style={{
+                      padding: "8px 10px",
+                      fontWeight: 900,
+                      fontSize: 13,
+                      borderBottom: "1px solid rgba(0,0,0,0.07)",
+                    }}
+                  >
+                    {tr.nearest}
+                  </div>
+
+                  {nearbyPlaces.map((place) => (
+                    <button
+                      key={`${place.id ?? place.name}-nearby`}
+                      type="button"
+                      onClick={() => openPlace(place)}
+                      style={{
+                        width: "100%",
+                        border: "none",
+                        borderBottom: "1px solid rgba(0,0,0,0.06)",
+                        background: "transparent",
+                        padding: "8px 10px",
+                        textAlign: "left",
+                        cursor: "pointer",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        gap: 10,
+                        fontSize: 12,
+                      }}
+                    >
+                      <span style={{ fontWeight: 800 }}>{localizePlace(place, language)?.name}</span>
+                      <span style={{ opacity: 0.68 }}>{place.distanceKm.toFixed(1)} км</span>
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
@@ -1327,10 +2146,10 @@ export default function MapView() {
             </button>
           </div>
 
-          <div style={{ marginTop: 12, fontSize: 14, lineHeight: 1.4 }}>{selected.short}</div>
+          <div style={{ marginTop: 12, fontSize: 14, lineHeight: 1.4 }}>{selectedView.short}</div>
 
           <details style={{ marginTop: 12 }}>
-            <summary style={{ cursor: "pointer", fontWeight: 800 }}>Толығырақ</summary>
+            <summary style={{ cursor: "pointer", fontWeight: 800 }}>{tr.more}</summary>
 
             <div
               style={{
@@ -1342,7 +2161,7 @@ export default function MapView() {
                 paddingRight: 6,
               }}
             >
-              {selected.full}
+              {selectedView.full}
 
               {selected.images?.length > 0 && (
                 <div style={{ marginTop: 12 }}>
@@ -1357,7 +2176,7 @@ export default function MapView() {
                       fontWeight: 800,
                     }}
                   >
-                    {showGallery ? "Суреттерді жабу" : "Суреттер"} ({selected.images.length})
+                    {showGallery ? tr.closeImages : tr.images} ({selected.images.length})
                   </button>
                 </div>
               )}
@@ -1484,6 +2303,12 @@ export default function MapView() {
           onClose={() => setShowModelViewer(false)}
         />
       )}
+
+      <AiAssistant
+        selectedPlace={selectedView}
+        visiblePlaces={filteredPlaces.map((place) => localizePlace(place, language))}
+        language={language}
+      />
     </>
   );
 }

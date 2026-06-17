@@ -1,5 +1,13 @@
 # React + Vite
 
+## Chat guide
+
+The map includes a chat guide. It works without API keys, answers from the selected map object and visible places, and can load short facts from the open Wikipedia API.
+
+The interface supports Kazakh, Russian, and English. Several previously empty place cards now include filled descriptions and translations.
+
+The "Popular Kazakhstan" era adds major historical sites, tourist destinations, national parks, and nature reserves. Protected areas are drawn with approximate interactive contours.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

@@ -1,5 +1,6 @@
 import { getBoundsFromCoords } from "../utils/mapHelpers";
 import { LAYER_IDS } from "../utils/mapConfig";
+import { MAPBOX_TOKEN, isMapboxTokenConfigured } from "../config/env.js";
 
 function isMapStyleReady(map) {
   return !!map && typeof map.isStyleLoaded === "function" && map.isStyleLoaded();
@@ -107,8 +108,7 @@ export async function buildDrivingRoute(map, from, to) {
   if (!isMapStyleReady(map)) return false;
   if (!from || !to) return false;
 
-  const token = import.meta.env.VITE_MAPBOX_TOKEN;
-  if (!token) {
+  if (!isMapboxTokenConfigured) {
     alert("VITE_MAPBOX_TOKEN жоқ (.env тексер).");
     return false;
   }
@@ -128,7 +128,7 @@ export async function buildDrivingRoute(map, from, to) {
   const url =
     `https://api.mapbox.com/directions/v5/mapbox/driving/` +
     `${from[0]},${from[1]};${to[0]},${to[1]}` +
-    `?geometries=geojson&overview=full&steps=false&access_token=${token}`;
+    `?geometries=geojson&overview=full&steps=false&access_token=${MAPBOX_TOKEN}`;
 
   let res;
 

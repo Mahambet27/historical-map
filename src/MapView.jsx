@@ -16,10 +16,18 @@ import {
   getBoundsFromCoords,
   clearMarkersList,
 } from "./utils/mapHelpers";
+import {
+  APP_NAME,
+  MAPBOX_TOKEN,
+  MAPBOX_TOKEN_ENV_NAME,
+  isMapboxTokenConfigured,
+} from "./config/env.js";
 import ObjectPresentation from "./ObjectPresentation";
 import AiAssistant from "./ui/AiAssistant";
 
-mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
+if (isMapboxTokenConfigured) {
+  mapboxgl.accessToken = MAPBOX_TOKEN;
+}
 
 const getPlaceType = (place) => place?.type || "Тарихи нысан";
 
@@ -38,6 +46,45 @@ const escapeHtml = (value) =>
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+
+const MissingMapboxTokenState = () => (
+  <div
+    role="alert"
+    style={{
+      minHeight: "100vh",
+      width: "100vw",
+      display: "grid",
+      placeItems: "center",
+      padding: 24,
+      boxSizing: "border-box",
+      background: "linear-gradient(135deg, #111827 0%, #1f2937 48%, #064e3b 100%)",
+      color: "#f9fafb",
+      fontFamily: "system-ui, Arial",
+    }}
+  >
+    <div
+      style={{
+        width: "min(560px, 100%)",
+        background: "rgba(255,255,255,0.08)",
+        border: "1px solid rgba(255,255,255,0.16)",
+        borderRadius: 12,
+        padding: 24,
+        boxShadow: "0 24px 70px rgba(0,0,0,0.34)",
+      }}
+    >
+      <div style={{ fontSize: 13, letterSpacing: 0, opacity: 0.72 }}>{APP_NAME}</div>
+      <h1 style={{ margin: "8px 0 12px", fontSize: 28, lineHeight: 1.1 }}>
+        Mapbox token is missing
+      </h1>
+      <p style={{ margin: 0, lineHeight: 1.55, color: "#d1d5db" }}>
+        Add a public Mapbox token to your local <b>.env</b> file as{" "}
+        <code>{MAPBOX_TOKEN_ENV_NAME}=your_mapbox_public_token_here</code>, then restart the
+        development server. The app has stopped before loading the map so it does not crash or leak
+        configuration details.
+      </p>
+    </div>
+  </div>
+);
 
 const distanceKm = (from, to) => {
   if (!isLngLatOk(from) || !isLngLatOk(to)) return Number.POSITIVE_INFINITY;
@@ -239,7 +286,7 @@ const localizePlace = (place, language) => {
   };
 };
 
-export default function MapView() {
+function MapViewInner() {
   const mapRef = useRef(null);
   const mapContainerRef = useRef(null);
   const markersRef = useRef([]);
@@ -707,20 +754,19 @@ export default function MapView() {
     const src = map.getSource("driving-route");
     if (src) src.setData({ type: "FeatureCollection", features: [] });
 
-    const token = import.meta.env.VITE_MAPBOX_TOKEN;
-    if (!token) {
+    if (!isMapboxTokenConfigured) {
       if (routeAbortRef.current === controller) {
         routeAbortRef.current = null;
         setRouteLoading(false);
       }
-      alert("VITE_MAPBOX_TOKEN жоқ (.env тексер).");
+      alert(`${MAPBOX_TOKEN_ENV_NAME} is missing. Add it to .env and restart the dev server.`);
       return;
     }
 
     const url =
       `https://api.mapbox.com/directions/v5/mapbox/driving/` +
       `${from[0]},${from[1]};${to[0]},${to[1]}` +
-      `?geometries=geojson&overview=full&steps=false&access_token=${token}`;
+      `?geometries=geojson&overview=full&steps=false&access_token=${MAPBOX_TOKEN}`;
 
     try {
       const res = await fetch(url, { signal: controller.signal });
@@ -2302,4 +2348,8 @@ export default function MapView() {
       />
     </>
   );
+}
+
+export default function MapView() {
+  return isMapboxTokenConfigured ? <MapViewInner /> : <MissingMapboxTokenState />;
 }

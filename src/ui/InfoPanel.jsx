@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toFixed5 } from "../utils/mapHelpers";
 
 const actionBtnStyle = {
@@ -30,11 +30,6 @@ export default function InfoPanel({
 }) {
   const [slideIndex, setSlideIndex] = useState(0);
   const [showGallery, setShowGallery] = useState(false);
-
-  useEffect(() => {
-    setSlideIndex(0);
-    setShowGallery(false);
-  }, [selected?.name]);
 
   if (!selected) return null;
 

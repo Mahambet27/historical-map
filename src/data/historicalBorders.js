@@ -160,3 +160,15 @@ export const historicalBorderContours = {
     ]),
   ],
 };
+
+export const historicalBorderLabels = {
+  type: "FeatureCollection",
+  features: historicalBorderContours.features.map((feature) => ({
+    type: "Feature",
+    properties: { ...feature.properties },
+    geometry: {
+      type: "Point",
+      coordinates: feature.properties.center,
+    },
+  })),
+};

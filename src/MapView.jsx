@@ -5,7 +5,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import settlements from "./data/settlements.json";
 import places from "./data/places.json";
 import { additionalEraPlaces } from "./data/eraPlaces.js";
-import { historicalBorderContours } from "./data/historicalBorders.js";
+import { historicalBorderContours, historicalBorderLabels } from "./data/historicalBorders.js";
 import { popularPlaces } from "./data/popularPlaces.js";
 import { tarbagataiGeojson, zaysanGeojson } from "./data/regionContours.js";
 import { protectedAreaContours } from "./data/protectedAreas.js";
@@ -57,17 +57,17 @@ const distanceKm = (from, to) => {
 };
 
 const smoothMapEasing = (t) => {
-  return t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
+  return t < 0.5 ? 16 * t ** 5 : 1 - (-2 * t + 2) ** 5 / 2;
 };
 
 const smoothCameraOptions = {
-  duration: 1500,
+  duration: 2200,
   easing: smoothMapEasing,
   essential: true,
 };
 
 const smoothFitOptions = {
-  duration: 1400,
+  duration: 2100,
   easing: smoothMapEasing,
   essential: true,
 };
@@ -246,6 +246,7 @@ export default function MapView() {
   const hoverPopupRef = useRef(null);
   const mapLoadedRef = useRef(false);
   const blockNextMapClickRef = useRef(false);
+  const modeRef = useRef("now");
 
   const userLocRef = useRef(null);
   const userMarkerRef = useRef(null);
@@ -282,6 +283,10 @@ export default function MapView() {
     setShowModelViewer(false);
     setShowNearby(false);
   }, [selected]);
+
+  useEffect(() => {
+    modeRef.current = mode;
+  }, [mode]);
 
   useEffect(() => {
     routeExistsRef.current = routeExists;
@@ -396,13 +401,16 @@ export default function MapView() {
       .slice(0, 5);
   }, [allPlaces, selected]);
 
-  const clearMarkers = () => {
-    clearMarkersList(markersRef);
-
+  const clearHoverPopup = () => {
     if (hoverPopupRef.current) {
       hoverPopupRef.current.remove();
       hoverPopupRef.current = null;
     }
+  };
+
+  const clearMarkers = () => {
+    clearMarkersList(markersRef);
+    clearHoverPopup();
   };
 
   const syncRouteExists = () => {
@@ -517,6 +525,7 @@ export default function MapView() {
       map.fitBounds(bounds, {
         padding: { top: 120, right: 260, bottom: 120, left: 380 },
         ...smoothFitOptions,
+        duration: 2300,
       });
     }
   };
@@ -773,6 +782,7 @@ export default function MapView() {
   };
 
   const openTarbagataiFromMap = (placeData = null) => {
+    clearHoverPopup();
     clearDrivingRoute();
     hideZaysan();
     showTarbagataiAndFit();
@@ -797,6 +807,7 @@ export default function MapView() {
   };
 
   const openZaysanFromMap = (placeData = null) => {
+    clearHoverPopup();
     clearDrivingRoute();
     hideTarbagatai();
     showZaysanAndFit();
@@ -826,6 +837,7 @@ export default function MapView() {
 
     const coords = p?.coords;
     if (!isLngLatOk(coords)) return;
+    clearHoverPopup();
 
     const n = normalizeName(p?.name);
 
@@ -844,13 +856,13 @@ export default function MapView() {
 
     map.flyTo({
       center: coords,
-      zoom: opts.zoom ?? 13.8,
-      pitch: opts.pitch ?? 75,
+      zoom: opts.zoom ?? 12.9,
+      pitch: opts.pitch ?? 68,
       bearing: opts.bearing ?? 30,
-      speed: opts.speed ?? 0.55,
-      curve: opts.curve ?? 1.22,
+      speed: opts.speed ?? 0.35,
+      curve: opts.curve ?? 1.05,
       ...smoothCameraOptions,
-      duration: opts.duration ?? 1550,
+      duration: opts.duration ?? 2400,
     });
 
     setSelected({
@@ -919,6 +931,7 @@ export default function MapView() {
     const map = mapRef.current;
     if (!map || !mapLoadedRef.current) return;
 
+    clearHoverPopup();
     clearDrivingRoute();
     hideTarbagatai();
     hideZaysan();
@@ -937,10 +950,10 @@ export default function MapView() {
 
     map.flyTo({
       ...initialView,
-      speed: 0.6,
-      curve: 1.18,
+      speed: 0.38,
+      curve: 1.08,
       ...smoothCameraOptions,
-      duration: 1300,
+      duration: 2200,
     });
   };
 
@@ -959,8 +972,8 @@ export default function MapView() {
     mapRef.current = map;
 
     try {
-      map.scrollZoom.setWheelZoomRate?.(1 / 900);
-      map.scrollZoom.setZoomRate?.(1 / 120);
+      map.scrollZoom.setWheelZoomRate?.(1 / 1700);
+      map.scrollZoom.setZoomRate?.(1 / 280);
     } catch (error) {
       console.warn("Smooth zoom tuning skipped:", error);
     }
@@ -1129,6 +1142,7 @@ export default function MapView() {
 
       if (!map.getSource("historical-borders")) {
         map.addSource("historical-borders", { type: "geojson", data: historicalBorderContours });
+        map.addSource("historical-border-labels", { type: "geojson", data: historicalBorderLabels });
 
         map.addLayer({
           id: "historical-borders-fill",
@@ -1137,7 +1151,7 @@ export default function MapView() {
           layout: { visibility: "none" },
           paint: {
             "fill-color": ["coalesce", ["get", "color"], "#f59e0b"],
-            "fill-opacity": 0.09,
+            "fill-opacity": 0.045,
           },
           filter: ["==", ["get", "era"], Number(selectedEra)],
         });
@@ -1149,8 +1163,8 @@ export default function MapView() {
           layout: { visibility: "none" },
           paint: {
             "line-color": ["coalesce", ["get", "color"], "#f59e0b"],
-            "line-width": 2.2,
-            "line-opacity": 0.78,
+            "line-width": 1.7,
+            "line-opacity": 0.68,
             "line-dasharray": [2, 1.2],
           },
           filter: ["==", ["get", "era"], Number(selectedEra)],
@@ -1159,7 +1173,7 @@ export default function MapView() {
         map.addLayer({
           id: "historical-borders-label",
           type: "symbol",
-          source: "historical-borders",
+          source: "historical-border-labels",
           layout: {
             visibility: "none",
             "text-field": ["get", "name"],
@@ -1175,30 +1189,6 @@ export default function MapView() {
             "text-halo-width": 1.4,
           },
           filter: ["==", ["get", "era"], Number(selectedEra)],
-        });
-
-        map.on("mouseenter", "historical-borders-fill", (e) => {
-          map.getCanvas().style.cursor = "pointer";
-          const feature = e.features?.[0];
-
-          if (hoverPopupRef.current) hoverPopupRef.current.remove();
-          hoverPopupRef.current = new mapboxgl.Popup({
-            closeButton: false,
-            closeOnClick: false,
-            offset: 14,
-            maxWidth: "260px",
-          })
-            .setLngLat(e.lngLat)
-            .setHTML(`<strong>${escapeHtml(feature?.properties?.name || "Historical border")}</strong>`)
-            .addTo(map);
-        });
-
-        map.on("mouseleave", "historical-borders-fill", () => {
-          map.getCanvas().style.cursor = "";
-          if (hoverPopupRef.current) {
-            hoverPopupRef.current.remove();
-            hoverPopupRef.current = null;
-          }
         });
       }
 
@@ -1293,7 +1283,7 @@ export default function MapView() {
         return;
       }
 
-      if (mode !== "now") return;
+      if (modeRef.current !== "now") return;
       if (!mapLoadedRef.current) return;
 
       const box = [
@@ -1419,6 +1409,7 @@ export default function MapView() {
   }, [filteredPlaces, tourOn, tourIndex]);
 
   const closeSelected = () => {
+    clearHoverPopup();
     setSelected(null);
     setShowModelViewer(false);
     hideTarbagatai();

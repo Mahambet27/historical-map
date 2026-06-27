@@ -1,5 +1,5 @@
 import mapboxgl from "mapbox-gl";
-import { isLngLatOk, clearMarkersList } from "../utils/mapHelpers";
+import { isLngLatOk, clearMarkersList } from "../lib/mapHelpers";
 
 export function clearHistoricalMarkers(markersRef) {
   clearMarkersList(markersRef);

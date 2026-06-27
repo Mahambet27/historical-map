@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { toFixed5 } from "../utils/mapHelpers";
+import { toFixed5 } from "../../lib/mapHelpers";
 
 const actionBtnStyle = {
   padding: "8px 10px",

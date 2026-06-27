@@ -1,7 +1,73 @@
-import "@google/model-viewer";
+import { useEffect, useState } from "react";
+
+const MODEL_VIEWER_SCRIPT_URL =
+  "https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js";
+
+const ensureModelViewerLoaded = () => {
+  if (typeof window === "undefined") return Promise.resolve();
+  if (window.customElements?.get("model-viewer")) return Promise.resolve();
+
+  const existing = document.querySelector('script[data-model-viewer="true"]');
+  if (existing) {
+    return new Promise((resolve, reject) => {
+      existing.addEventListener("load", resolve, { once: true });
+      existing.addEventListener("error", reject, { once: true });
+    });
+  }
+
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.type = "module";
+    script.src = MODEL_VIEWER_SCRIPT_URL;
+    script.dataset.modelViewer = "true";
+    script.addEventListener("load", resolve, { once: true });
+    script.addEventListener("error", reject, { once: true });
+    document.head.appendChild(script);
+  });
+};
 
 export default function ObjectPresentation({ place, onClose }) {
+  const [modelViewerLoad, setModelViewerLoad] = useState({
+    key: "",
+    ready: false,
+    error: false,
+  });
+  const modelViewerKey = place?.model3d || "";
+  const needsModelViewer = Boolean(place?.model3d && !place?.modelViewerUrl);
+  const modelViewerReady =
+    !needsModelViewer ||
+    (modelViewerLoad.key === modelViewerKey && modelViewerLoad.ready);
+  const modelViewerError =
+    needsModelViewer &&
+    modelViewerLoad.key === modelViewerKey &&
+    modelViewerLoad.error;
+
+  useEffect(() => {
+    let active = true;
+
+    if (!needsModelViewer) return undefined;
+
+    ensureModelViewerLoaded()
+      .then(() => {
+        if (active) {
+          setModelViewerLoad({ key: modelViewerKey, ready: true, error: false });
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setModelViewerLoad({ key: modelViewerKey, ready: false, error: true });
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [modelViewerKey, needsModelViewer]);
+
   if (!place) return null;
+
+  const imageFallback =
+    "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'%3E%3Crect width='800' height='500' fill='%23e5e7eb'/%3E%3Cpath d='M120 380 280 220l92 104 74-88 226 144z' fill='%239ca3af'/%3E%3Ccircle cx='620' cy='140' r='44' fill='%23d97706'/%3E%3C/svg%3E";
 
   const facts = [
     place?.type ? { label: "Түрі", value: place.type } : null,
@@ -65,6 +131,38 @@ export default function ObjectPresentation({ place, onClose }) {
               style={{ width: "100%", height: "100%", border: "none", position: "relative", zIndex: 1 }}
               allow="autoplay; fullscreen; xr-spatial-tracking"
             />
+          ) : modelViewerError ? (
+            <div
+              style={{
+                position: "relative",
+                zIndex: 1,
+                height: "100%",
+                display: "grid",
+                placeItems: "center",
+                color: "#fff",
+                padding: 24,
+                textAlign: "center",
+                fontWeight: 800,
+              }}
+            >
+              3D viewer could not be loaded.
+            </div>
+          ) : !modelViewerReady ? (
+            <div
+              style={{
+                position: "relative",
+                zIndex: 1,
+                height: "100%",
+                display: "grid",
+                placeItems: "center",
+                color: "#fff",
+                padding: 24,
+                textAlign: "center",
+                fontWeight: 800,
+              }}
+            >
+              Loading 3D viewer...
+            </div>
           ) : (
             <model-viewer
               src={place.model3d}
@@ -158,6 +256,8 @@ export default function ObjectPresentation({ place, onClose }) {
             </div>
 
             <button
+              type="button"
+              aria-label="Close 3D viewer"
               onClick={onClose}
               style={{
                 border: "none",
@@ -238,6 +338,13 @@ export default function ObjectPresentation({ place, onClose }) {
                     <img
                       src={src}
                       alt=""
+                      loading="lazy"
+                      decoding="async"
+                      onError={(event) => {
+                        if (event.currentTarget.dataset.fallbackApplied === "1") return;
+                        event.currentTarget.dataset.fallbackApplied = "1";
+                        event.currentTarget.src = imageFallback;
+                      }}
                       style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                     />
                   </div>

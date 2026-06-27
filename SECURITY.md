@@ -9,12 +9,16 @@ configuration and never commit the file.
 - Commit `.env.example` only with placeholder values.
 - Use `VITE_MAPBOX_TOKEN` for a public Mapbox token.
 - Never store private API keys in frontend code or Vite `VITE_*` variables.
+- Never expose a Supabase `service_role` key in the frontend.
+- Use only the public anon key with `VITE_SUPABASE_ANON_KEY`.
 
 ## Mapbox Token
 
 - Restrict the Mapbox token by allowed domains, such as localhost for development and the production
   deployment domain.
 - Rotate the token if it is ever exposed outside the intended environment.
+- Mapbox public tokens should be restricted by allowed URLs/domains before deployment.
+- Enable and test RLS before allowing production writes through Supabase.
 
 ## Frontend Safety
 
@@ -23,3 +27,4 @@ configuration and never commit the file.
   values before insertion.
 - Use HTTPS in production.
 - Review dependencies and update them regularly.
+- Do not add private AI or API keys to `VITE_` variables.

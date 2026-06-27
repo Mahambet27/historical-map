@@ -470,9 +470,14 @@ const buildLocalAnswer = ({ question, selectedPlace, visiblePlaces, facts, text,
     : text.chooseObject;
 };
 
-export default function AiAssistant({ selectedPlace, visiblePlaces, language = "kk" }) {
+export default function AiAssistant({
+  selectedPlace,
+  visiblePlaces,
+  language = "kk",
+  initialOpen = false,
+}) {
   const text = chatText[language] || chatText.kk;
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(initialOpen);
   const [question, setQuestion] = useState("");
   const [loading, setLoading] = useState(false);
   const [sourceResult, setSourceResult] = useState(null);

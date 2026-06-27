@@ -1,5 +1,5 @@
-import { getBoundsFromCoords } from "../utils/mapHelpers";
-import { LAYER_IDS } from "../utils/mapConfig";
+import { getBoundsFromCoords } from "../lib/mapHelpers";
+import { LAYER_IDS } from "../lib/mapConfig";
 import { MAPBOX_TOKEN, isMapboxTokenConfigured } from "../config/env.js";
 
 function isMapStyleReady(map) {

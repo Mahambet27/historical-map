@@ -1,6 +1,6 @@
-import { normalizeName } from "../utils/mapHelpers";
-import { ERAS } from "../utils/mapConfig";
-import TourControls from "./TourControls";
+import { normalizeName } from "../../lib/mapHelpers";
+import { ERAS } from "../../lib/mapConfig";
+import TourControls from "../routes/TourControls";
 
 const inputStyle = {
   width: "100%",

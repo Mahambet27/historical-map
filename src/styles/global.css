@@ -1,0 +1,488 @@
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+  color: #0f172a;
+  background:
+    radial-gradient(circle at top, rgba(22, 163, 74, 0.14), transparent 24%),
+    linear-gradient(180deg, #eaf0f5 0%, #dfe7ef 100%);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  touch-action: manipulation;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+[role="button"]:focus-visible {
+  outline: 3px solid rgba(245, 158, 11, 0.88) !important;
+  outline-offset: 2px !important;
+}
+
+.hm-map-canvas {
+  background: #d8e3ec;
+}
+
+.hm-topbar,
+.hm-sidebar,
+.hm-info-panel,
+.hm-legend,
+.hm-era-control,
+.hm-settings-menu,
+.hm-map-state,
+.hm-empty-state {
+  color: #0f172a;
+}
+
+.hm-topbar,
+.hm-sidebar,
+.hm-info-panel,
+.hm-legend,
+.hm-era-control,
+.hm-settings-menu {
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 18px 55px rgba(15, 23, 42, 0.16) !important;
+  backdrop-filter: blur(18px) saturate(1.15);
+}
+
+.hm-topbar {
+  border-radius: 20px !important;
+}
+
+.hm-topbar button,
+.hm-info-panel button,
+.hm-info-panel a,
+.hm-sidebar button,
+.hm-ghost-button,
+.hm-settings-menu select {
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease,
+  color 160ms ease;
+}
+
+.hm-topbar button,
+.hm-info-panel button,
+.hm-sidebar button,
+.hm-ghost-button {
+  min-height: 44px;
+  border-radius: 14px !important;
+}
+
+.hm-topbar button {
+  border-color: rgba(15, 23, 42, 0.08) !important;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+  letter-spacing: 0.01em;
+}
+
+.hm-info-panel button,
+.hm-sidebar button,
+.hm-ghost-button {
+  border-color: rgba(15, 23, 42, 0.1) !important;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
+}
+
+.hm-topbar button:hover,
+.hm-info-panel button:hover,
+.hm-info-panel a:hover,
+.hm-sidebar button:hover,
+.hm-ghost-button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(17, 24, 39, 0.2) !important;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.12);
+}
+
+.hm-sidebar {
+  width: clamp(380px, 30vw, 430px) !important;
+  height: calc(100vh - 112px) !important;
+  max-height: calc(100vh - 112px) !important;
+  border-radius: 24px !important;
+}
+
+.hm-search-input,
+.hm-select {
+  min-height: 44px;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  color: #0f172a;
+  border-radius: 14px !important;
+}
+
+.hm-search-input:focus,
+.hm-select:focus {
+  border-color: #16a34a !important;
+  box-shadow:
+    0 0 0 4px rgba(22, 163, 74, 0.12),
+    0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.hm-checkbox-row {
+  padding: 10px 12px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 14px;
+  background: rgba(248, 250, 252, 0.94);
+  color: #0f172a;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.04);
+}
+
+.hm-checkbox-row input {
+  accent-color: #16a34a;
+}
+
+.hm-place-list {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  gap: 9px;
+  min-height: 0;
+  padding: 10px;
+  align-content: stretch;
+  align-items: stretch;
+  line-height: 1.35;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+}
+
+.hm-place-card {
+  position: relative;
+  display: block;
+  gap: 8px;
+  flex: 0 0 auto;
+  min-height: auto;
+  padding: 12px 86px 12px 14px !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+  line-height: 1.38;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
+  overflow: visible;
+}
+
+.hm-place-card:hover,
+.hm-place-card:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(22, 163, 74, 0.32) !important;
+  box-shadow: 0 16px 38px rgba(15, 23, 42, 0.14);
+}
+
+.hm-place-card--active {
+  border-color: rgba(245, 158, 11, 0.56) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 251, 235, 0.98), rgba(255, 247, 214, 0.92)) !important;
+  box-shadow: 0 14px 34px rgba(120, 53, 15, 0.14);
+}
+
+.hm-place-card--active::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, #f59e0b 0%, #16a34a 100%);
+}
+
+.hm-place-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-right: 76px;
+}
+
+.hm-place-card__meta span {
+  border-radius: 999px;
+  padding: 4px 9px;
+  background: rgba(15, 23, 42, 0.06);
+  color: rgba(15, 23, 42, 0.76);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.hm-favorite-button {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: #ffffff;
+  color: #111827;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 900;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+}
+
+.hm-favorite-button--active,
+.hm-favorite-chip--active {
+  background: linear-gradient(180deg, #14532d, #0f3f22) !important;
+  color: #ffffff !important;
+  border-color: #14532d !important;
+  box-shadow: 0 8px 18px rgba(20, 83, 45, 0.22);
+}
+
+.hm-empty-state,
+.hm-map-state {
+  border-radius: 18px;
+  background: rgba(248, 250, 252, 0.96) !important;
+  color: rgba(15, 23, 42, 0.76);
+  text-align: center;
+}
+
+.hm-empty-state {
+  padding: 16px !important;
+  line-height: 1.45;
+}
+
+.hm-map-state {
+  position: absolute;
+  top: 92px;
+  left: 50%;
+  z-index: 35;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 280px;
+  transform: translateX(-50%);
+  border: 1px solid rgba(255, 255, 255, 0.64);
+  padding: 14px 16px;
+  box-shadow: 0 16px 45px rgba(15, 23, 42, 0.18);
+  backdrop-filter: blur(14px);
+}
+
+.hm-map-state span {
+  display: block;
+  margin-top: 3px;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.hm-loader {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  border: 3px solid rgba(20, 83, 45, 0.2);
+  border-top-color: #16a34a;
+  border-radius: 999px;
+  animation: hm-spin 900ms linear infinite;
+}
+
+.hm-map-state--error {
+  border-color: rgba(220, 38, 38, 0.24);
+}
+
+.hm-lazy-fallback,
+.hm-chat-launch {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  z-index: 32;
+  min-width: 118px;
+  min-height: 48px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #111827, #0f172a);
+  color: #ffffff;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+  font-weight: 900;
+}
+
+.hm-chat-launch {
+  cursor: pointer;
+}
+
+.hm-chat-launch:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.34);
+}
+
+.hm-lazy-fallback {
+  display: grid;
+  place-items: center;
+  padding: 0 16px;
+  font-size: 14px;
+  border-radius: 14px;
+}
+
+.hm-info-panel {
+  top: 86px !important;
+  width: clamp(320px, 25vw, 360px) !important;
+  border-radius: 24px !important;
+  max-height: calc(100vh - 176px);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.hm-info-panel summary {
+  color: #0f172a;
+}
+
+.hm-era-control input[type="range"] {
+  accent-color: #16a34a;
+}
+
+@keyframes hm-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 820px) {
+  .hm-topbar {
+    top: calc(8px + env(safe-area-inset-top)) !important;
+    right: calc(8px + env(safe-area-inset-right)) !important;
+    left: calc(8px + env(safe-area-inset-left)) !important;
+    max-width: none !important;
+    overflow-x: visible;
+    flex-wrap: wrap !important;
+    align-items: stretch;
+    gap: 8px;
+    padding: 8px !important;
+    border-radius: 20px !important;
+    scrollbar-width: none;
+  }
+
+  .hm-topbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hm-topbar button {
+    min-height: 44px;
+    white-space: nowrap;
+    padding: 10px 12px !important;
+    font-size: 14px;
+    min-width: 0;
+  }
+
+  .hm-sidebar {
+    top: auto !important;
+    right: 0 !important;
+    bottom: calc(0px + env(safe-area-inset-bottom)) !important;
+    left: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: none !important;
+    max-height: 56vh !important;
+    border-radius: 26px 26px 0 0 !important;
+    z-index: 42 !important;
+  }
+
+  .hm-info-panel {
+    top: auto !important;
+    right: 0 !important;
+    bottom: calc(0px + env(safe-area-inset-bottom)) !important;
+    left: 0 !important;
+    width: auto !important;
+    max-width: none !important;
+    max-height: 64vh !important;
+    width: auto !important;
+    border-radius: 28px 28px 0 0 !important;
+    padding: 18px !important;
+    z-index: 50 !important;
+  }
+
+  .hm-legend {
+    display: none !important;
+  }
+
+  .hm-era-control {
+    top: calc(72px + env(safe-area-inset-top)) !important;
+    right: calc(10px + env(safe-area-inset-right)) !important;
+    bottom: auto !important;
+    left: calc(10px + env(safe-area-inset-left)) !important;
+    min-width: 0 !important;
+    transform: none !important;
+  }
+
+  .hm-map-state {
+    top: calc(76px + env(safe-area-inset-top));
+    right: calc(12px + env(safe-area-inset-right));
+    left: calc(12px + env(safe-area-inset-left));
+    min-width: 0;
+    transform: none;
+  }
+
+  .hm-settings-menu {
+    left: auto !important;
+    right: 0 !important;
+    width: min(240px, calc(100vw - 24px)) !important;
+  }
+
+  .hm-search-input,
+  .hm-select {
+    font-size: 16px !important;
+    min-height: 44px;
+  }
+
+  .hm-place-list {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .hm-place-card {
+    padding: 12px 74px 12px 14px !important;
+  }
+
+  .hm-favorite-button {
+    min-height: 40px;
+    min-width: 40px;
+  }
+
+  .hm-chat-launch,
+  .hm-lazy-fallback {
+    right: calc(12px + env(safe-area-inset-right));
+    bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 560px) {
+  .hm-topbar > * {
+    flex: 1 1 calc(50% - 4px);
+    min-width: 0;
+  }
+
+  .hm-topbar > button {
+    min-width: 0;
+    white-space: normal;
+    padding: 8px 10px !important;
+    font-size: 13px;
+    line-height: 1.1;
+  }
+
+  .hm-topbar > * > button {
+    width: 100%;
+    white-space: normal;
+    padding: 8px 10px !important;
+    font-size: 13px;
+    line-height: 1.1;
+  }
+
+  .hm-map-state {
+    top: calc(220px + env(safe-area-inset-top));
+  }
+}

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Qazaq Heritage Map icon</title>
+  <desc id="desc">A stylized heritage map emblem with mountains, sun, and a location pin.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#111827" />
+      <stop offset="100%" stop-color="#14532d" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)" />
+  <circle cx="356" cy="144" r="54" fill="#f59e0b" />
+  <path d="M88 360L180 212l72 92 42-68 86 124z" fill="#22c55e" />
+  <path d="M124 356h264" stroke="#ffffff" stroke-width="16" stroke-linecap="round" opacity="0.28" />
+  <path d="M348 248c0 42-38 80-38 80s-38-38-38-80a38 38 0 1 1 76 0Z" fill="#f8fafc" />
+  <circle cx="310" cy="248" r="13" fill="#111827" />
+</svg>

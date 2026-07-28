@@ -4,6 +4,9 @@ import mapboxgl from "mapbox-gl";
 import { isLngLatOk, normalizeName } from "../lib/mapHelpers";
 import { setupRouteLayer } from "../layers/RouteLayer";
 import { escapeHtml, smoothCameraOptions } from "../components/map/mapViewUtils";
+import { getMapboxTokenError, mapboxToken } from "../config/env.js";
+import { getQualityProfile } from "../features/map/utils/mapPerformance.js";
+import { logger } from "../lib/logger.js";
 
 const MAP_STYLES = {
   now: "mapbox://styles/mapbox/streets-v12",
@@ -38,6 +41,12 @@ function removeTerrainSource(map) {
 
 function applyTerrain(map, { sourceUrl, allowFallback = true } = {}) {
   if (!map || !map.isStyleLoaded()) return;
+  const terrainExaggeration =
+    map.__hmQualityProfile?.terrainExaggeration ?? TERRAIN_EXAGGERATION;
+  if (terrainExaggeration <= 0) {
+    if (map.getTerrain?.()) map.setTerrain(null);
+    return false;
+  }
 
   const requestedSourceUrl = sourceUrl || map.__hmTerrainSourceUrl || PRIMARY_TERRAIN_URL;
   const activeSourceUrl = requestedSourceUrl;
@@ -62,12 +71,13 @@ function applyTerrain(map, { sourceUrl, allowFallback = true } = {}) {
       });
     }
 
-    map.setTerrain({ source: TERRAIN_SOURCE_ID, exaggeration: TERRAIN_EXAGGERATION });
+    map.setTerrain({ source: TERRAIN_SOURCE_ID, exaggeration: terrainExaggeration });
     terrainApplied = map.getTerrain?.()?.source === TERRAIN_SOURCE_ID;
     map.__hmTerrainSourceUrl = requestedSourceUrl;
   } catch (error) {
-    logTerrainDev("Terrain apply failed", error);
-    console.warn("Terrain disabled:", error);
+    const safeMessage = sanitizeMapboxText(error?.message || error);
+    logTerrainDev("Terrain apply failed", safeMessage);
+    console.warn("Terrain disabled:", safeMessage);
   }
 
   if (!terrainApplied && allowFallback && requestedSourceUrl !== FALLBACK_TERRAIN_URL) {
@@ -98,7 +108,7 @@ function applyTerrain(map, { sourceUrl, allowFallback = true } = {}) {
       });
     }
   } catch (error) {
-    logTerrainDev("Terrain atmosphere setup failed", error);
+    logTerrainDev("Terrain atmosphere setup failed", sanitizeMapboxText(error?.message || error));
   }
 
   if (terrainApplied && map.__hmTerrainAppliedLoggedSourceUrl !== activeSourceUrl) {
@@ -108,7 +118,7 @@ function applyTerrain(map, { sourceUrl, allowFallback = true } = {}) {
         : "Terrain applied with fallback DEM",
       {
         sourceUrl: activeSourceUrl,
-        exaggeration: TERRAIN_EXAGGERATION,
+        exaggeration: terrainExaggeration,
       }
     );
     map.__hmTerrainAppliedLoggedSourceUrl = activeSourceUrl;
@@ -174,6 +184,36 @@ const isAuthError = (error) => {
   return status === 401 || status === 403 || message.includes("401") || message.includes("403");
 };
 
+const sanitizeMapboxText = (value) => {
+  if (value === undefined || value === null) return undefined;
+
+  return String(value)
+    .replace(/([?&]access_token=)[^&\s]+/gi, "$1[redacted]")
+    .replace(/pk\.[A-Za-z0-9._-]+/g, "pk.[redacted]");
+};
+
+const resourceUrlWithoutToken = (event, error) => {
+  const value = event?.url || event?.tile?.url || error?.url;
+  if (!value) return undefined;
+
+  try {
+    const url = new URL(String(value));
+    url.searchParams.delete("access_token");
+    return sanitizeMapboxText(url.toString());
+  } catch {
+    return sanitizeMapboxText(value).replace(/([?&])access_token=[^&\s]*&?/gi, "$1");
+  }
+};
+
+const getMapboxErrorDiagnostics = (event, error) => ({
+  message: sanitizeMapboxText(error?.message || event?.message || "Unknown Mapbox error"),
+  sourceId: event?.sourceId || error?.sourceId,
+  tile: sanitizeMapboxText(event?.tile?.url || event?.tile?.tileID || error?.tile),
+  statusCode:
+    error?.status || error?.statusCode || event?.status || event?.statusCode || event?.response?.status,
+  url: resourceUrlWithoutToken(event, error),
+});
+
 export default function useMapbox({
   allPlaces,
   blockNextMapClickRef,
@@ -215,17 +255,45 @@ export default function useMapbox({
     if (!enabled) return;
     if (mapRef.current) return;
 
+    const qualityProfile = getQualityProfile();
+    logger.info("Mapbox initialization", { quality: qualityProfile.mode });
+
+    const tokenError = getMapboxTokenError();
+    if (tokenError) {
+      console.error("Mapbox configuration error:", tokenError);
+      setMapStatus("error");
+      return;
+    }
+
+    if (!mapContainerRef.current) {
+      console.error("Mapbox initialization error: map container is not available.");
+      setMapStatus("error");
+      return;
+    }
+
+    mapboxgl.accessToken = mapboxToken;
+
     const initialStyle = mode === "history" ? MAP_STYLES.history : MAP_STYLES.now;
-    const map = new mapboxgl.Map({
-      container: mapContainerRef.current,
-      style: initialStyle,
-      ...initialView,
-      antialias: true,
-      fadeDuration: 450,
-      scrollZoom: true,
-    });
+    let map;
+
+    try {
+      map = new mapboxgl.Map({
+        container: mapContainerRef.current,
+        style: initialStyle,
+        ...initialView,
+        antialias: qualityProfile.antialias,
+        fadeDuration: qualityProfile.animations ? 450 : 0,
+        pixelRatio: Math.min(window.devicePixelRatio || 1, qualityProfile.maxPixelRatio),
+        scrollZoom: true,
+      });
+    } catch (error) {
+      console.error("Mapbox initialization error:", sanitizeMapboxText(error?.message));
+      setMapStatus("error");
+      return;
+    }
 
     mapRef.current = map;
+    map.__hmQualityProfile = qualityProfile;
     map.__hmCurrentStyle = initialStyle;
     map.__hmTerrainSourceUrl = PRIMARY_TERRAIN_URL;
     map.__hmTerrainFallbackAttempted = false;
@@ -234,7 +302,7 @@ export default function useMapbox({
 
     map.on("error", (event) => {
       const error = event?.error || event;
-      console.warn("Mapbox error:", error);
+      console.error("Mapbox error diagnostics:", getMapboxErrorDiagnostics(event, error));
 
       const terrainError = isDemTerrainError(event, error);
       const authError = isAuthError(error);
@@ -271,7 +339,7 @@ export default function useMapbox({
       map.scrollZoom.setWheelZoomRate?.(1 / 1700);
       map.scrollZoom.setZoomRate?.(1 / 280);
     } catch (error) {
-      console.warn("Smooth zoom tuning skipped:", error);
+      console.warn("Smooth zoom tuning skipped:", sanitizeMapboxText(error?.message || error));
     }
 
     map.on("load", () => {
@@ -627,6 +695,8 @@ export default function useMapbox({
     return () => {
       clearDrivingRoute({ restoreRegion: false });
       map.remove();
+      if (mapRef.current === map) mapRef.current = null;
+      mapLoadedRef.current = false;
     };
   }, [enabled]); // eslint-disable-line react-hooks/exhaustive-deps
 

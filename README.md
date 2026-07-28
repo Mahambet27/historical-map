@@ -1,5 +1,50 @@
 # Qazaq Heritage Map
 
+## Educational mission
+
+Qazaq Heritage Map is an interactive educational atlas connecting the history of Kazakhstan with
+time, geography, historical entities, events, people, heritage objects and reviewed sources.
+
+## Exhibition mode
+
+Open `/exhibition` for the full-screen presentation or `/exhibition?kiosk=true` for the stand mode.
+The exhibition includes KK/RU/EN, a six-state guided story, manual timeline, entity cards, curated
+1465/1511 comparison, a Grade 7 mini-lesson, local 3D demonstration and accessibility controls.
+
+The historical timeline uses signed years (`-550` means 550 BCE). Historical entities are separate
+from their time-valid geometries, and every geometry is labelled with reconstruction confidence.
+Historical boundaries are scholarly reconstructions and may be approximate.
+
+The source panel shows citations and review status. The exhibition agent is an offline allow-listed
+tool runner: it uses the reviewed local pack and never needs an AI API. Mapbox and 3D are lazy
+chunks. If Mapbox, Supabase or the network is unavailable, the local diagram and all core
+educational interactions continue to work.
+
+See [Exhibition guide](docs/EXHIBITION_GUIDE.md),
+[data verification](docs/DATA_VERIFICATION_GUIDE.md),
+[AI architecture](docs/AI_AGENT_ARCHITECTURE.md) and
+[PostGIS schema](docs/database/historical_platform_schema.sql).
+
+### Running and deployment
+
+```bash
+npm install
+npm run dev
+npm run lint
+npm run test:run
+npm run build
+```
+
+Only public Mapbox and Supabase anon configuration belongs in `VITE_*`. AI provider keys,
+Supabase `service_role` and publishing operations belong on the server. Deploy as an SPA with
+history fallback to `index.html`; the included Vercel and PWA configuration already provides this.
+
+### Roadmap
+
+Next stages are historian-reviewed production geometries, a complete Supabase/PostGIS migration,
+atomic published data releases, licensed narration, broader lessons and a server-side cited RAG
+assistant. See `docs/EXHIBITION_IMPLEMENTATION.md` for the current architecture.
+
 [![React](https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=000&labelColor=ffffff)](#tech-stack)
 [![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=fff&labelColor=ffffff)](#tech-stack)
 [![Mapbox](https://img.shields.io/badge/Mapbox-000000?logo=mapbox&logoColor=fff&labelColor=ffffff)](#tech-stack)
@@ -59,6 +104,21 @@ This project brings historical, cultural, natural, and tourism-oriented places t
 - Optimized image loading
 - Safe environment handling with public-only frontend variables
 - Missing Mapbox token screen
+- Public platform landing page that does not load Mapbox
+- Client-side routes for the map, timeline, events, people, heritage, routes, museums, education, research, about, and admin shells
+- Interactive flagship event demo for the formation of the Kazakh Khanate
+
+## Application Routes
+
+- `/` - public platform landing page
+- `/map` - existing interactive Mapbox experience
+- `/timeline` - historical periods and time navigation
+- `/events` and `/events/:eventId` - events catalog and detail pages
+- `/people` and `/people/:personId` - people catalog and detail shells
+- `/heritage` and `/heritage/:placeId` - heritage catalog and detail shells
+- `/routes`, `/museums`, `/education`, `/research`, `/about`, `/admin` - platform sections
+
+See [docs/MIGRATION_PLAN.md](./docs/MIGRATION_PLAN.md) for the phased architecture plan.
 
 ## Tech Stack
 
@@ -77,6 +137,8 @@ This project brings historical, cultural, natural, and tourism-oriented places t
 - Map layer - Mapbox GL JS rendering, route visualization, and historical overlays.
 - Data layer - local JSON/JS datasets for places, eras, regions, borders, and categories.
 - UI layer - reusable panels, cards, loaders, alerts, and place presentation components.
+- Map feature layer - `src/features/map` composition, lifecycle seams, services, quality profiles,
+  loading/error states, and performance utilities.
 - Future backend - planned Supabase / PostgreSQL / PostGIS layer for moderation, publishing, and sync.
 
 ## Project Structure
@@ -88,6 +150,7 @@ This project brings historical, cultural, natural, and tourism-oriented places t
 - `src/components/ui` - shared UI states such as error screens
 - `src/config` - runtime configuration helpers
 - `src/data` - historical and geographic datasets
+- `src/features/map` - lazy map experience, hooks, services, config, and performance utilities
 - `src/layers` - Mapbox layer setup and drawing helpers
 - `src/styles` - global styling and mobile adjustments
 - `public` - manifest, icons, and static assets
@@ -111,6 +174,9 @@ Then run the app:
 npm run dev
 npm run build
 npm run lint
+npm run test:run
+npm run test:e2e
+npm run analyze
 ```
 
 If you want to test the optional Supabase backend, add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` to `.env`. If you leave them blank, the app keeps working on static data.
@@ -121,10 +187,35 @@ If you want to test the optional Supabase backend, add `VITE_SUPABASE_URL` and `
 - `VITE_APP_NAME` - optional app name override if the project is configured to read it.
 - `VITE_SUPABASE_URL` - optional Supabase project URL for the future PostgreSQL backend.
 - `VITE_SUPABASE_ANON_KEY` - optional Supabase public anon key for read-only frontend access.
+- `VITE_SENTRY_DSN` - reserved optional monitoring DSN; no SDK is loaded when it is empty.
 
 Important: `VITE_` variables are embedded into the client bundle, so they must never contain private API keys, secret keys, database passwords, or other sensitive credentials.
 Supabase is optional here. If those variables are missing, the app keeps using the static data files.
 Never use a `service_role` key in the frontend.
+
+## Mapbox troubleshooting
+
+### Local development
+
+1. Create `.env.local` in the project root.
+2. Add `VITE_MAPBOX_TOKEN=your_mapbox_public_token_here`.
+3. Restart `npm run dev` after changing the environment file.
+
+### Vercel
+
+1. Open the project settings in Vercel.
+2. Add an Environment Variable named `VITE_MAPBOX_TOKEN`.
+3. Enable it for Production, Preview, and Development.
+4. Start a new Redeploy so Vite embeds the variable in the client build.
+
+### Mapbox
+
+- Use a public token that begins with `pk.`.
+- If URL restrictions are enabled, allow:
+  - `http://localhost:5173/*`
+  - `https://historical-map-x7za.vercel.app/*`
+  - `https://*.vercel.app/*`
+- Never put the real token in source files, documentation, `.env.example`, or Git.
 
 ## Security Notes
 
@@ -141,16 +232,20 @@ Never use a `service_role` key in the frontend.
 - The 3D presentation is lazy-loaded.
 - `@google/model-viewer` is not part of the initial bundle.
 - Images use lazy loading and async decoding where it is safe.
-- Vite manual chunks split `react`, `mapbox`, and vendor code.
-- The large chunk warning is still expected because Mapbox GL JS is a heavy dependency by design.
+- Route and page components are lazy-loaded. Mapbox JS/CSS is not preloaded by `index.html`.
+- `quality=auto|high|balanced|light` selects terrain, antialiasing, pixel ratio, and animation cost.
+- `npm run analyze` writes the bundle treemap to `dist/stats.html`.
+- Mapbox remains a large on-demand chunk because Mapbox GL JS is a WebGL renderer.
 
 ## PWA / Mobile
 
-- PWA manifest is included.
+- PWA manifest and a Workbox service worker are included.
 - Mobile meta tags are configured for app-like behavior.
 - Controls are touch-friendly and use safe-area-aware spacing.
 - Panels adapt to small screens.
-- A service worker has not been added yet to avoid stale-cache risk and update complexity.
+- The precache is limited to the small app shell; Mapbox, models, images, and tiles are excluded.
+- A prompt asks before activating an updated service worker.
+- Mutable local JSON uses NetworkFirst; large/versioned media stays network-controlled.
 
 ## Roadmap
 

@@ -5,9 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta
       name="description"
-      content="Interactive historical and cultural map of Kazakhstan with Mapbox, 3D terrain, and heritage places."
+      content="Qazaq Heritage Map — цифровая историко-культурная платформа Казахстана: карта, эпохи, события, личности и наследие."
     />
-    <meta name="theme-color" content="#111827" />
+    <meta name="theme-color" content="#0d2938" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="https://historical-map.vercel.app/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Qazaq Heritage Map" />
+    <meta property="og:title" content="Qazaq Heritage Map — история Казахстана на карте" />
+    <meta
+      property="og:description"
+      content="Интерактивная историко-культурная карта Казахстана: эпохи, события, маршруты и наследие."
+    />
+    <meta property="og:url" content="https://historical-map.vercel.app/" />
+    <meta property="og:image" content="https://historical-map.vercel.app/icons/icon-512.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Qazaq Heritage Map" />
+    <meta
+      name="twitter:description"
+      content="Интерактивная историко-культурная карта Казахстана."
+    />
+    <meta name="twitter:image" content="https://historical-map.vercel.app/icons/icon-512.svg" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Heritage Map" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -22,6 +40,11 @@
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      Qazaq Heritage Map — интерактивная карта истории и культурного наследия Казахстана.
+      Для WebGL-карты требуется JavaScript; текстовые разделы описывают эпохи, события,
+      личности и памятники.
+    </noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

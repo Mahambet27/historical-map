@@ -1,0 +1,105 @@
+const tr = (ru, kk, en) => ({ ru, kk, en });
+
+export const historicalEntities = [
+  {
+    id: "saka-communities",
+    entityType: "cultural_political_communities",
+    startYear: -800,
+    endYear: -300,
+    names: tr("Сакские сообщества", "Сақ қауымдары", "Saka communities"),
+    descriptions: tr(
+      "Группы раннего железного века, известные по письменным свидетельствам и археологическим материалам. Не являлись единым государством в современном смысле.",
+      "Жазба деректер мен археологиялық материалдардан белгілі ерте темір дәуірі топтары. Қазіргі түсініктегі біртұтас мемлекет болған жоқ.",
+      "Iron Age groups known from written and archaeological evidence; they were not a single state in the modern sense."
+    ),
+    origins: tr("Формировались в разнообразной среде степей и предгорий.", "Дала мен тау бөктерінің әртүрлі ортасында қалыптасты.", "Formed across diverse steppe and foothill environments."),
+    capitals: [],
+    people: [],
+    eventIds: ["saka-archaeological-record"],
+    sourceIds: ["britannica-kazakhstan-history"],
+    neighbours: [],
+    stages: tr("Археологические культуры различались по регионам и времени.", "Археологиялық мәдениеттер аймақ пен уақытқа қарай ерекшеленді.", "Archaeological cultures differed by region and time."),
+    confidenceLevel: "low",
+  },
+  {
+    id: "first-turkic-khaganate",
+    entityType: "state",
+    startYear: 552,
+    endYear: 603,
+    names: tr("Тюркский каганат", "Түрік қағанаты", "First Turkic Khaganate"),
+    descriptions: tr(
+      "Крупное политическое объединение Центральной Евразии, основанное правящей династией Ашина.",
+      "Ашина әулеті құрған Орталық Еуразиядағы ірі саяси бірлестік.",
+      "A major Central Eurasian polity founded by the Ashina ruling house."
+    ),
+    origins: tr("Возник в ходе консолидации тюркских племён и борьбы за политическое господство.", "Түркі тайпаларының бірігуі және саяси үстемдік үшін күрес барысында құрылды.", "Emerged through Turkic consolidation and competition for political power."),
+    capitals: [tr("Отюкен (политический центр)", "Өтүкен (саяси орталық)", "Ötüken (political centre)")],
+    people: ["bumin-qaghan"],
+    eventIds: ["formation-turkic-khaganate"],
+    sourceIds: ["britannica-turkic-peoples", "unesco-silk-roads"],
+    neighbours: [tr("Сасанидский Иран", "Сасанилер Ираны", "Sasanian Iran")],
+    stages: tr("Создание в 552 году; расширение; разделение в начале VII века.", "552 жылы құрылуы; кеңеюі; VII ғасырдың басында бөлінуі.", "Foundation in 552, expansion, and division in the early 7th century."),
+    confidenceLevel: "low",
+  },
+  {
+    id: "kazakh-khanate",
+    entityType: "state",
+    startYear: 1465,
+    endYear: 1847,
+    names: tr("Казахское ханство", "Қазақ хандығы", "Kazakh Khanate"),
+    descriptions: tr(
+      "Политическое объединение, возникшее в XV веке и сыгравшее ключевую роль в формировании казахской государственности.",
+      "XV ғасырда құрылған және қазақ мемлекеттілігінің қалыптасуында шешуші рөл атқарған саяси бірлестік.",
+      "A polity founded in the 15th century that played a central role in the formation of Kazakh statehood."
+    ),
+    origins: tr(
+      "Связано с уходом части племён во главе с Кереем и Жанибеком из государства Абулхаира и их закреплением в Могулистане.",
+      "Керей мен Жәнібек бастаған тайпалардың Әбілқайыр мемлекетінен бөлініп, Моғолстан аумағына орнығуымен байланысты.",
+      "Linked to groups led by Kerei and Janibek leaving Abu’l-Khayr’s polity and settling in Moghulistan."
+    ),
+    capitals: [tr("Сузак", "Созақ", "Suzak"), tr("Сыгнак", "Сығанақ", "Syganak"), tr("Туркестан", "Түркістан", "Turkistan")],
+    people: ["kerei-khan", "janibek-khan", "kasym-khan"],
+    eventIds: ["formation-kazakh-khanate", "kasym-khan-consolidation"],
+    sourceIds: ["e-history-kazakh-khanate", "cambridge-kazakh-history", "e-history-kasym"],
+    neighbours: [tr("Могулистан", "Моғолстан", "Moghulistan"), tr("Государство Шайбанидов", "Шайбанилер мемлекеті", "Shaybanid polity")],
+    stages: tr("Основание; укрепление при Касым хане; дальнейшее развитие и периоды политической раздробленности.", "Құрылуы; Қасым хан тұсында нығаюы; кейінгі даму және саяси бытыраңқылық кезеңдері.", "Foundation, consolidation under Kasym Khan, later development and periods of political fragmentation."),
+    confidenceLevel: "medium",
+  },
+  {
+    id: "kazakh-ssr",
+    entityType: "union_republic",
+    startYear: 1936,
+    endYear: 1991,
+    names: tr("Казахская ССР", "Қазақ КСР", "Kazakh SSR"),
+    descriptions: tr("Союзная республика в составе СССР с 1936 по 1991 год.", "1936–1991 жылдары КСРО құрамындағы одақтас республика.", "A constituent republic of the Soviet Union from 1936 to 1991."),
+    origins: tr("Создана путём преобразования Казахской АССР.", "Қазақ АКСР-ін қайта құру арқылы құрылды.", "Created by transforming the Kazakh ASSR."),
+    capitals: [tr("Алма-Ата", "Алма-Ата", "Alma-Ata")],
+    people: [],
+    eventIds: ["kazakh-ssr-status"],
+    sourceIds: ["britannica-kazakhstan-history"],
+    neighbours: [],
+    stages: tr("Союзная республика; суверенизация; переход к независимости.", "Одақтас республика; егемендік; тәуелсіздікке өту.", "Union republic, sovereignty, and transition to independence."),
+    confidenceLevel: "high",
+  },
+  {
+    id: "republic-kazakhstan",
+    entityType: "republic",
+    startYear: 1991,
+    endYear: null,
+    names: tr("Республика Казахстан", "Қазақстан Республикасы", "Republic of Kazakhstan"),
+    descriptions: tr("Независимое государство, провозгласившее государственную независимость 16 декабря 1991 года.", "1991 жылғы 16 желтоқсанда мемлекеттік тәуелсіздігін жариялаған дербес мемлекет.", "An independent state whose state independence was established on 16 December 1991."),
+    origins: tr("Возникла в результате распада СССР и принятия Конституционного закона о независимости.", "КСРО ыдырауы және тәуелсіздік туралы Конституциялық заңның қабылдануы нәтижесінде құрылды.", "Emerged through the dissolution of the USSR and adoption of the Constitutional Law on Independence."),
+    capitals: [tr("Алматы (до 1997)", "Алматы (1997 жылға дейін)", "Almaty (until 1997)"), tr("Астана", "Астана", "Astana")],
+    people: [],
+    eventIds: ["independence-kazakhstan"],
+    sourceIds: ["adilet-independence-law", "un-kazakhstan"],
+    neighbours: [tr("Россия", "Ресей", "Russia"), tr("Китай", "Қытай", "China"), tr("Кыргызстан", "Қырғызстан", "Kyrgyzstan"), tr("Узбекистан", "Өзбекстан", "Uzbekistan"), tr("Туркменистан", "Түрікменстан", "Turkmenistan")],
+    stages: tr("Независимость; институциональное развитие; современный этап.", "Тәуелсіздік; институционалдық даму; қазіргі кезең.", "Independence, institutional development, and the contemporary period."),
+    confidenceLevel: "high",
+  },
+];
+
+export const entityRelations = [
+  { id: "khaganate-influence", fromEntityId: "first-turkic-khaganate", toEntityId: "kazakh-khanate", relationType: "influenced", confidenceLevel: "medium", sourceIds: ["cambridge-kazakh-history"] },
+  { id: "ssr-succeeded", fromEntityId: "kazakh-ssr", toEntityId: "republic-kazakhstan", relationType: "succeeded_by", confidenceLevel: "high", sourceIds: ["adilet-independence-law"] },
+];

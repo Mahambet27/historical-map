@@ -28,6 +28,7 @@ export default function useMapData() {
 
   useEffect(() => {
     let ignore = false;
+    const controller = new AbortController();
 
     async function loadMapData() {
       try {
@@ -46,7 +47,7 @@ export default function useMapData() {
           import("../data/popularPlaces.js"),
           import("../data/regionContours.js"),
           import("../data/protectedAreas.js"),
-          getPlaces(),
+          getPlaces({ signal: controller.signal }),
         ]);
 
         if (ignore) return;
@@ -85,6 +86,7 @@ export default function useMapData() {
 
     return () => {
       ignore = true;
+      controller.abort();
     };
   }, []);
 

@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /debug
+
+Sitemap: https://historical-map.vercel.app/sitemap.xml

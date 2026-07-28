@@ -27,3 +27,10 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# Generated quality reports and local browser profiles
+coverage
+.lighthouseci
+.lighthouse-profile
+playwright-report
+test-results

@@ -18,16 +18,12 @@ import {
 } from "./utils/mapHelpers";
 import {
   APP_NAME,
-  MAPBOX_TOKEN,
-  MAPBOX_TOKEN_ENV_NAME,
+  getMapboxTokenError,
   isMapboxTokenConfigured,
+  mapboxToken,
 } from "./config/env.js";
 import ObjectPresentation from "./ObjectPresentation";
 import AiAssistant from "./ui/AiAssistant";
-
-if (isMapboxTokenConfigured) {
-  mapboxgl.accessToken = MAPBOX_TOKEN;
-}
 
 const getPlaceType = (place) => place?.type || "Тарихи нысан";
 
@@ -78,9 +74,8 @@ const MissingMapboxTokenState = () => (
       </h1>
       <p style={{ margin: 0, lineHeight: 1.55, color: "#d1d5db" }}>
         Add a public Mapbox token to your local <b>.env</b> file as{" "}
-        <code>{MAPBOX_TOKEN_ENV_NAME}=your_mapbox_public_token_here</code>, then restart the
-        development server. The app has stopped before loading the map so it does not crash or leak
-        configuration details.
+        {getMapboxTokenError()} Add a valid public token to <b>.env.local</b> as{" "}
+        <code>VITE_MAPBOX_TOKEN=pk.xxxxxxxxxxxxxxxxx</code>, then restart the development server.
       </p>
     </div>
   </div>
@@ -759,14 +754,14 @@ function MapViewInner() {
         routeAbortRef.current = null;
         setRouteLoading(false);
       }
-      alert(`${MAPBOX_TOKEN_ENV_NAME} is missing. Add it to .env and restart the dev server.`);
+      alert("VITE_MAPBOX_TOKEN is missing. Add it to .env.local and restart the dev server.");
       return;
     }
 
     const url =
       `https://api.mapbox.com/directions/v5/mapbox/driving/` +
       `${from[0]},${from[1]};${to[0]},${to[1]}` +
-      `?geometries=geojson&overview=full&steps=false&access_token=${MAPBOX_TOKEN}`;
+      `?geometries=geojson&overview=full&steps=false&access_token=${mapboxToken}`;
 
     try {
       const res = await fetch(url, { signal: controller.signal });

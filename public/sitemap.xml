@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://historical-map.vercel.app/</loc></url>
+  <url><loc>https://historical-map.vercel.app/map</loc></url>
+  <url><loc>https://historical-map.vercel.app/timeline</loc></url>
+  <url><loc>https://historical-map.vercel.app/events</loc></url>
+  <url><loc>https://historical-map.vercel.app/people</loc></url>
+  <url><loc>https://historical-map.vercel.app/heritage</loc></url>
+  <url><loc>https://historical-map.vercel.app/routes</loc></url>
+  <url><loc>https://historical-map.vercel.app/museums</loc></url>
+  <url><loc>https://historical-map.vercel.app/education</loc></url>
+  <url><loc>https://historical-map.vercel.app/research</loc></url>
+  <url><loc>https://historical-map.vercel.app/about</loc></url>
+</urlset>

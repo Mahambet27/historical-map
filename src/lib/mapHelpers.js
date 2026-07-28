@@ -29,10 +29,7 @@ export const toFixed5 = (n) => (Number.isFinite(n) ? Number(n).toFixed(5) : "");
 
 export const getBoundsFromCoords = (coords) => {
   if (!Array.isArray(coords) || coords.length < 2) return null;
-  return coords.reduce(
-    (b, c) => b.extend(c),
-    new mapboxgl.LngLatBounds(coords[0], coords[0])
-  );
+  return coords.reduce((b, c) => b.extend(c), new mapboxgl.LngLatBounds(coords[0], coords[0]));
 };
 
 export const clearMarkersList = (markersRef) => {

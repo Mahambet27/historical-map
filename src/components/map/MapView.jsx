@@ -12,16 +12,18 @@ import {
 import { setupRouteLayer } from "../../layers/RouteLayer";
 import {
   APP_NAME,
-  MAPBOX_TOKEN,
-  MAPBOX_TOKEN_ENV_NAME,
+  getMapboxTokenError,
   isMapboxTokenConfigured,
+  mapboxToken,
 } from "../../config/env.js";
 import useLocalStorage from "../../hooks/useLocalStorage.js";
 import useMapData from "../../hooks/useMapData.js";
-import useMapbox from "../../hooks/useMapbox";
+import useMapbox from "../../features/map/hooks/useMapLifecycle.js";
+import { fetchDrivingRoute } from "../../features/map/services/directionsService.js";
 import ErrorState from "../ui/ErrorState";
 import { drawHistoricalMarkerList } from "./markerUtils";
 import MapTopControls from "./MapTopControls.jsx";
+import MapLayerManager from "./MapLayerManager.jsx";
 import {
   HISTORICAL_BORDER_LAYER_IDS,
   POPULAR_ERA,
@@ -41,17 +43,10 @@ const LazyAiAssistant = lazy(() => import("../chat/AiAssistant"));
 const LazyMapSidebar = lazy(() => import("./MapSidebar.jsx"));
 const LazySelectedPlacePanel = lazy(() => import("../places/SelectedPlacePanel.jsx"));
 
-if (isMapboxTokenConfigured) {
-  mapboxgl.accessToken = MAPBOX_TOKEN;
-}
-
-
 const MissingMapboxTokenState = () => (
-  <ErrorState eyebrow={APP_NAME} title="Mapbox token is missing">
-    Add a public Mapbox token to your local <b>.env</b> file as{" "}
-    <code>{MAPBOX_TOKEN_ENV_NAME}=your_mapbox_public_token_here</code>, then restart the development
-    server. The app has stopped before loading the map so it does not crash or leak configuration
-    details.
+  <ErrorState eyebrow={APP_NAME} title="Mapbox token is invalid">
+    {getMapboxTokenError()} Add a valid public token to <b>.env.local</b> as{" "}
+    <code>VITE_MAPBOX_TOKEN=pk.xxxxxxxxxxxxxxxxx</code>, then restart the development server.
   </ErrorState>
 );
 
@@ -241,6 +236,8 @@ function MapViewInner() {
   const [language, setLanguage] = useState("kk");
   const [showSettings, setShowSettings] = useState(false);
   const [selectedEra, setSelectedEra] = useState(0);
+  const [showHistoricalBorders, setShowHistoricalBorders] = useState(true);
+  const [showMapObjects, setShowMapObjects] = useState(true);
   const [selected, setSelected] = useState(null);
   const [query, setQuery] = useState("");
   const [selectedType, setSelectedType] = useState("all");
@@ -519,7 +516,7 @@ function MapViewInner() {
     const map = mapRef.current;
     if (!map || !mapLoadedRef.current) return;
 
-    const visible = mode === "history";
+    const visible = mode === "history" && showHistoricalBorders;
     HISTORICAL_BORDER_LAYER_IDS.forEach((id) => {
       if (map.getLayer(id)) {
         map.setLayoutProperty(id, "visibility", visible ? "visible" : "none");
@@ -695,31 +692,19 @@ function MapViewInner() {
         routeAbortRef.current = null;
         setRouteLoading(false);
       }
-      alert(`${MAPBOX_TOKEN_ENV_NAME} is missing. Add it to .env and restart the dev server.`);
+      alert("VITE_MAPBOX_TOKEN is missing. Add it to .env.local and restart the dev server.");
       return;
     }
 
-    const url =
-      `https://api.mapbox.com/directions/v5/mapbox/driving/` +
-      `${from[0]},${from[1]};${to[0]},${to[1]}` +
-      `?geometries=geojson&overview=full&steps=false&access_token=${MAPBOX_TOKEN}`;
-
     try {
-      const res = await fetch(url, { signal: controller.signal });
+      const route = await fetchDrivingRoute({
+        from,
+        to,
+        token: mapboxToken,
+        signal: controller.signal,
+      });
 
-      if (!res.ok) {
-        const txt = await res.text().catch(() => "");
-        console.error("Directions API error:", res.status, txt);
-        alert(
-          `Маршрут салынбады. HTTP ${res.status}\n` +
-            `Егер 401/403 болса — Mapbox token restrictions (localhost / vercel) тексер.`
-        );
-        return;
-      }
-
-      const data = await res.json();
-      const route = data?.routes?.[0];
-      if (!route?.geometry?.coordinates?.length) {
+      if (!route.coordinates.length) {
         alert("Маршрут табылмады.");
         return;
       }
@@ -733,7 +718,7 @@ function MapViewInner() {
           {
             type: "Feature",
             properties: {},
-            geometry: route.geometry,
+            geometry: { type: "LineString", coordinates: route.coordinates },
           },
         ],
       });
@@ -744,11 +729,11 @@ function MapViewInner() {
       });
 
       if (options.fit !== false) {
-        const bounds = getBoundsFromCoords(route.geometry.coordinates);
+        const bounds = getBoundsFromCoords(route.coordinates);
         if (bounds) map.fitBounds(bounds, { padding: 90, ...smoothFitOptions });
       }
 
-      animateRoute(route.geometry.coordinates);
+      animateRoute(route.coordinates);
       syncRouteExists();
     } catch (error) {
       if (error?.name !== "AbortError") {
@@ -915,7 +900,7 @@ function MapViewInner() {
       return;
     }
 
-    drawHistoricalMarkers(filteredPlaces);
+    drawHistoricalMarkers(showMapObjects ? filteredPlaces : []);
 
     map.flyTo({
       ...overviewView,
@@ -990,7 +975,7 @@ function MapViewInner() {
 
     syncHistoricalBorders();
     syncProtectedAreasVisibility();
-    drawHistoricalMarkers(filteredPlaces);
+    drawHistoricalMarkers(showMapObjects ? filteredPlaces : []);
     if (Number(selectedEra) === POPULAR_ERA) fitPopularPlaces();
   }, [mode]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -1003,7 +988,7 @@ function MapViewInner() {
       hideZaysan();
       syncHistoricalBorders();
       syncProtectedAreasVisibility();
-      drawHistoricalMarkers(filteredPlaces);
+      drawHistoricalMarkers(showMapObjects ? filteredPlaces : []);
       if (Number(selectedEra) === POPULAR_ERA) fitPopularPlaces();
     } else {
       setProtectedAreasVisible(false);
@@ -1015,8 +1000,8 @@ function MapViewInner() {
     if (mode !== "history") return;
     syncHistoricalBorders();
     syncProtectedAreasVisibility();
-    drawHistoricalMarkers(filteredPlaces);
-  }, [filteredPlaces, mode, language]); // eslint-disable-line react-hooks/exhaustive-deps
+    drawHistoricalMarkers(showMapObjects ? filteredPlaces : []);
+  }, [filteredPlaces, mode, language, showHistoricalBorders, showMapObjects]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!tourOn) return;
@@ -1140,6 +1125,12 @@ function MapViewInner() {
           }}
         >
           <div style={{ fontWeight: 900, fontSize: 13, marginBottom: 8 }}>{tr.legend}</div>
+          <MapLayerManager
+            showHistoricalBorders={showHistoricalBorders}
+            showMapObjects={showMapObjects}
+            setShowHistoricalBorders={setShowHistoricalBorders}
+            setShowMapObjects={setShowMapObjects}
+          />
           <div style={{ display: "grid", gap: 7 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <span style={{ width: 12, height: 12, borderRadius: 999, background: "#d11" }} />

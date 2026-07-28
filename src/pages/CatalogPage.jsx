@@ -1,0 +1,17 @@
+import { useMemo, useState } from "react";
+import { Link } from "../app/router.jsx";
+
+const config = {
+  events: { title: "Исторические события", eyebrow: "Каталог событий", description: "Ключевые поворотные моменты истории Казахстана, связанные с местами, участниками и источниками.", items: [["Образование Казахского ханства","1465–1466","Флагманский сценарий платформы","/events/kazakh-khanate"],["Орбулакская битва","1643","Военная история","/events/orbulak"],["Великий джут","1928–1933","Новейшая история","/events/asharshylyk"]] },
+  people: { title: "Исторические личности", eyebrow: "Биографический каталог", description: "Правители, просветители, учёные и деятели культуры в историко-географическом контексте.", items: [["Керей хан","XV век","Первый хан Казахского ханства","/people/kerey"],["Жанибек хан","XV век","Сооснователь Казахского ханства","/people/zhanibek"],["Абай Кунанбаев","1845–1904","Поэт, мыслитель и просветитель","/people/abai"]] },
+  heritage: { title: "Наследие и археология", eyebrow: "Каталог объектов", description: "Археологические памятники, древние города, мавзолеи и сакральные объекты Казахстана.", items: [["Петроглифы Тамгалы","Бронзовый век","Объект Всемирного наследия","/heritage/tamgaly"],["Городище Отрар","I–XVIII века","Центр Великого шёлкового пути","/heritage/otrar"],["Берельские курганы","IV–III века до н.э.","Царские погребения Алтая","/heritage/berel"]] },
+  routes: { title: "Исторические маршруты", eyebrow: "Путешествия во времени", description: "Маршруты миграций, походов и современные культурно-туристические путешествия.", items: [["Путь Керея и Жанибека","XV век","От Восточного Дешт-и-Кыпчака к Чу","/map"],["Шёлковый путь: южная ветвь","Средневековье","Тараз — Отрар — Туркестан","/map"],["Золотое кольцо Алтая","2–5 дней","Археологический маршрут","/map"]] },
+};
+
+export default function CatalogPage({ type, detailId }) {
+  const page = config[type] || config.events;
+  const [query,setQuery]=useState("");
+  const items=useMemo(()=>page.items.filter(x=>x.join(" ").toLowerCase().includes(query.toLowerCase())),[page,query]);
+  if (detailId) return <div className="content-page"><header className="page-hero"><p className="eyebrow"><span></span> Демонстрационная карточка</p><h1>{page.items.find(x=>x[3].endsWith(detailId))?.[0] || "Исторический объект"}</h1><p>Страница подготовлена для подключения верифицированных источников, связей, медиаматериалов и геоданных.</p></header><div className="notice-card"><strong>Материал требует научной редакции</strong><p>Структура карточки готова, но сведения должны быть проверены профильным историком перед публикацией.</p><Link to={`/${type}`}>← Вернуться в каталог</Link></div></div>;
+  return <div className="content-page"><header className="page-hero"><p className="eyebrow"><span></span> {page.eyebrow}</p><h1>{page.title}</h1><p>{page.description}</p></header><div className="content-toolbar"><input value={query} onChange={e=>setQuery(e.target.value)} type="search" placeholder="Поиск по каталогу…"/><span>{items.length} материала</span></div><div className="catalog-grid">{items.map((x,index)=><Link to={x[3]} key={x[0]}><span>{String(index+1).padStart(2,"0")}</span><small>{x[1]}</small><h2>{x[0]}</h2><p>{x[2]}</p><i>Открыть →</i></Link>)}</div><p className="demo-disclaimer">Демонстрационный набор данных. Для публичной версии требуется верификация материалов профильными специалистами.</p></div>;
+}

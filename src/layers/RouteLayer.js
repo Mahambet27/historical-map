@@ -1,6 +1,6 @@
 import { getBoundsFromCoords } from "../lib/mapHelpers";
 import { LAYER_IDS } from "../lib/mapConfig";
-import { MAPBOX_TOKEN, isMapboxTokenConfigured } from "../config/env.js";
+import { isMapboxTokenConfigured, mapboxToken } from "../config/env.js";
 
 function isMapStyleReady(map) {
   return !!map && typeof map.isStyleLoaded === "function" && map.isStyleLoaded();
@@ -128,7 +128,7 @@ export async function buildDrivingRoute(map, from, to) {
   const url =
     `https://api.mapbox.com/directions/v5/mapbox/driving/` +
     `${from[0]},${from[1]};${to[0]},${to[1]}` +
-    `?geometries=geojson&overview=full&steps=false&access_token=${MAPBOX_TOKEN}`;
+    `?geometries=geojson&overview=full&steps=false&access_token=${mapboxToken}`;
 
   let res;
 

@@ -68,11 +68,12 @@ const buildImages = (rows) =>
     .map((row) => chooseFirstText(row?.public_url, row?.storage_path))
     .filter(Boolean);
 
-const getSupabaseData = async () => {
+const getSupabaseData = async (signal) => {
   if (!supabaseClient) {
     return null;
   }
 
+  const requestSignal = signal || new AbortController().signal;
   let results;
 
   try {
@@ -83,14 +84,17 @@ const getSupabaseData = async () => {
           "id, slug, status, region, district, place_type, era_id, latitude, longitude, short_notes, full_notes"
         )
         .eq("status", "published")
-        .order("created_at", { ascending: true }),
+        .order("created_at", { ascending: true })
+        .abortSignal(requestSignal),
       supabaseClient
         .from("place_translations")
-        .select("place_id, language, title, short_description, full_description"),
+        .select("place_id, language, title, short_description, full_description")
+        .abortSignal(requestSignal),
       supabaseClient
         .from("place_images")
-        .select("place_id, public_url, storage_path, alt_text, caption, sort_order, is_primary"),
-      supabaseClient.from("eras").select("id, sort_order"),
+        .select("place_id, public_url, storage_path, alt_text, caption, sort_order, is_primary")
+        .abortSignal(requestSignal),
+      supabaseClient.from("eras").select("id, sort_order").abortSignal(requestSignal),
     ]);
   } catch (error) {
     logDev("Using static places fallback", {
@@ -194,8 +198,8 @@ const getSupabaseData = async () => {
   return mappedPlaces;
 };
 
-export async function getPlaces() {
-  const supabasePlaces = await getSupabaseData();
+export async function getPlaces({ signal } = {}) {
+  const supabasePlaces = await getSupabaseData(signal);
   if (Array.isArray(supabasePlaces) && supabasePlaces.length > 0) {
     logDev("Loaded places from Supabase", { count: supabasePlaces.length });
     return supabasePlaces;

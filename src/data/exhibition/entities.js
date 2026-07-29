@@ -103,3 +103,62 @@ export const entityRelations = [
   { id: "khaganate-influence", fromEntityId: "first-turkic-khaganate", toEntityId: "kazakh-khanate", relationType: "influenced", confidenceLevel: "medium", sourceIds: ["cambridge-kazakh-history"] },
   { id: "ssr-succeeded", fromEntityId: "kazakh-ssr", toEntityId: "republic-kazakhstan", relationType: "succeeded_by", confidenceLevel: "high", sourceIds: ["adilet-independence-law"] },
 ];
+
+const contextEntity = (id, startYear, endYear, ru, kk, en, color, borderColor, extrusionColor) => ({
+  id,
+  entityType: "state",
+  startYear,
+  endYear,
+  names: tr(ru, kk, en),
+  descriptions: tr(
+    "Контекстная сущность демонстрационной карты. Геометрия требует дополнительной научной проверки.",
+    "Демонстрациялық картаның контекстік нысаны. Геометрия қосымша ғылыми тексеруді қажет етеді.",
+    "A contextual entity for the demonstration map. Its geometry requires further scholarly review."
+  ),
+  origins: tr("Требует редакционной проверки.", "Редакциялық тексеруді қажет етеді.", "Requires editorial review."),
+  capitals: [],
+  people: [],
+  eventIds: [],
+  sourceIds: [],
+  neighbours: [],
+  stages: tr("Демонстрационный контекст.", "Демонстрациялық мәнмәтін.", "Demonstration context."),
+  confidenceLevel: "low",
+  verificationStatus: "needs_review",
+  color,
+  borderColor,
+  extrusionColor,
+});
+
+export const politicalContextEntities = [
+  contextEntity("western-turkic-khaganate", 603, 704, "Западно-Тюркский каганат", "Батыс Түрік қағанаты", "Western Turkic Khaganate", "#B8873F", "#F1CE8D", "#865D28"),
+  contextEntity("turgesh-khaganate", 704, 756, "Тюргешский каганат", "Түргеш қағанаты", "Turgesh Khaganate", "#8E6841", "#E5BE82", "#62452A"),
+  contextEntity("karluk-state", 756, 940, "Карлукское государство", "Қарлұқ мемлекеті", "Karluk state", "#3E866B", "#8FD2B8", "#275D49"),
+  contextEntity("oghuz-state", 756, 1055, "Огузское государство", "Оғыз мемлекеті", "Oghuz state", "#3F6E9C", "#8DB8E1", "#294C70"),
+  contextEntity("kimak-khaganate", 840, 1050, "Кимакский каганат", "Қимақ қағанаты", "Kimak Khaganate", "#66789B", "#AFC0DF", "#43516D"),
+  contextEntity("karakhanid-state", 840, 1212, "Караханидское государство", "Қарахан мемлекеті", "Karakhanid state", "#76558F", "#C5A4DD", "#503863"),
+  contextEntity("abulkhair-state", 1428, 1468, "Государство Абулхаира", "Әбілқайыр мемлекеті", "Abu'l-Khayr state", "#8A6A43", "#D8B77D", "#60472D"),
+  contextEntity("moghulistan", 1347, 1514, "Могулистан", "Моғолстан", "Moghulistan", "#3C8062", "#8ACBAD", "#285741"),
+  contextEntity("nogai-horde", 1440, 1634, "Ногайская Орда", "Ноғай Ордасы", "Nogai Horde", "#3B6795", "#8CB5DC", "#264969"),
+  contextEntity("timurid-state", 1370, 1507, "Государство Тимуридов", "Темір әулеті мемлекеті", "Timurid state", "#745890", "#C1A2D9", "#4F3B63"),
+  contextEntity("sibir-khanate", 1468, 1598, "Сибирское ханство", "Сібір хандығы", "Sibir Khanate", "#477B83", "#93CDD3", "#31565C"),
+  contextEntity("dzungar-khanate", 1635, 1758, "Джунгарское ханство", "Жоңғар хандығы", "Dzungar Khanate", "#8E3F4C", "#E39AA4", "#642B35"),
+  contextEntity("bukhara-khanate", 1500, 1785, "Бухарское ханство", "Бұхара хандығы", "Bukhara Khanate", "#76518D", "#C3A0DA", "#503660"),
+  contextEntity("khiva-khanate", 1511, 1920, "Хивинское ханство", "Хиуа хандығы", "Khiva Khanate", "#A16F42", "#E2B984", "#704B2C"),
+  contextEntity("russian-empire", 1721, 1917, "Российская империя", "Ресей империясы", "Russian Empire", "#304F78", "#85A9D4", "#203650"),
+  contextEntity("qing-empire", 1644, 1912, "Цинская империя", "Цин империясы", "Qing Empire", "#8F3940", "#E18A90", "#64272C"),
+];
+
+const coreStyles = {
+  "saka-communities": ["#A97D45", "#E5C28D", "#76552E"],
+  "first-turkic-khaganate": ["#B07B38", "#F0CA84", "#7D5423"],
+  "kazakh-khanate": ["#C7963E", "#F5D58E", "#A87527"],
+  "kazakh-ssr": ["#3C7F75", "#8ED3C4", "#28594F"],
+  "republic-kazakhstan": ["#267D73", "#8BE0CE", "#18574F"],
+};
+
+historicalEntities.forEach((entity) => {
+  const [color, borderColor, extrusionColor] = coreStyles[entity.id] || ["#6C7780", "#C5CDD2", "#465058"];
+  Object.assign(entity, { color, borderColor, extrusionColor, verificationStatus: entity.verificationStatus || "reviewed" });
+});
+
+export const allHistoricalEntities = [...historicalEntities, ...politicalContextEntities];

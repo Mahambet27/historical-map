@@ -1,44 +1,125 @@
-import { exhibitionPlaces } from "../../data/exhibition/places.js";
+import { allHistoricalEntities } from "../../data/exhibition/entities.js";
+import { getEntityLabelsAtYear } from "../../data/exhibition/entityLabels.js";
+import {
+  getFallbackEntitiesAtYear,
+  projectExhibitionCoordinate,
+} from "./mapDataUtils.js";
 
-const project = ([lng, lat]) => ({
-  x: 70 + ((lng - 46) / 42) * 760,
-  y: 330 - ((lat - 40) / 16) * 260,
-});
+const entityById = new Map(allHistoricalEntities.map((entity) => [entity.id, entity]));
+const local = (value, language) => value?.[language] || value?.ru || "";
 
-export default function ExhibitionMapFallback({ state, language, text, comparison }) {
-  const activePlaces = exhibitionPlaces.filter((place) => state.placeIds.includes(place.id));
+const polygonPath = (coordinates, offsetY = 0) =>
+  coordinates
+    .map((coordinate, index) => {
+      const point = projectExhibitionCoordinate(coordinate);
+      return `${index ? "L" : "M"}${point.x.toFixed(1)} ${(point.y + offsetY).toFixed(1)}`;
+    })
+    .join(" ") + "Z";
+
+export default function ExhibitionMapFallback({
+  selectedYear,
+  activeSnapshot,
+  language,
+  text,
+  comparison,
+  selectedEntityId,
+  onSelectEntity,
+}) {
+  const territories = getFallbackEntitiesAtYear(selectedYear).sort(
+    (a, b) => Number(a.entity.id === selectedEntityId) - Number(b.entity.id === selectedEntityId)
+  );
+  const labels = getEntityLabelsAtYear(selectedYear);
+  const comparisonTerritories = comparison
+    ? getFallbackEntitiesAtYear(comparison.secondYear)
+    : [];
+
   return (
     <div className="ex-map-fallback" role="img" aria-label={`${text.mapLabel}. ${text.mapUnavailable}`}>
       <svg viewBox="0 0 900 430" aria-hidden="true">
         <defs>
-          <linearGradient id="steppe" x1="0" x2="1">
-            <stop offset="0" stopColor="#174d50" />
-            <stop offset="1" stopColor="#2a736c" />
-          </linearGradient>
-          <pattern id="disputed" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-            <line x1="0" y1="0" x2="0" y2="10" stroke="#f1cc84" strokeWidth="3" opacity=".45" />
+          <radialGradient id="ex-sea" cx="55%" cy="45%">
+            <stop offset="0" stopColor="#17434c" />
+            <stop offset="1" stopColor="#081a25" />
+          </radialGradient>
+          <filter id="ex-soft-shadow" x="-20%" y="-20%" width="140%" height="150%">
+            <feDropShadow dx="0" dy="7" stdDeviation="7" floodColor="#02080d" floodOpacity=".58" />
+          </filter>
+          <pattern id="ex-review-pattern" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <line x1="0" y1="0" x2="0" y2="8" stroke="#fff" strokeWidth="1" opacity=".08" />
           </pattern>
-          <filter id="glow"><feGaussianBlur stdDeviation="8" /></filter>
         </defs>
+        <rect width="900" height="430" fill="url(#ex-sea)" />
         <path className="ex-map-fallback__grid" d="M0 90H900M0 170H900M0 250H900M0 330H900M150 0V430M300 0V430M450 0V430M600 0V430M750 0V430" />
-        <path className="ex-map-fallback__glow" d="M76 221L117 114 247 82 382 103 485 83 645 126 822 206 769 275 670 303 560 365 414 340 327 377 190 326 92 278Z" filter="url(#glow)" />
-        <path className="ex-map-fallback__country" d="M76 221L117 114 247 82 382 103 485 83 645 126 822 206 769 275 670 303 560 365 414 340 327 377 190 326 92 278Z" />
-        <path
-          className={`ex-map-fallback__era ex-map-fallback__era--${state.id}`}
-          d={state.year <= 552 ? "M170 154L306 103 505 116 697 177 627 288 432 316 241 276Z" : state.year < 1936 ? "M217 193L334 134 554 144 692 216 587 301 378 321 238 267Z" : "M82 220L122 121 248 91 382 111 485 91 641 133 810 207 762 270 665 295 557 356 416 332 326 367 194 318 98 273Z"}
-        />
-        {comparison && <path className="ex-map-fallback__compare" d="M146 175L275 111 545 124 735 202 644 320 381 344 195 287Z" />}
-        {activePlaces.map((place) => {
-          const point = project(place.coords);
+        <path className="ex-map-fallback__water" d="M33 170C65 148 102 159 115 212C126 255 84 304 27 298Z" />
+
+        {comparisonTerritories.map(({ geometry }) => (
+          <path
+            key={`compare-${geometry.id}`}
+            className="ex-map-fallback__comparison-territory"
+            d={polygonPath(geometry.geojson.geometry.coordinates[0])}
+          />
+        ))}
+
+        {territories.map(({ geometry, entity }) => {
+          const path = polygonPath(geometry.geojson.geometry.coordinates[0]);
+          const selected = entity.id === selectedEntityId;
           return (
-            <g key={place.id} transform={`translate(${point.x} ${point.y})`}>
-              <circle r="13" className="ex-map-fallback__point-ring" />
-              <circle r="5" className="ex-map-fallback__point" />
-              <text x="11" y="-10">{place.names[language] || place.names.ru}</text>
+            <g
+              key={geometry.id}
+              className={`ex-map-fallback__territory ${selected ? "is-selected" : ""}`}
+              onClick={() => onSelectEntity?.(entity.id)}
+              role="button"
+            >
+              <path d={polygonPath(geometry.geojson.geometry.coordinates[0], selected ? 9 : 6)} fill={entity.extrusionColor} opacity=".58" />
+              <path
+                d={path}
+                fill={entity.color}
+                stroke={entity.borderColor}
+                strokeWidth={selected ? 3.2 : 2}
+                opacity={selected ? ".92" : ".72"}
+                filter="url(#ex-soft-shadow)"
+              />
+              {geometry.verificationStatus === "needs_review" && <path d={path} fill="url(#ex-review-pattern)" />}
             </g>
           );
         })}
+
+        {labels.map((item) => {
+          const entity = entityById.get(item.entityId);
+          const point = projectExhibitionCoordinate(item.labelPoint);
+          if (!entity) return null;
+          return (
+            <text
+              key={item.id}
+              className="ex-map-fallback__entity-label"
+              x={point.x}
+              y={point.y - (entity.id === selectedEntityId ? 10 : 5)}
+              transform={`rotate(${item.labelRotation} ${point.x} ${point.y})`}
+            >
+              {local(entity.names, language)}
+            </text>
+          );
+        })}
+
+        {(activeSnapshot?.placeIds || []).slice(0, 4).map((placeId) => {
+          const knownPoints = { "chu-valley": [73.7,43.3], turkistan: [68.25,43.3], saraishyk: [51.73,47.05], almaty: [76.89,43.24], astana: [71.43,51.13] };
+          const coordinate = knownPoints[placeId];
+          if (!coordinate) return null;
+          const point = projectExhibitionCoordinate(coordinate);
+          return <circle key={placeId} cx={point.x} cy={point.y} r="4" className="ex-map-fallback__point" />;
+        })}
       </svg>
+
+      <aside className="ex-map-legend" aria-label={text.mapLegend}>
+        <strong>{text.mapLegend}</strong>
+        {territories.map(({ entity, geometry }) => (
+          <button key={entity.id} onClick={() => onSelectEntity?.(entity.id)}>
+            <i style={{ background: entity.color, borderColor: entity.borderColor }} />
+            <span>{local(entity.names, language)}</span>
+            {geometry.verificationStatus === "needs_review" && <small title={text.needsReview}>○</small>}
+          </button>
+        ))}
+      </aside>
       <div className="ex-map-fallback__status">
         <span>◈</span>
         <div><strong>{text.mapUnavailable}</strong><small>{text.mapUnavailableDetail}</small></div>

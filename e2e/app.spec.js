@@ -47,8 +47,13 @@ test("exhibition route starts the offline-capable historical experience", async 
   await expect(page.getByRole("heading", { name: /Qazaq/i })).toBeVisible();
   await expect(page.getByRole("button", { name: "Начать демонстрацию" })).toBeVisible();
   await page.getByRole("button", { name: "Исследовать самостоятельно" }).click();
-  await expect(page.locator(".ex-timeline__states button")).toHaveCount(6);
-  await expect(page.getByText(/Исторические границы являются научной реконструкцией/)).toBeVisible();
+  await expect(page.locator(".ex-era-selector button")).toHaveCount(5);
+  await expect(page.locator(".ex-year-slider input")).toHaveValue("1465");
+  await page.locator(".ex-era-selector button").nth(1).click();
+  await expect(page.locator(".ex-year-slider input")).toHaveValue("552");
+  await page.locator(".ex-era-selector button").nth(2).click();
+  await expect(page.locator(".ex-year-slider input")).toHaveValue("1465");
+  await expect(page.locator(".ex-disclaimer--map")).toBeVisible();
   await page.getByRole("button", { name: /Научные источники/ }).first().click();
   await expect(page.getByRole("heading", { name: "Научные источники" })).toBeVisible();
 });

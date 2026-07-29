@@ -8,11 +8,15 @@ export default defineConfig(({ mode }) => ({
     react(),
     VitePWA({
       registerType: "prompt",
-      includeAssets: ["icons/*.svg", "offline.html"],
+      includeAssets: [
+        "icons/*.svg",
+        "offline.html",
+        "models/exhibition/posters/*.webp",
+      ],
       manifest: false,
       workbox: {
         cleanupOutdatedCaches: true,
-        maximumFileSizeToCacheInBytes: 500 * 1024,
+        maximumFileSizeToCacheInBytes: 900 * 1024,
         globPatterns: ["**/*.{html,js,css,svg,webmanifest}"],
         globIgnores: [
           "**/models/**",
@@ -21,6 +25,8 @@ export default defineConfig(({ mode }) => ({
           "**/assets/MapView-*.js",
           "**/assets/MapView-*.css",
           "**/assets/mapbox-gl-*.js",
+          "**/assets/model-viewer-*.js",
+          "**/assets/supabase-*.js",
         ],
         navigateFallback: "/index.html",
         runtimeCaching: [
@@ -32,6 +38,16 @@ export default defineConfig(({ mode }) => ({
               cacheName: "qhm-json-v1",
               networkTimeoutSeconds: 4,
               expiration: { maxEntries: 30, maxAgeSeconds: 24 * 60 * 60 },
+            },
+          },
+          {
+            urlPattern: ({ url }) =>
+              url.origin === self.location.origin &&
+              /\/assets\/model-viewer-[^/]+\.js$/.test(url.pathname),
+            handler: "CacheFirst",
+            options: {
+              cacheName: "qhm-model-viewer-v1",
+              expiration: { maxEntries: 2, maxAgeSeconds: 365 * 24 * 60 * 60 },
             },
           },
         ],
@@ -50,6 +66,17 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks(id) {
+          if (
+            id.includes("node_modules/@google/model-viewer") ||
+            id.includes("node_modules/@lit") ||
+            /node_modules[\\/]lit[\\/]/.test(id) ||
+            id.includes("node_modules/three")
+          ) {
+            return "model-viewer";
+          }
+          if (id.includes("node_modules/@supabase")) {
+            return "supabase";
+          }
           if (id.includes("react-dom") || /node_modules[\\/]react[\\/]/.test(id)) {
             return "react";
           }

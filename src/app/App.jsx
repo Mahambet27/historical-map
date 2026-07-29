@@ -12,6 +12,9 @@ const EventPage = lazy(() => import("../pages/EventPage.jsx"));
 const SectionPage = lazy(() => import("../pages/SectionPage.jsx"));
 const NotFoundPage = lazy(() => import("../pages/NotFoundPage.jsx"));
 const ExhibitionPage = lazy(() => import("../features/exhibition/ExhibitionPage.jsx"));
+const ExhibitionDiagnosticsPage = lazy(
+  () => import("../features/exhibition/ExhibitionDiagnosticsPage.jsx")
+);
 
 const catalogRoutes = {
   "/events": "events",
@@ -56,6 +59,15 @@ function RouteContent() {
 
 function AppRoutes() {
   const { path } = useRoute();
+  if (path === "/exhibition/diagnostics") {
+    return (
+      <Suspense fallback={<MapRouteLoading />}>
+        <ErrorBoundary name="exhibition-diagnostics">
+          <ExhibitionDiagnosticsPage />
+        </ErrorBoundary>
+      </Suspense>
+    );
+  }
   if (path === "/exhibition") {
     return (
       <Suspense fallback={<MapRouteLoading />}>

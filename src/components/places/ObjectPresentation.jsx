@@ -1,30 +1,5 @@
 import { useEffect, useState } from "react";
-
-const MODEL_VIEWER_SCRIPT_URL =
-  "https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js";
-
-const ensureModelViewerLoaded = () => {
-  if (typeof window === "undefined") return Promise.resolve();
-  if (window.customElements?.get("model-viewer")) return Promise.resolve();
-
-  const existing = document.querySelector('script[data-model-viewer="true"]');
-  if (existing) {
-    return new Promise((resolve, reject) => {
-      existing.addEventListener("load", resolve, { once: true });
-      existing.addEventListener("error", reject, { once: true });
-    });
-  }
-
-  return new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-    script.type = "module";
-    script.src = MODEL_VIEWER_SCRIPT_URL;
-    script.dataset.modelViewer = "true";
-    script.addEventListener("load", resolve, { once: true });
-    script.addEventListener("error", reject, { once: true });
-    document.head.appendChild(script);
-  });
-};
+import { loadModelViewer } from "../../features/exhibition/threeD/loadModelViewer.js";
 
 export default function ObjectPresentation({ place, onClose }) {
   const [modelViewerLoad, setModelViewerLoad] = useState({
@@ -47,7 +22,7 @@ export default function ObjectPresentation({ place, onClose }) {
 
     if (!needsModelViewer) return undefined;
 
-    ensureModelViewerLoaded()
+    loadModelViewer()
       .then(() => {
         if (active) {
           setModelViewerLoad({ key: modelViewerKey, ready: true, error: false });

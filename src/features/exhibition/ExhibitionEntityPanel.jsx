@@ -13,7 +13,7 @@ export default function ExhibitionEntityPanel({ entity, language, text, onClose,
         <div><span className="ex-kicker">{text.entity}</span><h2>{local(entity.names, language)}</h2></div>
         <button className="ex-icon-button" onClick={onClose} aria-label={text.close}>×</button>
       </header>
-      <div className="ex-entity-panel__period"><span>{text.period}</span><strong>{Math.abs(entity.startYear)}{entity.startYear < 0 ? " BCE" : ""}—{entity.endYear || "…"}</strong><i className={`confidence confidence--${entity.confidenceLevel}`}>{entity.confidenceLevel}</i></div>
+      <div className="ex-entity-panel__period"><span>{text.period}</span><strong>{Math.abs(entity.startYear)}{entity.startYear < 0 ? " BCE" : ""}—{entity.endYear || "…"}</strong><i className={`confidence confidence--${entity.confidenceLevel}`}>{entity.confidenceLevel}</i>{entity.verificationStatus === "needs_review" && <i className="confidence confidence--low">{text.needsReview}</i>}</div>
       <p className="ex-panel__lead">{local(entity.descriptions, language)}</p>
       <dl className="ex-details">
         <div><dt>{text.origins}</dt><dd>{local(entity.origins, language)}</dd></div>

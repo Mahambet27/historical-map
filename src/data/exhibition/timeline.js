@@ -122,3 +122,19 @@ export const getTimelineStateAtYear = (year) =>
   timelineStates.reduce((best, state) =>
     Math.abs(state.year - year) < Math.abs(best.year - year) ? state : best
   );
+
+// The selected year remains independent. A snapshot supplies curated content and
+// camera settings but never rewrites the user's exact year.
+export const getHistoricalSnapshotAtYear = (year) => {
+  const exactPeriod = timelineStates.find(
+    (state) => year >= state.periodStart && year <= state.periodEnd
+  );
+  if (exactPeriod) return exactPeriod;
+  const preceding = timelineStates.filter((state) => state.year <= year);
+  return preceding.at(-1) || timelineStates[0];
+};
+
+export const KEY_HISTORICAL_YEARS = [
+  -800, 552, 603, 704, 756, 942, 1219, 1465, 1511, 1521, 1643, 1723, 1731, 1847,
+  1936, 1991, 2026,
+];

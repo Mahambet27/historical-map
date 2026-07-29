@@ -335,18 +335,6 @@ function MapViewInner() {
   }, [routeExists]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (window.customElements?.get("model-viewer")) return;
-
-    const existing = document.querySelector('script[data-model-viewer="true"]');
-    if (existing) return;
-
-    const script = document.createElement("script");
-    script.type = "module";
-    script.src = "https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js";
-    script.dataset.modelViewer = "true";
-    document.head.appendChild(script);
-
     return () => {
       // Скрипт оставляем в документе, чтобы не дергать повторно.
     };

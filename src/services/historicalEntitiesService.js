@@ -1,5 +1,5 @@
 import supabaseClient from "../lib/supabaseClient.js";
-import { historicalEntities, entityRelations } from "../data/exhibition/entities.js";
+import { allHistoricalEntities, entityRelations } from "../data/exhibition/entities.js";
 import { entityGeometries, getGeometriesAtYear } from "../data/exhibition/entityGeometries.js";
 import { historicalEvents } from "../data/exhibition/events.js";
 import { historicalPeople } from "../data/exhibition/people.js";
@@ -10,7 +10,7 @@ const logFallback = (reason) => {
 };
 
 const normalizedLocalData = {
-  entities: historicalEntities,
+  entities: allHistoricalEntities,
   geometries: entityGeometries,
   relations: entityRelations,
   events: historicalEvents,
@@ -46,7 +46,7 @@ export async function getHistoricalData({ signal } = {}) {
   }
 }
 
-export const getEntityById = (id) => historicalEntities.find((item) => item.id === id) || null;
+export const getEntityById = (id) => allHistoricalEntities.find((item) => item.id === id) || null;
 export const getEventById = (id) => historicalEvents.find((item) => item.id === id) || null;
 export const getPersonById = (id) => historicalPeople.find((item) => item.id === id) || null;
 export const getPlaceById = (id) => exhibitionPlaces.find((item) => item.id === id) || null;

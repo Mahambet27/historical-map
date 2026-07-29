@@ -11,8 +11,12 @@ Open `/exhibition` for the full-screen presentation or `/exhibition?kiosk=true` 
 The exhibition includes KK/RU/EN, a six-state guided story, manual timeline, entity cards, curated
 1465/1511 comparison, a Grade 7 mini-lesson, local 3D demonstration and accessibility controls.
 
-The historical timeline uses signed years (`-550` means 550 BCE). Historical entities are separate
-from their time-valid geometries, and every geometry is labelled with reconstruction confidence.
+The historical timeline uses signed years (`-550` means 550 BCE). Era selection and the exact
+global year (`-3000…2026`) are independent: moving to any year does not snap the control to a
+nearby story snapshot. Historical entities are separate from their time-valid geometries, and
+every geometry is labelled with reconstruction confidence. The exhibition map hides all Mapbox
+symbol layers and renders only its own political territories, solid borders, extrusion, labels,
+places and legend. Use `?quality=light` to disable extrusion on a lower-power device.
 Historical boundaries are scholarly reconstructions and may be approximate.
 
 The source panel shows citations and review status. The exhibition agent is an offline allow-listed
@@ -236,6 +240,15 @@ Never use a `service_role` key in the frontend.
 - `quality=auto|high|balanced|light` selects terrain, antialiasing, pixel ratio, and animation cost.
 - `npm run analyze` writes the bundle treemap to `dist/stats.html`.
 - Mapbox remains a large on-demand chunk because Mapbox GL JS is a WebGL renderer.
+- `/exhibition` has persisted era/map themes, `auto|high|light` quality modes,
+  compact/expanded panels and keyboard controls.
+- `/exhibition/diagnostics` reports local runtime readiness and session-only,
+  non-personal performance metrics.
+- Exhibition 3D uses a local dynamic `@google/model-viewer` import, an optimized
+  Meshopt/WebP GLB and a poster-first fallback. `quality=light` requires an explicit
+  load action.
+- `npm run 3d:audit`, `npm run 3d:optimize` and `npm run 3d:budget` maintain the
+  exhibition model pipeline without overwriting archived source GLBs.
 
 ## PWA / Mobile
 
@@ -244,6 +257,9 @@ Never use a `service_role` key in the frontend.
 - Controls are touch-friendly and use safe-area-aware spacing.
 - Panels adapt to small screens.
 - The precache is limited to the small app shell; Mapbox, models, images, and tiles are excluded.
+- Production GLBs are never mandatory precache entries. A separate confirmed action
+  stores only the selected exhibition model in the versioned
+  `qazaq-heritage-3d-v1` runtime cache.
 - A prompt asks before activating an updated service worker.
 - Mutable local JSON uses NetworkFirst; large/versioned media stays network-controlled.
 

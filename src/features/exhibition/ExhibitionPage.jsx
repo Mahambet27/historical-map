@@ -1,5 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useI18n } from "../../app/i18n.jsx";
+import { HISTORICAL_DATA_SOURCE } from "../../config/env.js";
+import { getHistoricalRepository } from "../../dataAccess/createHistoricalRepository.js";
 import { getExhibitionText } from "../../i18n/exhibitionText.js";
 import {
   initialTimelineState,
@@ -8,6 +10,9 @@ import {
 import { getEraById, historicalEras } from "../../data/exhibition/eras.js";
 import { allHistoricalEntities } from "../../data/exhibition/entities.js";
 import { getGeometriesAtYear } from "../../data/exhibition/entityGeometries.js";
+import { entityGeometries } from "../../data/exhibition/entityGeometries.js";
+import { historicalEvents } from "../../data/exhibition/events.js";
+import { historicalPeople } from "../../data/exhibition/people.js";
 import { historicalSources } from "../../data/exhibition/sources.js";
 import { AGENT_ACTIONS } from "../agent/agentTypes.js";
 import ExhibitionHero from "./ExhibitionHero.jsx";
@@ -21,6 +26,7 @@ import ExhibitionSourcePanel from "./ExhibitionSourcePanel.jsx";
 import ExhibitionComparePanel from "./ExhibitionComparePanel.jsx";
 import ExhibitionLessonPanel from "./ExhibitionLessonPanel.jsx";
 import ExhibitionAccessibility from "./ExhibitionAccessibility.jsx";
+import HistoricalChangeLegend from "./HistoricalChangeLegend.jsx";
 import {
   EXHIBITION_RESET_MS,
   EXHIBITION_WARNING_MS,
@@ -41,10 +47,56 @@ import {
   resolveMapPalette,
   storeMapStyle,
 } from "./theme/mapPalettes.js";
+import {
+  getAvailableComparisons,
+  getChangeById,
+  getHistoricalChange,
+  shouldShowChangePrompt,
+} from "./historicalChangeModel.js";
+import { recordExhibitionMetric } from "./performanceTelemetry.js";
+import {
+  readLayerState,
+  resetLayerState,
+  storeLayerState,
+  toggleLayerState,
+} from "./layerState.js";
+import {
+  loadEnvironmentData,
+  loadHydrologyData,
+  loadRouteData,
+} from "./p1bDataLoader.js";
+import { parseP1BUrlState } from "./p1bUrlState.js";
+import { parseP1CUrlState } from "./p1cUrlState.js";
+import { loadArchiveData, loadEvidenceData } from "./p1cDataLoader.js";
+import { canDisplayFullArchiveMap } from "./archiveMapRights.js";
+import { buildReviewQueue } from "./review/reviewQueueModel.js";
+import { readLocalReviews } from "./review/localReviewStore.js";
+import HistoricalDataStatus from "./HistoricalDataStatus.jsx";
+import useHistoricalSnapshot from "./hooks/useHistoricalSnapshot.js";
+import useHistoricalRoutes from "./hooks/useHistoricalRoutes.js";
+import useHistoricalEvidence from "./hooks/useHistoricalEvidence.js";
 
 const ExhibitionMap = lazy(() => import("./ExhibitionMap.jsx"));
 const HistoricalAgent = lazy(() => import("../agent/HistoricalAgent.jsx"));
 const ExhibitionThreeD = lazy(() => import("./ExhibitionThreeD.jsx"));
+const HistoricalChangePanel = lazy(() => import("./HistoricalChangePanel.jsx"));
+const HistoricalStoryPlayer = lazy(() =>
+  import("./story/HistoricalStoryPlayer.jsx")
+);
+const ExhibitionLayerPanel = lazy(() => import("./ExhibitionLayerPanel.jsx"));
+const ExhibitionRoutePanel = lazy(() => import("./ExhibitionRoutePanel.jsx"));
+const RouteJourneyPlayer = lazy(() => import("./RouteJourneyPlayer.jsx"));
+const HistoricalGeographyPanel = lazy(() =>
+  import("./HistoricalGeographyPanel.jsx")
+);
+const ExhibitionAtmosphere = lazy(() =>
+  import("./atmosphere/ExhibitionAtmosphere.jsx")
+);
+const ArchiveMapPanel = lazy(() => import("./ArchiveMapPanel.jsx"));
+const ArchiveMapCompare = lazy(() => import("./ArchiveMapCompare.jsx"));
+const EvidencePanel = lazy(() => import("./EvidencePanel.jsx"));
+const CitationExportPanel = lazy(() => import("./CitationExportPanel.jsx"));
+const ReviewQueuePanel = lazy(() => import("./review/ReviewQueuePanel.jsx"));
 
 const entityById = new Map(allHistoricalEntities.map((entity) => [entity.id, entity]));
 
@@ -55,26 +107,95 @@ const getPrimaryEntity = (snapshot, year) => {
 };
 
 export default function ExhibitionPage() {
+  const [p1bUrlState] = useState(() => parseP1BUrlState());
+  const [p1cUrlState] = useState(() => parseP1CUrlState());
+  const [forceSvgFallback] = useState(
+    () => new URLSearchParams(window.location.search).get("fallback") === "svg"
+  );
   const { language, setLanguage } = useI18n();
   const text = getExhibitionText(language);
-  const [started, setStarted] = useState(false);
+  const [started, setStarted] = useState(
+    () =>
+      p1bUrlState.layers.length > 0 ||
+      Boolean(
+        p1bUrlState.route ||
+          p1bUrlState.place ||
+          p1bUrlState.story ||
+          p1cUrlState.archiveMap ||
+          p1cUrlState.evidence ||
+          p1cUrlState.review ||
+          p1cUrlState.story
+      )
+  );
   const [selectedYear, setSelectedYear] = useState(1465);
   const [selectedEraId, setSelectedEraId] = useState("kazakh-khanate");
   const [activeSnapshot, setActiveSnapshot] = useState(initialTimelineState);
-  const [tour, setTour] = useState({ active: false, index: 2, playing: false });
+  const [tour, setTour] = useState({
+    active: false,
+    index: 2,
+    playing: false,
+    total: timelineStates.length,
+  });
   const [speed, setSpeed] = useState(1);
   const [panel, setPanel] = useState(CLOSED_PANEL);
   const [selectedEntity, setSelectedEntity] = useState(() =>
     getPrimaryEntity(initialTimelineState, 1465)
   );
   const [comparison, setComparison] = useState(null);
+  const [activeChange, setActiveChange] = useState(null);
+  const [activeChangeSection, setActiveChangeSection] = useState(null);
+  const [changePrompt, setChangePrompt] = useState(null);
+  const [storyId, setStoryId] = useState(null);
+  const [storyStep, setStoryStep] = useState(null);
+  const [repositoryStory, setRepositoryStory] = useState(null);
+  const [sourceContextIds, setSourceContextIds] = useState(null);
+  const [selectedReference, setSelectedReference] = useState(null);
   const [settings, setSettings] = useState({ scale: 1, contrast: false, simple: false });
   const [mapStyleMode, setMapStyleMode] = useState(readStoredMapStyle);
   const [qualityMode, setQualityMode] = useState(readStoredQualityMode);
   const [inactivityWarning, setInactivityWarning] = useState(false);
   const [pageVisible, setPageVisible] = useState(() => !document.hidden);
+  const [layerState, setLayerState] = useState(() => {
+    const initial = readLayerState();
+    return p1bUrlState.layers.reduce(
+      (state, layerId) => toggleLayerState(state, layerId, true),
+      initial
+    );
+  });
+  const [loadedP1BData, setP1BData] = useState(null);
+  const [selectedRouteId, setSelectedRouteId] = useState(
+    () => p1bUrlState.route
+  );
+  const [selectedPlaceId, setSelectedPlaceId] = useState(
+    () => p1bUrlState.place
+  );
+  const [routeJourneyActive, setRouteJourneyActive] = useState(false);
+  const [routeCamera, setRouteCamera] = useState(null);
+  const [atmosphereAnimating, setAtmosphereAnimating] = useState(false);
+  const [loadedP1CData, setP1CData] = useState(null);
+  const [evidenceTarget, setEvidenceTarget] = useState(
+    () => p1cUrlState.evidence || null
+  );
+  const [selectedArchiveMapId, setSelectedArchiveMapId] = useState(
+    () => p1cUrlState.archiveMap
+  );
+  const [archiveOpacity, setArchiveOpacity] = useState(
+    () => p1cUrlState.archiveOpacity ?? 0.65
+  );
+  const [archiveOverlayEnabled, setArchiveOverlayEnabled] = useState(false);
+  const [archiveAboveReconstruction, setArchiveAboveReconstruction] = useState(false);
+  const [citationSource, setCitationSource] = useState(null);
+  const [localReviews, setLocalReviews] = useState(readLocalReviews);
   const warningTimer = useRef(null);
   const resetTimer = useRef(null);
+  const changePromptTimer = useRef(null);
+  const selectedYearRef = useRef(1465);
+  const shownChangePromptsRef = useRef(new Set());
+  const storyStartedAtRef = useRef(0);
+  const panelBackdropRef = useRef(null);
+  const p1bUrlAppliedRef = useRef(false);
+  const p1cUrlAppliedRef = useRef(false);
+  const hydrologySnapshotRef = useRef(null);
   const kiosk = getKioskEnabled();
   const reducedMotion =
     window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
@@ -82,6 +203,74 @@ export default function ExhibitionPage() {
     requested: qualityMode,
     reducedMotion,
   });
+  const effectiveLayerState = useMemo(
+    () =>
+      effectiveQuality === "light"
+        ? { ...layerState, atmosphere: false, "3dObjects": false }
+        : layerState,
+    [effectiveQuality, layerState]
+  );
+  const repositorySnapshot = useHistoricalSnapshot({
+    year: selectedYear,
+    language,
+    enabled: started,
+  });
+  const needsRepositoryRoutes =
+    layerState.tradeRoutes ||
+    layerState.nomadicRoutes ||
+    layerState.militaryRoutes ||
+    layerState.historicalPlaces ||
+    Boolean(selectedRouteId || selectedPlaceId || p1bUrlState.story);
+  const repositoryRoutes = useHistoricalRoutes({
+    year: selectedYear,
+    language,
+    enabled: needsRepositoryRoutes,
+  });
+  const repositoryEvidence = useHistoricalEvidence({
+    subjectType: evidenceTarget?.subjectType,
+    subjectId: evidenceTarget?.subjectId,
+    language,
+    enabled: panel.type === "evidence" && Boolean(evidenceTarget),
+  });
+  const p1bData = useMemo(() => {
+    const snapshot = repositorySnapshot.data;
+    const routes = repositoryRoutes.data || snapshot?.routes;
+    return {
+      ...(loadedP1BData || {}),
+      ...(snapshot
+        ? {
+            environmentSnapshots: snapshot.environment || [],
+            hydrologySnapshots: snapshot.hydrology || [],
+            historicalRoutes: routes?.routes || [],
+            routeSegments: routes?.segments || [],
+            historicalSettlements: routes?.places?.length
+              ? routes.places
+              : snapshot.places || [],
+          }
+        : {}),
+      ...(repositoryRoutes.data
+        ? {
+            historicalRoutes: repositoryRoutes.data.routes || [],
+            routeSegments: repositoryRoutes.data.segments || [],
+            historicalSettlements: repositoryRoutes.data.places || [],
+          }
+        : {}),
+    };
+  }, [loadedP1BData, repositoryRoutes.data, repositorySnapshot.data]);
+  const p1cData = useMemo(
+    () => ({
+      ...(loadedP1CData || {}),
+      ...(repositoryEvidence.data
+        ? {
+            sourceClaims: repositoryEvidence.data.claims || [],
+            archiveMaps: repositoryEvidence.data.archiveMaps?.length
+              ? repositoryEvidence.data.archiveMaps
+              : loadedP1CData?.archiveMaps || [],
+          }
+        : {}),
+    }),
+    [loadedP1CData, repositoryEvidence.data]
+  );
   const palette = useMemo(
     () => resolveMapPalette({ mode: mapStyleMode, eraId: selectedEraId, year: selectedYear }),
     [mapStyleMode, selectedEraId, selectedYear]
@@ -90,17 +279,245 @@ export default function ExhibitionPage() {
     setPanel(openPanel(type, mode));
   }, []);
   const hidePanel = useCallback(() => setPanel(closePanel()), []);
+  const openComparison = useCallback((firstYear, secondYear, mode = "overlay") => {
+    setComparison({ firstYear, secondYear, mode, geometryResult: null });
+    showPanel("compare");
+  }, [showPanel]);
+  const toggleLayer = useCallback((layerId, enabled) => {
+    setLayerState((current) => {
+      const next =
+        layerId === "__reset__"
+          ? resetLayerState(effectiveQuality)
+          : toggleLayerState(current, layerId, enabled);
+      recordExhibitionMetric("layer_toggled", enabled === false ? 0 : 1, {
+        layerId,
+      });
+      if (layerId === "atmosphere") {
+        recordExhibitionMetric(
+          enabled ? "atmosphere_enabled" : "atmosphere_disabled",
+          1
+        );
+      }
+      return next;
+    });
+  }, [effectiveQuality]);
+
+  useEffect(() => {
+    storeLayerState(layerState);
+  }, [layerState]);
+
+  useEffect(() => {
+    if (!storyId) return undefined;
+    const controller = new AbortController();
+    getHistoricalRepository()
+      .then((repository) =>
+        repository.getStory(storyId, {
+          language,
+          signal: controller.signal,
+        })
+      )
+      .then((story) => {
+        if (!controller.signal.aborted) setRepositoryStory(story);
+      })
+      .catch((error) => {
+        if (error?.name !== "AbortError" && error?.code !== "ABORTED") {
+          recordExhibitionMetric("repository_story_failed", 1, {
+            reason: error?.code || "INVALID_RESPONSE",
+          });
+        }
+      });
+    return () => controller.abort();
+  }, [language, storyId]);
+
+  useEffect(() => {
+    const needsEnvironment =
+      layerState.environment || Boolean(p1bUrlState.story) || panel.type === "review";
+    const needsHydrology =
+      layerState.hydrology || Boolean(p1bUrlState.story) || panel.type === "review";
+    const needsRoutes =
+      layerState.tradeRoutes ||
+      layerState.nomadicRoutes ||
+      layerState.militaryRoutes ||
+      layerState.historicalPlaces ||
+      layerState.archaeology ||
+      selectedRouteId ||
+      selectedPlaceId ||
+      p1bUrlState.story ||
+      panel.type === "review";
+    const localLoaderAllowed =
+      HISTORICAL_DATA_SOURCE !== "supabase" &&
+      repositorySnapshot.activeRepository !== "supabase";
+    if (
+      !localLoaderAllowed ||
+      (!needsEnvironment && !needsHydrology && !needsRoutes)
+    ) {
+      return undefined;
+    }
+    const controller = new AbortController();
+    const tasks = [];
+    if (needsEnvironment) {
+      tasks.push(
+        loadEnvironmentData(controller.signal).then((module) =>
+          setP1BData((current) => ({
+            ...(current || {}),
+            environmentSnapshots: module.environmentSnapshots,
+          }))
+        )
+      );
+    }
+    if (needsHydrology) {
+      tasks.push(
+        loadHydrologyData(controller.signal).then((module) =>
+          setP1BData((current) => ({
+            ...(current || {}),
+            hydrologySnapshots: module.hydrologySnapshots,
+          }))
+        )
+      );
+    }
+    if (needsRoutes) {
+      tasks.push(
+        loadRouteData(controller.signal).then((module) =>
+          setP1BData((current) => ({
+            ...(current || {}),
+            historicalRoutes: module.historicalRoutes,
+            routeSegments: module.routeSegments,
+            historicalSettlements: module.historicalSettlements,
+          }))
+        )
+      );
+    }
+    Promise.all(tasks).catch((error) => {
+      if (error?.name !== "AbortError") {
+        recordExhibitionMetric("p1b_data_load_failed", 1, {
+          reason: error?.message || "unknown",
+        });
+      }
+    });
+    return () => controller.abort();
+  }, [
+    layerState.archaeology,
+    layerState.environment,
+    layerState.historicalPlaces,
+    layerState.hydrology,
+    layerState.militaryRoutes,
+    layerState.nomadicRoutes,
+    layerState.tradeRoutes,
+    selectedPlaceId,
+    selectedRouteId,
+    p1bUrlState.story,
+    panel.type,
+    repositorySnapshot.activeRepository,
+  ]);
+
+  useEffect(() => {
+    const needsArchive =
+      layerState.archiveMaps ||
+      ["archive", "archiveCompare", "review"].includes(panel.type) ||
+      Boolean(p1cUrlState.archiveMap || p1cUrlState.compareArchive || p1cUrlState.story) ||
+      storyId === "historical-evidence";
+    const needsEvidence =
+      ["evidence", "review"].includes(panel.type) ||
+      Boolean(p1cUrlState.evidence || p1cUrlState.review || p1cUrlState.story) ||
+      storyId === "historical-evidence";
+    if (!needsArchive && !needsEvidence) return undefined;
+    const controller = new AbortController();
+    const tasks = [];
+    if (needsArchive) {
+      if (repositorySnapshot.activeRepository === "supabase") {
+        tasks.push(
+          getHistoricalRepository()
+            .then((repository) =>
+              repository.getArchiveMaps({ signal: controller.signal })
+            )
+            .then((maps) =>
+              setP1CData((current) => ({
+                ...(current || {}),
+                archiveMaps: maps,
+              }))
+            )
+        );
+      } else {
+        tasks.push(loadArchiveData(controller.signal).then((module) =>
+          setP1CData((current) => ({ ...(current || {}), archiveMaps: module.archiveMaps }))
+        ));
+      }
+    }
+    if (
+      needsEvidence &&
+      (repositorySnapshot.activeRepository !== "supabase" ||
+        panel.type === "review")
+    ) {
+      tasks.push(loadEvidenceData(controller.signal).then((module) =>
+        setP1CData((current) => ({
+          ...(current || {}),
+          sourceClaims: module.sourceClaims,
+          sourceDisputes: module.sourceDisputes,
+        }))
+      ));
+    }
+    Promise.all(tasks).catch((error) => {
+      if (error?.name !== "AbortError") {
+        recordExhibitionMetric("evidence_validation_failed", 1, {
+          reason: error?.message || "unknown",
+        });
+      }
+    });
+    return () => controller.abort();
+  }, [
+    layerState.archiveMaps,
+    p1cUrlState.archiveMap,
+    p1cUrlState.compareArchive,
+    p1cUrlState.evidence,
+    p1cUrlState.review,
+    p1cUrlState.story,
+    panel.type,
+    repositorySnapshot.activeRepository,
+    storyId,
+  ]);
+
+  useEffect(() => {
+    if (!layerState.hydrology || !p1bData?.hydrologySnapshots) return;
+    const snapshot = p1bData.hydrologySnapshots
+      .filter(
+        (item) =>
+          item.validFromYear <= selectedYear &&
+          (item.validToYear === null || item.validToYear >= selectedYear)
+      )
+      .sort((a, b) => b.validFromYear - a.validFromYear)[0];
+    if (!snapshot || snapshot.id === hydrologySnapshotRef.current) return;
+    hydrologySnapshotRef.current = snapshot.id;
+    recordExhibitionMetric("hydrology_snapshot_changed", selectedYear, {
+      snapshotId: snapshot.id,
+    });
+  }, [layerState.hydrology, p1bData, selectedYear]);
 
   const handleYearChange = useCallback((year) => {
     const selection = resolveYearSelection(year);
     const { selectedYear: exactYear, selectedEraId: eraId, activeSnapshot: snapshot } = selection;
+    const prompt = shouldShowChangePrompt({
+      fromYear: selectedYearRef.current,
+      toYear: exactYear,
+      kioskAutoplay: tour.playing || Boolean(storyId),
+      alreadyShown: shownChangePromptsRef.current,
+    });
+    if (prompt) {
+      shownChangePromptsRef.current.add(prompt.signature);
+      setChangePrompt(prompt);
+      recordExhibitionMetric("historical_change_prompt_shown", 1, {
+        changeId: prompt.change.id,
+        fromYear: selectedYearRef.current,
+        toYear: exactYear,
+      });
+    }
+    selectedYearRef.current = exactYear;
     setSelectedYear(exactYear);
     setActiveSnapshot(snapshot);
     setSelectedEraId(eraId);
     setSelectedEntity(getPrimaryEntity(snapshot, exactYear));
     const tourIndex = timelineStates.findIndex((item) => item.id === snapshot.id);
     setTour((current) => ({ ...current, index: Math.max(0, tourIndex) }));
-  }, []);
+  }, [storyId, tour.playing]);
 
   const handleEraChange = useCallback((eraId) => {
     const selection = resolveEraSelection(eraId);
@@ -108,6 +525,7 @@ export default function ExhibitionPage() {
     const { selectedYear: defaultYear, selectedEraId: nextEraId, activeSnapshot: snapshot } = selection;
     setSelectedEraId(nextEraId);
     setSelectedYear(defaultYear);
+    selectedYearRef.current = defaultYear;
     setActiveSnapshot(snapshot);
     setSelectedEntity(getPrimaryEntity(snapshot, defaultYear));
     const tourIndex = timelineStates.findIndex((item) => item.id === snapshot.id);
@@ -126,12 +544,26 @@ export default function ExhibitionPage() {
     setSelectedEraId("kazakh-khanate");
     setActiveSnapshot(initialTimelineState);
     setSelectedEntity(getPrimaryEntity(initialTimelineState, 1465));
-    setTour({ active: false, index: 2, playing: false });
+    setTour({ active: false, index: 2, playing: false, total: timelineStates.length });
     setPanel(closePanel());
     setComparison(null);
+    setActiveChange(null);
+    setActiveChangeSection(null);
+    setChangePrompt(null);
+    setStoryId(null);
+    setStoryStep(null);
+    setSourceContextIds(null);
+    setSelectedReference(null);
+    setLayerState(resetLayerState(effectiveQuality));
+    setSelectedRouteId(null);
+    setSelectedPlaceId(null);
+    setRouteJourneyActive(false);
+    setRouteCamera(null);
+    selectedYearRef.current = 1465;
+    shownChangePromptsRef.current.clear();
     setInactivityWarning(false);
     setLanguage("ru");
-  }, [setLanguage]);
+  }, [effectiveQuality, setLanguage]);
 
   useEffect(() => {
     storeMapStyle(mapStyleMode);
@@ -140,6 +572,41 @@ export default function ExhibitionPage() {
   useEffect(() => {
     storeQualityMode(qualityMode);
   }, [qualityMode]);
+
+  useEffect(() => {
+    window.clearTimeout(changePromptTimer.current);
+    if (!changePrompt) return undefined;
+    changePromptTimer.current = window.setTimeout(
+      () => setChangePrompt(null),
+      reducedMotion ? 9_000 : 6_000
+    );
+    return () => window.clearTimeout(changePromptTimer.current);
+  }, [changePrompt, reducedMotion]);
+
+  useEffect(() => {
+    const container = panelBackdropRef.current;
+    if (!panel.type || panel.mode !== "expanded" || !container) return undefined;
+    const selector =
+      'button:not([disabled]), a[href], select:not([disabled]), input:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    const focusable = () => [...container.querySelectorAll(selector)];
+    focusable()[0]?.focus();
+    const trapFocus = (event) => {
+      if (event.key !== "Tab") return;
+      const items = focusable();
+      if (!items.length) return;
+      const first = items[0];
+      const last = items.at(-1);
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    container.addEventListener("keydown", trapFocus);
+    return () => container.removeEventListener("keydown", trapFocus);
+  }, [panel.mode, panel.type]);
 
   useEffect(() => {
     const handleVisibility = () => {
@@ -168,15 +635,46 @@ export default function ExhibitionPage() {
       } else if (action === "agent") {
         showPanel("agent");
       } else if (action === "compare") {
-        setComparison({ firstYear: 1465, secondYear: 1511 });
-        showPanel("compare");
+        openComparison(1465, 1511);
+      } else if (action === "routes") {
+        toggleLayer("tradeRoutes");
+      } else if (action === "environment") {
+        toggleLayer("environment");
+      } else if (action === "hydrology") {
+        toggleLayer("hydrology");
+      } else if (action === "historical-places") {
+        toggleLayer("historicalPlaces");
+      } else if (action === "route-journey") {
+        if (selectedRouteId && !routeJourneyActive) setRouteJourneyActive(true);
+      } else if (action === "evidence") {
+        setEvidenceTarget({ subjectType: "entity", subjectId: selectedEntity?.id || "kazakh-khanate" });
+        showPanel("evidence");
+      } else if (action === "archive-maps") {
+        toggleLayer("archiveMaps", true);
+        showPanel("archive");
+      } else if (action === "archive-compare") {
+        showPanel(selectedArchiveMapId ? "archiveCompare" : "archive");
+      } else if (action === "review-queue") {
+        showPanel("review");
       } else if (action === "close-panel") {
         hidePanel();
       }
     };
     window.addEventListener("keydown", handleShortcut);
     return () => window.removeEventListener("keydown", handleShortcut);
-  }, [started, selectedYear, handleYearChange, showPanel, hidePanel]);
+  }, [
+    started,
+    selectedYear,
+    selectedRouteId,
+    selectedArchiveMapId,
+    selectedEntity,
+    routeJourneyActive,
+    handleYearChange,
+    showPanel,
+    hidePanel,
+    openComparison,
+    toggleLayer,
+  ]);
 
   useEffect(() => {
     if (!tour.playing || !started) return undefined;
@@ -217,13 +715,306 @@ export default function ExhibitionPage() {
     setStarted(true);
     hidePanel();
     handleYearChange(timelineStates[0].year);
-    setTour({ active: true, index: 0, playing: true });
+    setTour({ active: true, index: 0, playing: true, total: timelineStates.length });
   };
 
+  const openSources = useCallback((sourceIds = null) => {
+    setSourceContextIds(sourceIds);
+    showPanel("sources");
+  }, [showPanel]);
+
+  const openEvidence = useCallback((subjectType, subjectId) => {
+    setEvidenceTarget({ subjectType, subjectId });
+    showPanel("evidence");
+    recordExhibitionMetric("evidence_panel_opened", 1, { subjectType, subjectId });
+  }, [showPanel]);
+
+  const openArchiveMaps = useCallback(() => {
+    setLayerState((current) => ({ ...current, archiveMaps: true }));
+    showPanel("archive");
+    recordExhibitionMetric("archive_panel_opened", 1);
+  }, [showPanel]);
+
+  const selectArchiveMap = useCallback((archiveMap, opacityOverride = null) => {
+    if (!canDisplayFullArchiveMap(archiveMap)) {
+      recordExhibitionMetric("restricted_archive_blocked", 1, {
+        archiveMapId: archiveMap?.id || "unknown",
+        licenseStatus: archiveMap?.license?.status || "unknown",
+      });
+      return false;
+    }
+    const image = new Image();
+    const startedAt = performance.now();
+    image.src = archiveMap.imageUrl;
+    Promise.resolve(image.decode?.()).then(() => {
+      setSelectedArchiveMapId(archiveMap.id);
+      setArchiveOpacity(opacityOverride ?? archiveMap.defaultOpacity ?? 0.65);
+      setArchiveOverlayEnabled(true);
+      setLayerState((current) => ({ ...current, archiveMaps: true }));
+      recordExhibitionMetric("archive_map_selected", 1, { archiveMapId: archiveMap.id });
+      recordExhibitionMetric("archive_overlay_enabled", 1, { archiveMapId: archiveMap.id });
+      recordExhibitionMetric("archive_overlay_decode_time", performance.now() - startedAt, {
+        archiveMapId: archiveMap.id,
+        unit: "ms",
+      });
+    }).catch(() => {
+      recordExhibitionMetric("evidence_validation_failed", 1, {
+        reason: "archive_image_decode_failed",
+        archiveMapId: archiveMap.id,
+      });
+    });
+    return true;
+  }, []);
+
+  const openArchiveComparison = useCallback((archiveMap, opacityOverride = null) => {
+    if (!selectArchiveMap(archiveMap, opacityOverride)) return;
+    showPanel("archiveCompare");
+    recordExhibitionMetric("archive_comparison_started", 1, { archiveMapId: archiveMap.id });
+  }, [selectArchiveMap, showPanel]);
+
+  const openCitation = useCallback((source) => {
+    if (!source) return;
+    setCitationSource(source);
+    showPanel("citation");
+  }, [showPanel]);
+
+  const openReviewQueue = useCallback(() => {
+    showPanel("review");
+    recordExhibitionMetric("review_queue_opened", 1);
+  }, [showPanel]);
+
+  const openRoute = useCallback((routeId, startJourney = false) => {
+    setSelectedRouteId(routeId);
+    setLayerState((current) => ({
+      ...current,
+      tradeRoutes: true,
+      historicalPlaces: true,
+    }));
+    recordExhibitionMetric("route_selected", 1, { routeId });
+    if (startJourney) {
+      setRouteJourneyActive(true);
+      hidePanel();
+    } else {
+      showPanel("route");
+    }
+  }, [hidePanel, showPanel]);
+
+  const openPlace = useCallback((placeId, geography = true) => {
+    setSelectedPlaceId(placeId);
+    setLayerState((current) => ({ ...current, historicalPlaces: true }));
+    if (geography) showPanel("geography");
+  }, [showPanel]);
+
+  const handleRouteStopChange = useCallback((place) => {
+    setSelectedPlaceId(place.id);
+    setRouteCamera({
+      center: place.coordinates,
+      zoom: 6.4,
+      pitch: effectiveQuality === "light" ? 0 : 22,
+      bearing: 0,
+    });
+  }, [effectiveQuality]);
+
+  const openHistoricalChange = useCallback((changeOrId, section = null) => {
+    const base =
+      typeof changeOrId === "string" ? getChangeById(changeOrId) : changeOrId;
+    if (!base) return;
+    const displayChange =
+      base.displayFromYear !== undefined
+        ? base
+        : getHistoricalChange(base.fromYear, base.toYear);
+    setActiveChange(displayChange);
+    setActiveChangeSection(section);
+    if (section === "sources") {
+      setSourceContextIds(base.sourceIds);
+      showPanel("sources");
+      recordExhibitionMetric("historical_change_source_opened", 1, {
+        changeId: base.id,
+        sourceCount: base.sourceIds.length,
+      });
+    } else {
+      showPanel("change");
+    }
+    recordExhibitionMetric("historical_change_opened", 1, {
+      changeId: base.id,
+    });
+  }, [showPanel]);
+
+  const handleGeometryResult = useCallback((geometryResult, geometryMeta = null) => {
+    setComparison((current) =>
+      current ? { ...current, geometryResult, geometryMeta } : current
+    );
+  }, []);
+
+  const startHistoricalStory = useCallback((nextStoryId) => {
+    storyStartedAtRef.current = performance.now();
+    setStoryId(nextStoryId);
+    setStoryStep(null);
+    setComparison(null);
+    hidePanel();
+    setTour((current) => ({ ...current, playing: false }));
+    recordExhibitionMetric("story_started", 1, { storyId: nextStoryId });
+    if (nextStoryId === "silk-road-geography") {
+      recordExhibitionMetric("geography_story_started", 1, {
+        storyId: nextStoryId,
+      });
+    }
+    if (nextStoryId === "historical-evidence") {
+      recordExhibitionMetric("evidence_story_started", 1, {
+        storyId: nextStoryId,
+      });
+    }
+  }, [hidePanel]);
+
+  const handleStoryStepChange = useCallback((step) => {
+    setStoryStep(step);
+    handleYearChange(step.year);
+    if (step.entityIds?.[0]) selectEntity(step.entityIds[0], false);
+    if (step.selectedRouteId) setSelectedRouteId(step.selectedRouteId);
+    if (step.selectedPlaceId) setSelectedPlaceId(step.selectedPlaceId);
+    if (step.archiveMapId) {
+      const archiveMap = p1cData?.archiveMaps?.find((item) => item.id === step.archiveMapId);
+      if (archiveMap) selectArchiveMap(archiveMap);
+    }
+    if (
+      step.activeLayers?.includes("comparison") &&
+      step.action?.type === "comparison"
+    ) {
+      setComparison({
+        firstYear: step.action.fromYear,
+        secondYear: step.action.toYear,
+        mode: "overlay",
+        geometryResult: null,
+        storyControlled: true,
+      });
+    } else {
+      setComparison((current) => current?.storyControlled ? null : current);
+    }
+    if (storyStartedAtRef.current) {
+      recordExhibitionMetric(
+        "story-start-duration",
+        performance.now() - storyStartedAtRef.current,
+        { unit: "ms" }
+      );
+      storyStartedAtRef.current = 0;
+    }
+  }, [handleYearChange, p1cData, selectArchiveMap, selectEntity]);
+
+  useEffect(() => {
+    const url = p1bUrlState;
+    if (p1bUrlAppliedRef.current || !p1bData?.historicalRoutes) return;
+    const timer = window.setTimeout(() => {
+      p1bUrlAppliedRef.current = true;
+      if (url.route) openRoute(url.route);
+      if (url.place) openPlace(url.place);
+      if (url.atmosphere !== null) toggleLayer("atmosphere", url.atmosphere);
+      if (url.story) startHistoricalStory(url.story);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [openPlace, openRoute, p1bData, p1bUrlState, startHistoricalStory, toggleLayer]);
+
+  useEffect(() => {
+    if (
+      p1cUrlAppliedRef.current ||
+      (!p1cData?.archiveMaps && !p1cData?.sourceClaims)
+    ) return;
+    const timer = window.setTimeout(() => {
+      p1cUrlAppliedRef.current = true;
+      const archiveMap = p1cData?.archiveMaps?.find(
+        (item) => item.id === p1cUrlState.archiveMap
+      );
+      if (archiveMap) {
+        if (p1cUrlState.compareArchive) {
+          openArchiveComparison(archiveMap, p1cUrlState.archiveOpacity);
+        } else if (canDisplayFullArchiveMap(archiveMap)) {
+          selectArchiveMap(archiveMap, p1cUrlState.archiveOpacity);
+        } else if (!canDisplayFullArchiveMap(archiveMap)) {
+          selectArchiveMap(archiveMap);
+          openArchiveMaps();
+        }
+      }
+      if (p1cUrlState.evidence) {
+        openEvidence(
+          p1cUrlState.evidence.subjectType,
+          p1cUrlState.evidence.subjectId
+        );
+      }
+      if (p1cUrlState.review) openReviewQueue();
+      if (p1cUrlState.story) startHistoricalStory(p1cUrlState.story);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [
+    openArchiveComparison,
+    openArchiveMaps,
+    openEvidence,
+    openReviewQueue,
+    p1cData,
+    p1cUrlState,
+    selectArchiveMap,
+    startHistoricalStory,
+  ]);
+
+  const sourceIdsForPanel = sourceContextIds || activeSnapshot.sourceIds;
   const sourcesForCurrent = historicalSources.filter((source) =>
-    activeSnapshot.sourceIds.includes(source.id)
+    sourceIdsForPanel.includes(source.id)
   );
+  const availableChanges = getAvailableComparisons(selectedYear);
+  const currentAvailableChange = availableChanges[0]
+    ? getHistoricalChange(selectedYear, availableChanges[0].toYear)
+    : null;
+  const comparisonFirstYear = comparison?.firstYear;
+  const comparisonSecondYear = comparison?.secondYear;
+  const comparisonChange = useMemo(
+    () =>
+      comparisonFirstYear !== undefined && comparisonSecondYear !== undefined
+        ? getHistoricalChange(comparisonFirstYear, comparisonSecondYear)
+        : null,
+    [comparisonFirstYear, comparisonSecondYear]
+  );
+  const referenceItem = selectedReference?.type === "person"
+    ? historicalPeople.find((item) => item.id === selectedReference.id)
+    : historicalEvents.find((item) => item.id === selectedReference?.id);
   const activeEra = getEraById(selectedEraId);
+  const selectedRoute =
+    p1bData?.historicalRoutes?.find((route) => route.id === selectedRouteId) ||
+    null;
+  const selectedHistoricalPlace =
+    p1bData?.historicalSettlements?.find(
+      (place) => place.id === selectedPlaceId
+    ) || null;
+  const selectedRoutePlaces = selectedRoute
+    ? selectedRoute.placeIds
+        .map((id) =>
+          p1bData?.historicalSettlements?.find((place) => place.id === id)
+        )
+        .filter(Boolean)
+    : [];
+  const selectedArchiveMap =
+    p1cData?.archiveMaps?.find((map) => map.id === selectedArchiveMapId) || null;
+  const reviewQueue = buildReviewQueue({
+    claims: p1cData?.sourceClaims || [],
+    geometries: entityGeometries,
+    routes: p1bData?.historicalRoutes || [],
+    places: p1bData?.historicalSettlements || [],
+    hydrology: p1bData?.hydrologySnapshots || [],
+    environment: p1bData?.environmentSnapshots || [],
+    archiveMaps: p1cData?.archiveMaps || [],
+  });
+  const environmentScreenReaderText = effectiveLayerState.environment
+    ? (p1bData?.environmentSnapshots || [])
+        .filter(
+          (item) =>
+            item.validFromYear <= selectedYear &&
+            (item.validToYear === null || item.validToYear >= selectedYear)
+        )
+        .map(
+          (item) =>
+            item.screenReaderDescriptions?.[language] ||
+            item.screenReaderDescriptions?.ru
+        )
+        .filter(Boolean)
+        .join(" ")
+    : "";
 
   const handleAgentAction = (action) => {
     switch (action.type) {
@@ -231,17 +1022,97 @@ export default function ExhibitionPage() {
         handleYearChange(action.payload.year);
         break;
       case AGENT_ACTIONS.COMPARE:
-        setComparison(action.payload);
-        showPanel("compare");
+        openComparison(action.payload.firstYear, action.payload.secondYear);
+        break;
+      case AGENT_ACTIONS.OPEN_COMPARISON:
+        openComparison(
+          action.payload.firstYear,
+          action.payload.secondYear,
+          action.payload.mode
+        );
         break;
       case AGENT_ACTIONS.SELECT_ENTITY:
         selectEntity(action.payload.entityId);
         break;
       case AGENT_ACTIONS.SHOW_SOURCES:
-        showPanel("sources");
+        openSources();
         break;
       case AGENT_ACTIONS.START_LESSON:
         showPanel("lesson");
+        break;
+      case AGENT_ACTIONS.SHOW_CHANGE:
+        openHistoricalChange(action.payload.changeId, action.payload.section);
+        break;
+      case AGENT_ACTIONS.START_STORY:
+        startHistoricalStory(action.payload.storyId);
+        break;
+      case AGENT_ACTIONS.TOGGLE_LAYER:
+        toggleLayer(action.payload.layerId, action.payload.enabled);
+        break;
+      case AGENT_ACTIONS.SELECT_ROUTE:
+        openRoute(action.payload.routeId);
+        break;
+      case AGENT_ACTIONS.START_ROUTE_JOURNEY:
+        openRoute(action.payload.routeId, true);
+        break;
+      case AGENT_ACTIONS.SELECT_PLACE:
+        openPlace(action.payload.placeId, false);
+        break;
+      case AGENT_ACTIONS.SHOW_GEOGRAPHY:
+        if (action.payload.targetType === "place") {
+          openPlace(action.payload.targetId, true);
+        } else {
+          showPanel("geography");
+        }
+        break;
+      case AGENT_ACTIONS.START_GEOGRAPHY_STORY:
+        startHistoricalStory(action.payload.storyId);
+        break;
+      case AGENT_ACTIONS.SHOW_EVIDENCE:
+        openEvidence(action.payload.subjectType, action.payload.subjectId);
+        break;
+      case AGENT_ACTIONS.SHOW_ARCHIVE_MAPS:
+        openArchiveMaps();
+        break;
+      case AGENT_ACTIONS.SELECT_ARCHIVE_MAP: {
+        const archiveMap = p1cData?.archiveMaps?.find(
+          (item) => item.id === action.payload.archiveMapId
+        );
+        if (archiveMap) selectArchiveMap(archiveMap);
+        break;
+      }
+      case AGENT_ACTIONS.START_ARCHIVE_COMPARISON: {
+        const archiveMap = p1cData?.archiveMaps?.find(
+          (item) => item.id === action.payload.archiveMapId
+        );
+        if (archiveMap) openArchiveComparison(archiveMap);
+        else openArchiveMaps();
+        break;
+      }
+      case AGENT_ACTIONS.SHOW_REVIEW_QUEUE:
+        openReviewQueue();
+        break;
+      case AGENT_ACTIONS.SHOW_DISPUTE:
+        setEvidenceTarget({ subjectType: "geometry", subjectId: "demo-only" });
+        showPanel("evidence");
+        break;
+      case AGENT_ACTIONS.START_EVIDENCE_STORY:
+        startHistoricalStory(action.payload.storyId);
+        break;
+      case AGENT_ACTIONS.EXPORT_CITATION: {
+        const source = historicalSources.find(
+          (item) => item.id === action.payload.sourceId
+        );
+        openCitation(source);
+        break;
+      }
+      case AGENT_ACTIONS.SHOW_EVENT:
+        setSelectedReference({ type: "event", id: action.payload.eventId });
+        showPanel("reference");
+        break;
+      case AGENT_ACTIONS.SHOW_PERSON:
+        setSelectedReference({ type: "person", id: action.payload.personId });
+        showPanel("reference");
         break;
       case AGENT_ACTIONS.RESET:
         reset();
@@ -277,20 +1148,34 @@ export default function ExhibitionPage() {
       style={{ "--ex-scale": settings.scale, ...paletteToCssVariables(palette) }}
       data-theme={palette.id}
       data-quality={effectiveQuality}
+      data-atmosphere-animation={atmosphereAnimating ? "running" : "idle"}
     >
       <ExhibitionControls
         {...{ text, language, setLanguage }}
         onHome={reset}
         onAgent={() => showPanel("agent")}
-        onSources={() => showPanel("sources")}
+        onSources={() => openSources()}
         onCompare={() => {
-          setComparison({ firstYear: 1465, secondYear: 1511 });
-          showPanel("compare");
+          openComparison(1465, 1511);
         }}
         onLesson={() => showPanel("lesson")}
+        onLayers={() => showPanel("layers")}
+        onStory={() =>
+          startHistoricalStory("formation-and-consolidation-kazakh-khanate")
+        }
         onThreeD={() => showPanel("3d")}
         onAccess={() => showPanel("access")}
       />
+      {(repositorySnapshot.fallback || import.meta.env.DEV) && (
+        <HistoricalDataStatus
+          language={language}
+          activeRepository={repositorySnapshot.activeRepository}
+          fallbackReason={
+            repositorySnapshot.fallback ? "FALLBACK_ACTIVATED" : null
+          }
+          onRetry={repositorySnapshot.retry}
+        />
+      )}
       <section className="ex-stage">
         <Suspense fallback={<div className="ex-map-loading"><i />{text.mapLabel}</div>}>
           <ExhibitionMap
@@ -305,11 +1190,77 @@ export default function ExhibitionPage() {
               palette,
               effectiveQuality,
             }}
+            activeLayers={storyStep?.activeLayers || null}
+            cameraOverride={routeCamera || storyStep?.camera || null}
             selectedEntityId={selectedEntity?.id || null}
+            {...{
+              layerState: effectiveLayerState,
+              p1bData,
+              selectedRouteId,
+              selectedPlaceId,
+              archiveMap: selectedArchiveMap,
+              archiveOverlayEnabled:
+                effectiveLayerState.archiveMaps && archiveOverlayEnabled,
+              archiveOpacity,
+              archiveAboveReconstruction,
+              forceFallback: forceSvgFallback,
+            }}
             onSelectEntity={selectEntity}
+            onSelectRoute={(routeId) => openRoute(routeId)}
+            onSelectPlace={(placeId) => openPlace(placeId)}
+          />
+        </Suspense>
+        <Suspense fallback={null}>
+          <ExhibitionAtmosphere
+            enabled={effectiveLayerState.atmosphere}
+            eraId={selectedEraId}
+            year={selectedYear}
+            quality={effectiveQuality}
+            reducedMotion={reducedMotion}
+            onAnimationState={setAtmosphereAnimating}
           />
         </Suspense>
         <div className="ex-stage__wash" />
+        {environmentScreenReaderText && (
+          <div className="sr-only" aria-live="polite">
+            {environmentScreenReaderText}
+          </div>
+        )}
+        {comparison && (
+          <HistoricalChangeLegend
+            language={language}
+            mode={comparison.mode || "overlay"}
+            compact
+          />
+        )}
+        {currentAvailableChange && !storyId && (
+          <button
+            type="button"
+            className="ex-change-button"
+            onClick={() => openHistoricalChange(currentAvailableChange)}
+          >
+            ? {language === "en"
+              ? "Why did the map change?"
+              : language === "kk"
+                ? "Карта неге өзгерді?"
+                : "Почему изменилась карта?"}
+          </button>
+        )}
+        {effectiveLayerState.tradeRoutes &&
+          p1bData?.historicalRoutes?.[0] &&
+          !storyId && (
+            <button
+              type="button"
+              className="ex-route-button"
+              onClick={() => openRoute(p1bData.historicalRoutes[0].id)}
+            >
+              ⇢ {language === "en"
+                ? "Silk Road"
+                : language === "kk"
+                  ? "Ұлы Жібек жолы"
+                  : "Великий Шёлковый путь"}
+            </button>
+          )}
         <ExhibitionStoryPanel
           state={displayedSnapshot}
           {...{ language, text, tour }}
@@ -318,7 +1269,7 @@ export default function ExhibitionPage() {
           }
           onNext={() => {
             if (tour.index >= timelineStates.length - 1) {
-              setTour({ active: false, index: tour.index, playing: false });
+              setTour((current) => ({ ...current, active: false, playing: false }));
             } else {
               handleYearChange(timelineStates[tour.index + 1].year);
             }
@@ -328,10 +1279,52 @@ export default function ExhibitionPage() {
             setTour((current) => ({ ...current, active: false, playing: false }))
           }
           onEntity={() => selectedEntity && showPanel("entity")}
-          onSources={() => showPanel("sources")}
+          onSources={() => openSources()}
         />
         <div className="ex-disclaimer ex-disclaimer--map">ⓘ {text.disclaimer}</div>
       </section>
+
+      {storyId && (
+        <Suspense fallback={<div className="ex-story-loading" role="status"><i /></div>}>
+          <HistoricalStoryPlayer
+            {...{ storyId, language, reducedMotion }}
+            story={repositoryStory?.id === storyId ? repositoryStory : null}
+            onStepChange={handleStoryStepChange}
+            onExit={() => {
+              setStoryId(null);
+              setStoryStep(null);
+              setComparison((current) =>
+                current?.storyControlled ? null : current
+              );
+            }}
+            onOpenEntity={(entityId) => selectEntity(entityId)}
+            onOpenSources={openSources}
+            onOpenComparison={({ fromYear, toYear }) =>
+              openComparison(fromYear, toYear)
+            }
+            onShowChange={openHistoricalChange}
+          />
+        </Suspense>
+      )}
+      {routeJourneyActive && selectedRoute && selectedRoutePlaces.length > 0 && (
+        <Suspense fallback={<div className="ex-story-loading" role="status"><i /></div>}>
+          <RouteJourneyPlayer
+            route={selectedRoute}
+            stops={selectedRoutePlaces}
+            selectedYear={selectedYear}
+            language={language}
+            quality={effectiveQuality}
+            reducedMotion={reducedMotion}
+            onStopChange={handleRouteStopChange}
+            onOpenPlace={(place) => openPlace(place.id)}
+            onOpenSources={openSources}
+            onClose={() => {
+              setRouteJourneyActive(false);
+              setRouteCamera(null);
+            }}
+          />
+        </Suspense>
+      )}
 
       <div className="ex-time-dock">
         <ExhibitionEraSelector
@@ -355,7 +1348,10 @@ export default function ExhibitionPage() {
 
       {panel.type && (
         <div
+          ref={panelBackdropRef}
           className={`ex-panel-backdrop ex-panel-backdrop--${panel.mode}`}
+          role="dialog"
+          aria-modal={panel.mode === "expanded"}
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) hidePanel();
           }}
@@ -380,30 +1376,268 @@ export default function ExhibitionPage() {
               {...{ language, text }}
               onClose={hidePanel}
               onCompare={() => {
-                setComparison({ firstYear: 1465, secondYear: 1511 });
-                showPanel("compare");
+                openComparison(1465, 1511);
               }}
               onLesson={() => showPanel("lesson")}
-              onSources={() => showPanel("sources")}
+              onSources={() => openSources(selectedEntity?.sourceIds || null)}
+              onEvidence={() => openEvidence("entity", selectedEntity?.id)}
             />
           )}
           {panel.type === "sources" && (
             <ExhibitionSourcePanel
               sources={sourcesForCurrent.length ? sourcesForCurrent : historicalSources}
               {...{ language, text }}
-              onClose={hidePanel}
+              onClose={() => {
+                setSourceContextIds(null);
+                hidePanel();
+              }}
+              onCitation={openCitation}
             />
           )}
           {panel.type === "compare" && (
             <ExhibitionComparePanel
-              comparison={comparison || { firstYear: 1465, secondYear: 1511 }}
+              comparison={comparison || { firstYear: 1465, secondYear: 1511, mode: "overlay" }}
+              change={comparisonChange}
               {...{ language, text }}
               onChange={setComparison}
+              onGeometryResult={handleGeometryResult}
               onClose={() => {
                 hidePanel();
                 setComparison(null);
               }}
             />
+          )}
+          {panel.type === "change" && (
+            <Suspense fallback={<div className="ex-panel ex-panel-loading"><i /></div>}>
+              <HistoricalChangePanel
+                change={activeChange}
+                focusSection={activeChangeSection}
+                mode={panel.mode}
+                {...{ language, text }}
+                onClose={hidePanel}
+                onSources={openSources}
+                onComparison={(change) =>
+                  openComparison(
+                    change.displayFromYear,
+                    change.displayToYear,
+                    "overlay"
+                  )
+                }
+                onPerson={(person) => {
+                  setSelectedReference({ type: "person", id: person.id });
+                  showPanel("reference");
+                }}
+                onEvent={(event) => {
+                  setSelectedReference({ type: "event", id: event.id });
+                  showPanel("reference");
+                }}
+                onEvidence={() =>
+                  openEvidence("historical_change", activeChange?.id)
+                }
+              />
+            </Suspense>
+          )}
+          {panel.type === "layers" && (
+            <Suspense fallback={<div className="ex-panel ex-panel-loading"><i /></div>}>
+              <ExhibitionLayerPanel
+                language={language}
+                text={text}
+                state={effectiveLayerState}
+                quality={effectiveQuality}
+                onToggle={toggleLayer}
+                onReset={() => setLayerState(resetLayerState(effectiveQuality))}
+                onOpenArchive={openArchiveMaps}
+                dataStatus={{
+                  activeRepository: repositorySnapshot.activeRepository,
+                  fallbackReason: repositorySnapshot.fallback
+                    ? "FALLBACK_ACTIVATED"
+                    : null,
+                }}
+                onRetryData={repositorySnapshot.retry}
+                onClose={hidePanel}
+              />
+            </Suspense>
+          )}
+          {panel.type === "archive" && (
+            <Suspense fallback={<div className="ex-panel ex-panel-loading"><i /></div>}>
+              <ArchiveMapPanel
+                maps={p1cData?.archiveMaps || []}
+                selectedMapId={selectedArchiveMapId}
+                opacity={archiveOpacity}
+                overlayEnabled={archiveOverlayEnabled}
+                aboveReconstruction={archiveAboveReconstruction}
+                language={language}
+                text={text}
+                onSelect={selectArchiveMap}
+                onToggleOverlay={(enabled) => {
+                  setArchiveOverlayEnabled(enabled);
+                  recordExhibitionMetric(
+                    enabled ? "archive_overlay_enabled" : "archive_overlay_disabled",
+                    1,
+                    { archiveMapId: selectedArchiveMapId }
+                  );
+                }}
+                onOpacity={(value) => {
+                  setArchiveOpacity(value);
+                  recordExhibitionMetric("archive_opacity_changed", Math.round(value * 100), {
+                    archiveMapId: selectedArchiveMapId,
+                  });
+                }}
+                onOrder={setArchiveAboveReconstruction}
+                onCompare={() => selectedArchiveMap && openArchiveComparison(selectedArchiveMap)}
+                onSource={openSources}
+                onReset={() => {
+                  setArchiveOverlayEnabled(false);
+                  setSelectedArchiveMapId(null);
+                  setArchiveOpacity(0.65);
+                }}
+                onClose={hidePanel}
+              />
+            </Suspense>
+          )}
+          {panel.type === "archiveCompare" && selectedArchiveMap && (
+            <Suspense fallback={<div className="ex-panel ex-panel-loading"><i /></div>}>
+              <ArchiveMapCompare
+                archiveMap={selectedArchiveMap}
+                language={language}
+                text={text}
+                reducedMotion={reducedMotion}
+                onClose={hidePanel}
+              />
+            </Suspense>
+          )}
+          {panel.type === "evidence" && evidenceTarget && (
+            <Suspense fallback={<div className="ex-panel ex-panel-loading"><i /></div>}>
+              <EvidencePanel
+                subjectType={evidenceTarget.subjectType}
+                subjectId={evidenceTarget.subjectId}
+                claims={p1cData?.sourceClaims || []}
+                sources={historicalSources}
+                archiveMaps={p1cData?.archiveMaps || []}
+                disputes={p1cData?.sourceDisputes || []}
+                language={language}
+                text={text}
+                onSource={openSources}
+                onArchive={(archiveMap) => {
+                  selectArchiveMap(archiveMap);
+                  showPanel("archive");
+                }}
+                onCitation={openCitation}
+                onReview={openReviewQueue}
+                onClose={hidePanel}
+              />
+            </Suspense>
+          )}
+          {panel.type === "citation" && citationSource && (
+            <Suspense fallback={<div className="ex-panel ex-panel-loading"><i /></div>}>
+              <CitationExportPanel
+                source={citationSource}
+                language={language}
+                text={text}
+                onClose={hidePanel}
+              />
+            </Suspense>
+          )}
+          {panel.type === "review" && (
+            <Suspense fallback={<div className="ex-panel ex-panel-loading"><i /></div>}>
+              <ReviewQueuePanel
+                queue={reviewQueue}
+                initialReviews={localReviews}
+                language={language}
+                text={text}
+                onReviews={setLocalReviews}
+                onClose={hidePanel}
+              />
+            </Suspense>
+          )}
+          {panel.type === "route" && selectedRoute && (
+            <Suspense fallback={<div className="ex-panel ex-panel-loading"><i /></div>}>
+              <ExhibitionRoutePanel
+                route={selectedRoute}
+                places={selectedRoutePlaces}
+                year={selectedYear}
+                language={language}
+                text={text}
+                onClose={hidePanel}
+                onShowAll={() => {
+                  setRouteCamera({ center: [68.5, 43], zoom: 4.7, pitch: 12, bearing: 0 });
+                  hidePanel();
+                }}
+                onJourney={() => {
+                  setRouteJourneyActive(true);
+                  hidePanel();
+                }}
+                onStory={() => startHistoricalStory("silk-road-geography")}
+                onPlace={(place) => openPlace(place.id)}
+                onSources={openSources}
+                onEvidence={() => openEvidence("route", selectedRoute.id)}
+                onHide={() => {
+                  toggleLayer("tradeRoutes", false);
+                  setSelectedRouteId(null);
+                  hidePanel();
+                }}
+              />
+            </Suspense>
+          )}
+          {panel.type === "geography" && (selectedHistoricalPlace || selectedRoute) && (
+            <Suspense fallback={<div className="ex-panel ex-panel-loading"><i /></div>}>
+              <HistoricalGeographyPanel
+                subject={selectedHistoricalPlace}
+                route={selectedRoute}
+                year={selectedYear}
+                language={language}
+                text={text}
+                onSources={openSources}
+                onEvidence={() =>
+                  openEvidence(
+                    selectedHistoricalPlace ? "place" : "route",
+                    selectedHistoricalPlace?.id || selectedRoute?.id
+                  )
+                }
+                onClose={hidePanel}
+              />
+            </Suspense>
+          )}
+          {["route", "geography"].includes(panel.type) &&
+            !selectedRoute &&
+            !selectedHistoricalPlace && (
+              <div className="ex-panel ex-panel-loading" role="status"><i /></div>
+            )}
+          {panel.type === "reference" && referenceItem && (
+            <section className="ex-panel ex-reference-panel">
+              <header className="ex-panel__header">
+                <div>
+                  <span className="ex-kicker">
+                    {selectedReference.type === "person"
+                      ? language === "en" ? "Person" : language === "kk" ? "Тұлға" : "Личность"
+                      : language === "en" ? "Event" : language === "kk" ? "Оқиға" : "Событие"}
+                  </span>
+                  <h2>
+                    {(referenceItem.names || referenceItem.titles)?.[language] ||
+                      (referenceItem.names || referenceItem.titles)?.ru}
+                  </h2>
+                </div>
+                <button className="ex-icon-button" onClick={hidePanel} aria-label={text.close}>×</button>
+              </header>
+              <p className="ex-panel__lead">
+                {referenceItem.descriptions?.[language] ||
+                  referenceItem.descriptions?.ru}
+              </p>
+              <button
+                className="ex-source-link"
+                onClick={() => openSources(referenceItem.sourceIds)}
+              >
+                ▤ {text.sources}
+              </button>
+              <button
+                className="ex-source-link"
+                onClick={() =>
+                  openEvidence(selectedReference.type, referenceItem.id)
+                }
+              >
+                ◇ {language === "en" ? "Show evidence" : language === "kk" ? "Дәлелдерді көрсету" : "Показать доказательства"}
+              </button>
+            </section>
           )}
           {panel.type === "lesson" && (
             <ExhibitionLessonPanel
@@ -448,6 +1682,46 @@ export default function ExhibitionPage() {
         <div className="ex-toast" role="status">
           <span>◷</span><p>{text.inactivityWarning}</p>
           <button onClick={() => setInactivityWarning(false)}>{text.continue}</button>
+        </div>
+      )}
+      {changePrompt && (
+        <div
+          className={`ex-change-prompt ${reducedMotion ? "is-reduced-motion" : ""}`}
+          role="status"
+        >
+          <div>
+            <strong>
+              {language === "en"
+                ? "The map changed"
+                : language === "kk"
+                  ? "Карта өзгерді"
+                  : "Карта изменилась"}
+            </strong>
+            <span>
+              {changePrompt.change.displayFromYear} → {changePrompt.change.displayToYear}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              openHistoricalChange(changePrompt.change);
+              setChangePrompt(null);
+            }}
+          >
+            {language === "en"
+              ? "View explanation"
+              : language === "kk"
+                ? "Түсіндірмені көру"
+                : "Посмотреть объяснение"}
+          </button>
+          <button
+            type="button"
+            className="ex-icon-button"
+            onClick={() => setChangePrompt(null)}
+            aria-label={text.close}
+          >
+            ×
+          </button>
         </div>
       )}
       <div className="sr-only" aria-live="polite">

@@ -94,3 +94,14 @@ export const getEraThemeKey = ({ eraId, year } = {}) => {
 
 export const getEraTheme = (options) => ERA_THEMES[getEraThemeKey(options)];
 
+export const ERA_ATMOSPHERE = {
+  saka: { type: "steppe-dust", color: "rgba(214,164,65,.12)", density: 0.25 },
+  turkic: { type: "soft-cloud", color: "rgba(159,231,243,.09)", density: 0.2 },
+  "kazakh-khanate": { type: "sunlight", color: "rgba(240,206,142,.1)", density: 0.22 },
+  imperial: { type: "light-fog", color: "rgba(229,208,165,.09)", density: 0.18 },
+  "kazakh-ssr": { type: "soft-cloud", color: "rgba(193,190,181,.08)", density: 0.15 },
+  "independent-kazakhstan": { type: "night-overlay", color: "rgba(3,29,42,.1)", density: 0.12 },
+};
+
+export const getEraAtmosphere = (options) =>
+  ERA_ATMOSPHERE[getEraThemeKey(options)] || ERA_ATMOSPHERE["kazakh-khanate"];

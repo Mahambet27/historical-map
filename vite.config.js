@@ -2,10 +2,52 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { visualizer } from "rollup-plugin-visualizer";
 import { VitePWA } from "vite-plugin-pwa";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import process from "node:process";
+
+const p2a5LocalVerificationPlugin = () => ({
+  name: "p2a5-local-verification",
+  apply: "serve",
+  configureServer(server) {
+    server.middlewares.use(
+      "/__p2a5/verification",
+      async (request, response) => {
+        if (request.method !== "GET") {
+          response.statusCode = 405;
+          response.end();
+          return;
+        }
+        response.setHeader("Content-Type", "application/json; charset=utf-8");
+        response.setHeader("Cache-Control", "no-store");
+        try {
+          const content = await readFile(
+            path.join(process.cwd(), ".p2a5", "verification.json"),
+            "utf8"
+          );
+          response.statusCode = 200;
+          response.end(content);
+        } catch {
+          response.statusCode = 404;
+          response.end('{"available":false,"sections":{}}');
+        }
+      }
+    );
+  },
+});
 
 export default defineConfig(({ mode }) => ({
+  optimizeDeps: {
+    include: [
+      "@turf/difference",
+      "@turf/helpers",
+      "@turf/intersect",
+      "@turf/union",
+    ],
+  },
   plugins: [
     react(),
+    p2a5LocalVerificationPlugin(),
     VitePWA({
       registerType: "prompt",
       includeAssets: [
@@ -27,6 +69,8 @@ export default defineConfig(({ mode }) => ({
           "**/assets/mapbox-gl-*.js",
           "**/assets/model-viewer-*.js",
           "**/assets/supabase-*.js",
+          "**/assets/supabaseClient-*.js",
+          "**/assets/SupabaseHistoricalRepository-*.js",
         ],
         navigateFallback: "/index.html",
         runtimeCaching: [
@@ -84,6 +128,9 @@ export default defineConfig(({ mode }) => ({
         },
       },
     },
+  },
+  worker: {
+    format: "es",
   },
   test: {
     environment: "jsdom",

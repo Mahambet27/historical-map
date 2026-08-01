@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="700" viewBox="0 0 1400 700">
+  <defs>
+    <pattern id="paper" width="24" height="24" patternUnits="userSpaceOnUse">
+      <rect width="24" height="24" fill="#dcc89b"/>
+      <path d="M0 7h24M8 0v24" stroke="#8b7046" stroke-opacity=".09"/>
+    </pattern>
+    <pattern id="reconstruction" width="22" height="22" patternUnits="userSpaceOnUse" patternTransform="rotate(35)">
+      <path d="M0 0v22" stroke="#7d2e2e" stroke-width="5" stroke-opacity=".55"/>
+    </pattern>
+  </defs>
+  <rect width="1400" height="700" fill="url(#paper)"/>
+  <path d="M110 430C270 270 470 210 650 245s310 12 510-120l120 210c-180 55-310 160-540 170S330 560 110 430Z" fill="url(#reconstruction)" stroke="#69302b" stroke-width="9"/>
+  <path d="M105 475C330 410 460 505 685 430s390-44 610-135" fill="none" stroke="#345f74" stroke-width="13" stroke-opacity=".72"/>
+  <g fill="#3f2d1c" font-family="Georgia,serif">
+    <text x="70" y="72" font-size="34">QHM EDUCATIONAL RECONSTRUCTION · NOT AN ARCHIVAL ORIGINAL</text>
+    <text x="75" y="630" font-size="25">Diagram for comparing evidence, uncertainty and digital reconstruction</text>
+  </g>
+  <g fill="#6b3b22" stroke="#f3e4bd" stroke-width="5">
+    <circle cx="370" cy="430" r="13"/><circle cx="590" cy="390" r="13"/><circle cx="835" cy="400" r="13"/><circle cx="1040" cy="345" r="13"/>
+  </g>
+</svg>

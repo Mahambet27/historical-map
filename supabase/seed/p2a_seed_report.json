@@ -1,0 +1,779 @@
+{
+  "datasetVersion": "p2a-2026-08",
+  "errors": [],
+  "mapping": [
+    {
+      "dataset": "archive_maps",
+      "demoOnly": 0,
+      "imported": 2,
+      "needsReview": 1,
+      "reason": "",
+      "records": 2,
+      "recordsWithSources": 2,
+      "recordsWithoutSources": 0,
+      "reviewed": 1,
+      "skipped": 0,
+      "verified": 0
+    },
+    {
+      "dataset": "educational_questions",
+      "demoOnly": 0,
+      "imported": 13,
+      "needsReview": 5,
+      "reason": "",
+      "records": 13,
+      "recordsWithSources": 13,
+      "recordsWithoutSources": 0,
+      "reviewed": 8,
+      "skipped": 0,
+      "verified": 0
+    },
+    {
+      "dataset": "educational_stories",
+      "demoOnly": 0,
+      "imported": 3,
+      "needsReview": 1,
+      "reason": "",
+      "records": 3,
+      "recordsWithSources": 0,
+      "recordsWithoutSources": 3,
+      "reviewed": 2,
+      "skipped": 0,
+      "verified": 0
+    },
+    {
+      "dataset": "educational_story_steps",
+      "demoOnly": 0,
+      "imported": 27,
+      "needsReview": 0,
+      "reason": "",
+      "records": 27,
+      "recordsWithSources": 27,
+      "recordsWithoutSources": 0,
+      "reviewed": 0,
+      "skipped": 0,
+      "verified": 0
+    },
+    {
+      "dataset": "environment_snapshots",
+      "demoOnly": 1,
+      "imported": 3,
+      "needsReview": 2,
+      "reason": "",
+      "records": 3,
+      "recordsWithSources": 3,
+      "recordsWithoutSources": 0,
+      "reviewed": 0,
+      "skipped": 0,
+      "verified": 0
+    },
+    {
+      "dataset": "historical_entities",
+      "demoOnly": 0,
+      "imported": 21,
+      "needsReview": 16,
+      "reason": "",
+      "records": 21,
+      "recordsWithSources": 5,
+      "recordsWithoutSources": 16,
+      "reviewed": 5,
+      "skipped": 0,
+      "verified": 0
+    },
+    {
+      "dataset": "historical_events",
+      "demoOnly": 0,
+      "imported": 6,
+      "needsReview": 6,
+      "reason": "",
+      "records": 6,
+      "recordsWithSources": 6,
+      "recordsWithoutSources": 0,
+      "reviewed": 0,
+      "skipped": 0,
+      "verified": 0
+    },
+    {
+      "dataset": "historical_geometries",
+      "demoOnly": 0,
+      "imported": 27,
+      "needsReview": 20,
+      "reason": "",
+      "records": 27,
+      "recordsWithSources": 7,
+      "recordsWithoutSources": 20,
+      "reviewed": 6,
+      "skipped": 0,
+      "verified": 1
+    },
+    {
+      "dataset": "historical_names",
+      "demoOnly": 0,
+      "imported": 63,
+      "needsReview": 48,
+      "reason": "",
+      "records": 63,
+      "recordsWithSources": 15,
+      "recordsWithoutSources": 48,
+      "reviewed": 15,
+      "skipped": 0,
+      "verified": 0
+    },
+    {
+      "dataset": "historical_people",
+      "demoOnly": 0,
+      "imported": 4,
+      "needsReview": 4,
+      "reason": "",
+      "records": 4,
+      "recordsWithSources": 4,
+      "recordsWithoutSources": 0,
+      "reviewed": 0,
+      "skipped": 0,
+      "verified": 0
+    },
+    {
+      "dataset": "historical_places",
+      "demoOnly": 0,
+      "imported": 16,
+      "needsReview": 16,
+      "reason": "",
+      "records": 16,
+      "recordsWithSources": 8,
+      "recordsWithoutSources": 8,
+      "reviewed": 0,
+      "skipped": 0,
+      "verified": 0
+    },
+    {
+      "dataset": "historical_routes",
+      "demoOnly": 0,
+      "imported": 2,
+      "needsReview": 2,
+      "reason": "",
+      "records": 2,
+      "recordsWithSources": 1,
+      "recordsWithoutSources": 1,
+      "reviewed": 0,
+      "skipped": 0,
+      "verified": 0
+    },
+    {
+      "dataset": "historical_sources",
+      "demoOnly": 0,
+      "imported": 9,
+      "needsReview": 0,
+      "reason": "",
+      "records": 9,
+      "recordsWithSources": 0,
+      "recordsWithoutSources": 9,
+      "reviewed": 7,
+      "skipped": 0,
+      "verified": 2
+    },
+    {
+      "dataset": "hydrology_snapshots",
+      "demoOnly": 1,
+      "imported": 5,
+      "needsReview": 4,
+      "reason": "",
+      "records": 5,
+      "recordsWithSources": 0,
+      "recordsWithoutSources": 5,
+      "reviewed": 0,
+      "skipped": 0,
+      "verified": 0
+    },
+    {
+      "dataset": "route_segments",
+      "demoOnly": 0,
+      "imported": 4,
+      "needsReview": 4,
+      "reason": "",
+      "records": 4,
+      "recordsWithSources": 4,
+      "recordsWithoutSources": 0,
+      "reviewed": 0,
+      "skipped": 0,
+      "verified": 0
+    },
+    {
+      "dataset": "source_claim_sources",
+      "demoOnly": 0,
+      "imported": 12,
+      "needsReview": 0,
+      "reason": "",
+      "records": 12,
+      "recordsWithSources": 12,
+      "recordsWithoutSources": 0,
+      "reviewed": 0,
+      "skipped": 0,
+      "verified": 0
+    },
+    {
+      "dataset": "source_claims",
+      "demoOnly": 0,
+      "imported": 8,
+      "needsReview": 5,
+      "reason": "",
+      "records": 8,
+      "recordsWithSources": 8,
+      "recordsWithoutSources": 0,
+      "reviewed": 2,
+      "skipped": 0,
+      "verified": 1
+    }
+  ],
+  "skippedRecords": [
+    {
+      "count": 24,
+      "dataset": "entityLabels",
+      "reason": "Derived presentation labels; server names are generated from entities."
+    },
+    {
+      "count": 6,
+      "dataset": "timeline",
+      "reason": "Derived client navigation snapshots; snapshot RPC reads normalized records."
+    },
+    {
+      "count": 5,
+      "dataset": "eras",
+      "reason": "Client navigation configuration remains local in P2A."
+    },
+    {
+      "count": 3,
+      "dataset": "historicalChanges",
+      "reason": "P1A interpretation model remains local until a normalized change schema is reviewed."
+    },
+    {
+      "count": 1,
+      "dataset": "sourceDisputes",
+      "reason": "Demo-only dispute structure is not imported as a real scholarly dispute."
+    },
+    {
+      "count": 1,
+      "dataset": "lessons",
+      "reason": "Legacy lesson remains local; P2A imports the newer story/question model."
+    },
+    {
+      "count": 1,
+      "dataset": "threeDModels",
+      "reason": "Binary/media metadata is outside the read-only historical data foundation."
+    }
+  ],
+  "tables": {
+    "archive_maps": 2,
+    "educational_questions": 13,
+    "educational_stories": 3,
+    "educational_story_steps": 27,
+    "environment_snapshots": 3,
+    "historical_entities": 21,
+    "historical_events": 6,
+    "historical_geometries": 27,
+    "historical_names": 63,
+    "historical_people": 4,
+    "historical_places": 16,
+    "historical_routes": 2,
+    "historical_sources": 9,
+    "hydrology_snapshots": 5,
+    "p2a_dataset_metadata": 1,
+    "route_segments": 4,
+    "source_claim_sources": 12,
+    "source_claims": 8
+  },
+  "totals": {
+    "errors": 0,
+    "geometryRecords": 55,
+    "records": 226,
+    "warnings": 81
+  },
+  "valid": true,
+  "warnings": [
+    {
+      "code": "missing_source_claim",
+      "id": "abulkhair-1428",
+      "message": "Add a territorial_extent claim explaining what the geometry represents.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "abulkhair-1428",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "missing_source_claim",
+      "id": "bukhara-1500",
+      "message": "Add a territorial_extent claim explaining what the geometry represents.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "bukhara-1500",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "missing_source_claim",
+      "id": "dzungar-1635",
+      "message": "Add a territorial_extent claim explaining what the geometry represents.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "dzungar-1635",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "missing_source_claim",
+      "id": "karakhanid-840",
+      "message": "Add a territorial_extent claim explaining what the geometry represents.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "karakhanid-840",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "missing_source_claim",
+      "id": "karluk-756",
+      "message": "Add a territorial_extent claim explaining what the geometry represents.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "karluk-756",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "missing_source_claim",
+      "id": "kazakh-ssr-1936",
+      "message": "Add a territorial_extent claim explaining what the geometry represents.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "kazakh-ssr-1936",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "khanate-1465",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "missing_source_claim",
+      "id": "khanate-1510",
+      "message": "Add a territorial_extent claim explaining what the geometry represents.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "khanate-1510",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "missing_source_claim",
+      "id": "khanate-1513",
+      "message": "Add a territorial_extent claim explaining what the geometry represents.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "khanate-1513",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "missing_source_claim",
+      "id": "khanate-1522",
+      "message": "Add a territorial_extent claim explaining what the geometry represents.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "khanate-1522",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "missing_source_claim",
+      "id": "khanate-1635",
+      "message": "Add a territorial_extent claim explaining what the geometry represents.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "khanate-1635",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "missing_source_claim",
+      "id": "khanate-1723",
+      "message": "Add a territorial_extent claim explaining what the geometry represents.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "khanate-1723",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "missing_source_claim",
+      "id": "khanate-1731",
+      "message": "Add a territorial_extent claim explaining what the geometry represents.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "khanate-1731",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "missing_source_claim",
+      "id": "khiva-1511",
+      "message": "Add a territorial_extent claim explaining what the geometry represents.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "khiva-1511",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "missing_source_claim",
+      "id": "kimak-840",
+      "message": "Add a territorial_extent claim explaining what the geometry represents.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "kimak-840",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "missing_source_claim",
+      "id": "moghulistan-1347",
+      "message": "Add a territorial_extent claim explaining what the geometry represents.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "moghulistan-1347",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "missing_source_claim",
+      "id": "nogai-1440",
+      "message": "Add a territorial_extent claim explaining what the geometry represents.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "nogai-1440",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "missing_source_claim",
+      "id": "oghuz-756",
+      "message": "Add a territorial_extent claim explaining what the geometry represents.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "oghuz-756",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "missing_source_claim",
+      "id": "qing-1644",
+      "message": "Add a territorial_extent claim explaining what the geometry represents.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "qing-1644",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "missing_source_claim",
+      "id": "republic-1991",
+      "message": "Add a territorial_extent claim explaining what the geometry represents.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "republic-1991",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "missing_source_claim",
+      "id": "russian-1721",
+      "message": "Add a territorial_extent claim explaining what the geometry represents.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "russian-1721",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "missing_source_claim",
+      "id": "saka-550",
+      "message": "Add a territorial_extent claim explaining what the geometry represents.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "saka-550",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "missing_source_claim",
+      "id": "sibir-1468",
+      "message": "Add a territorial_extent claim explaining what the geometry represents.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "sibir-1468",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "missing_source_claim",
+      "id": "timurid-1370",
+      "message": "Add a territorial_extent claim explaining what the geometry represents.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "timurid-1370",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "missing_source_claim",
+      "id": "turgesh-704",
+      "message": "Add a territorial_extent claim explaining what the geometry represents.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "turgesh-704",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "missing_source_claim",
+      "id": "turkic-552",
+      "message": "Add a territorial_extent claim explaining what the geometry represents.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "turkic-552",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "missing_source_claim",
+      "id": "western-turkic-604",
+      "message": "Add a territorial_extent claim explaining what the geometry represents.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "western-turkic-604",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "almaty",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "astana",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "baikonur",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "balasagun",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "chu-valley",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "ispidjab",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "issyk",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "merke",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "otrar",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "saraishyk",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "sayram",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "shilikti",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "syganak",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "taraz",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "turkistan",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "ulytau",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "silk-otrar-turkistan",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "silk-sayram-taraz",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "silk-taraz-otrar",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "silk-turkistan-syganak",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "southern-steppe-medieval-demo",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "syr-darya-valley-medieval-demo",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "tian-shan-foothills-medieval-demo",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "aral-sea-circa-1960-demo",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "aral-sea-circa-1985-demo",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "aral-sea-circa-2000-demo",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "aral-sea-circa-2010-demo",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    },
+    {
+      "code": "srid_assumption",
+      "id": "aral-sea-modern-demo",
+      "message": "Coordinates are assumed to be WGS84/EPSG:4326; verify provenance before publication.",
+      "table": "geometry"
+    }
+  ]
+}

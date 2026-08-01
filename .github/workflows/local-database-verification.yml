@@ -1,0 +1,96 @@
+name: Local database verification
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [labeled]
+
+permissions:
+  contents: read
+
+jobs:
+  p2a5-local-database:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.label.name == 'local-database-verification'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Verify Supabase CLI
+        run: npx --yes supabase --version
+
+      - name: Assert local-only target
+        run: npm run db:assert-local
+
+      - name: Generate deterministic seed
+        run: |
+          npm run db:seed:build
+          npm run db:seed:validate
+          npm run db:seed:generate
+          npm run db:seed:compare
+          npm run db:geometry:validate
+
+      - name: Start local Supabase
+        run: npm run db:local:start
+
+      - name: Verify clean migration chain
+        run: npm run db:migrations:verify
+
+      - name: Reset and seed local database
+        run: npm run db:local:reset
+
+      - name: Verify schema, seed and PostGIS
+        run: |
+          npm run db:schema:verify
+          npm run db:seed:verify
+          npm run db:seed:idempotency
+          npm run db:postgis:verify
+
+      - name: Verify RLS, RPC and repository parity
+        run: |
+          npm run db:security:test
+          npm run db:rpc:test
+          npm run db:compare:local
+
+      - name: Query plans and bounded smoke test
+        run: |
+          npm run db:query-plan:test
+          npm run db:smoke
+
+      - name: Unit and real local database E2E
+        run: |
+          npm run test:run
+          npm run test:e2e:local-db
+
+      - name: Upload safe verification reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p2a5-local-database-reports
+          path: |
+            docs/P2A5_*.md
+            .p2a5/verification.json
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Stop local Supabase
+        if: always()
+        run: npm run db:local:cleanup
+

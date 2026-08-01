@@ -1,8 +1,8 @@
-import supabaseClient from "../lib/supabaseClient.js";
+import { getSupabaseClient } from "../lib/supabaseClient.js";
 import { hasSupabaseConfig } from "../config/env.js";
 
 export async function checkSupabaseConnection() {
-  if (!hasSupabaseConfig || !supabaseClient) {
+  if (!hasSupabaseConfig) {
     return {
       configured: false,
       connected: false,
@@ -15,6 +15,15 @@ export async function checkSupabaseConnection() {
   let lastError = null;
 
   try {
+    const supabaseClient = await getSupabaseClient();
+    if (!supabaseClient) {
+      return {
+        configured: true,
+        connected: false,
+        table: null,
+        error: "Supabase is disabled in local data mode.",
+      };
+    }
     for (const table of probes) {
       const { error } = await supabaseClient
         .from(table)

@@ -1,4 +1,4 @@
-import supabaseClient from "../lib/supabaseClient.js";
+import { getSupabaseClient } from "../lib/supabaseClient.js";
 
 let staticPlacesPromise = null;
 
@@ -69,6 +69,7 @@ const buildImages = (rows) =>
     .filter(Boolean);
 
 const getSupabaseData = async (signal) => {
+  const supabaseClient = await getSupabaseClient();
   if (!supabaseClient) {
     return null;
   }

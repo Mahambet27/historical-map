@@ -1,4 +1,4 @@
-import supabaseClient from "../lib/supabaseClient.js";
+import { getSupabaseClient } from "../lib/supabaseClient.js";
 import { allHistoricalEntities, entityRelations } from "../data/exhibition/entities.js";
 import { entityGeometries, getGeometriesAtYear } from "../data/exhibition/entityGeometries.js";
 import { historicalEvents } from "../data/exhibition/events.js";
@@ -19,6 +19,7 @@ const normalizedLocalData = {
 };
 
 export async function getHistoricalData({ signal } = {}) {
+  const supabaseClient = await getSupabaseClient();
   if (!supabaseClient) {
     logFallback("Supabase is not configured");
     return normalizedLocalData;

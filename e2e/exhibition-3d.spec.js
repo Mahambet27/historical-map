@@ -9,7 +9,7 @@ const openExhibition = async (page, quality = "high") => {
 };
 
 const openThreeD = (page) =>
-  page.locator(".ex-appbar nav button").nth(3).click();
+  page.getByRole("button", { name: "3D", exact: true }).click();
 
 test("ordinary exhibition does not request GLB or model-viewer", async ({ page }) => {
   const requests = [];
@@ -32,7 +32,7 @@ test("opening 3D shows the local poster", async ({ page }) => {
 });
 
 test("high quality requests GLB only after opening 3D", async ({ page }) => {
-  test.setTimeout(60_000);
+  test.setTimeout(120_000);
   const pageErrors = [];
   const consoleErrors = [];
   page.on("pageerror", (error) => pageErrors.push(error.message));

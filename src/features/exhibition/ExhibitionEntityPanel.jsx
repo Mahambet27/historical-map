@@ -3,7 +3,7 @@ import { historicalPeople } from "../../data/exhibition/people.js";
 
 const local = (value, language) => value?.[language] || value?.ru || "";
 
-export default function ExhibitionEntityPanel({ entity, language, text, onClose, onCompare, onLesson, onSources }) {
+export default function ExhibitionEntityPanel({ entity, language, text, onClose, onCompare, onLesson, onSources, onEvidence }) {
   if (!entity) return null;
   const people = historicalPeople.filter((person) => entity.people.includes(person.id));
   const sourceCount = getSourcesByIds(entity.sourceIds).length;
@@ -22,7 +22,10 @@ export default function ExhibitionEntityPanel({ entity, language, text, onClose,
         <div><dt>{text.stages}</dt><dd>{local(entity.stages, language)}</dd></div>
         <div><dt>{text.neighbours}</dt><dd>{entity.neighbours.map((item) => local(item, language)).join(" · ") || "—"}</dd></div>
       </dl>
-      <button className="ex-source-link" onClick={onSources}>▤ {text.verified.replace("{count}", sourceCount)} <span>→</span></button>
+      <div className="ex-evidence-actions">
+        <button className="ex-source-link" onClick={onSources}>▤ {text.verified.replace("{count}", sourceCount)} <span>→</span></button>
+        <button className="ex-source-link" onClick={onEvidence}>◇ {language === "en" ? "Show evidence" : language === "kk" ? "Дәлелдерді көрсету" : "Показать доказательства"}</button>
+      </div>
       <div className="ex-panel__actions"><button onClick={onCompare}>⇄ {text.compare}</button><button className="is-primary" onClick={onLesson}>◫ {text.startLesson}</button></div>
     </section>
   );

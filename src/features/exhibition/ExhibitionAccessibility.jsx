@@ -56,7 +56,7 @@ export default function ExhibitionAccessibility({
         </a>
         <div className="ex-access-shortcuts">
           <strong>{local(language, { ru: "Клавиатура", kk: "Пернетақта", en: "Keyboard" })}</strong>
-          <small>Space — play · [ ] — year · L — lesson · A — agent · C — compare · Esc — close</small>
+          <small>Space — play · [ ] — year · L — lesson · A — agent · C — compare · R/G/H/P/J — P1B · E — evidence · V — archive · Shift+V — archive compare · Q — review · Esc — close</small>
         </div>
         <label>
           <span><strong>{local(language, { ru: "Аудиогид", kk: "Аудиогид", en: "Audio guide" })}</strong><small>{local(language, { ru: "Архитектура готова; озвучивание на следующем этапе", kk: "Архитектура дайын; дыбыстау кейін қосылады", en: "Architecture ready; narration coming later" })}</small></span>

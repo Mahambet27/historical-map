@@ -3,7 +3,6 @@ import { mapboxToken, isMapboxTokenConfigured } from "../../config/env.js";
 import { getGeometriesAtYear } from "../../data/exhibition/entityGeometries.js";
 import { allHistoricalEntities } from "../../data/exhibition/entities.js";
 import { getEntityLabelsAtYear } from "../../data/exhibition/entityLabels.js";
-import { exhibitionPlaces } from "../../data/exhibition/places.js";
 import {
   ENTITY_LABEL_LAYOUT,
   ENTITY_LABEL_PAINT,
@@ -16,7 +15,7 @@ import {
 import ExhibitionMapFallback from "./ExhibitionMapFallback.jsx";
 import ArchiveMapOverlay from "./ArchiveMapOverlay.jsx";
 import { buildTerritoryCollection } from "./mapDataUtils.js";
-import { ensureExhibitionLayerOrder } from "./layerRegistry.js";
+import { ensureHistoricalLayerOrder } from "./layerRegistry.js";
 import {
   buildEmptyP1BCollections,
   buildEnvironmentCollection,
@@ -35,6 +34,11 @@ import {
   removeArchiveOverlay,
   updateArchiveOverlayOpacity,
 } from "./archiveMapOverlayUtils.js";
+import {
+  createHistoricalBasemapStyle,
+  validateHistoricalBasemap,
+} from "./historicalBasemapPolicy.js";
+import { isRecordAllowedInOfficialDemo } from "./officialDemoMode.js";
 
 const emptyCollection = { type: "FeatureCollection", features: [] };
 const entityById = new Map(allHistoricalEntities.map((entity) => [entity.id, entity]));
@@ -45,15 +49,21 @@ const buildLabelCollection = (selectedYear, language) => ({
   features: getEntityLabelsAtYear(selectedYear)
     .map((item) => {
       const entity = entityById.get(item.entityId);
+      const geometry = getGeometriesAtYear(selectedYear).find(
+        (candidate) => candidate.entityId === item.entityId
+      );
       if (!entity) return null;
       return {
         type: "Feature",
         id: item.id,
         properties: {
+          labelKind: "state",
           entityId: item.entityId,
           label: local(entity.names, language),
           rotation: item.labelRotation,
           size: item.labelSize,
+          verificationStatus: geometry?.verificationStatus || "needs_review",
+          sourceIds: geometry?.sourceIds || [],
         },
         geometry: { type: "Point", coordinates: item.labelPoint },
       };
@@ -61,8 +71,64 @@ const buildLabelCollection = (selectedYear, language) => ({
     .filter(Boolean),
 });
 
+// eslint-disable-next-line react-refresh/only-export-components
+export const buildHistoricalLabelCollection = ({
+  selectedYear,
+  language,
+  collections = buildEmptyP1BCollections(),
+}) => ({
+  type: "FeatureCollection",
+  features: [
+    ...buildLabelCollection(selectedYear, language).features,
+    ...[...(collections.places?.features || []), ...(collections.archaeology?.features || [])]
+      .filter((feature) => feature.properties.label)
+      .map((feature) => ({
+        ...feature,
+        id: `label-${feature.id}`,
+        properties: { ...feature.properties, labelKind: "place" },
+      })),
+    ...(collections.hydrology?.features || [])
+      .filter((feature) => feature.properties.label && feature.properties.verificationStatus !== "demo_only")
+      .map((feature) => ({
+        ...feature,
+        id: `label-${feature.id}`,
+        properties: { ...feature.properties, labelKind: "hydrology" },
+      })),
+    ...[
+      ...(collections.trade?.features || []),
+      ...(collections.nomadic?.features || []),
+      ...(collections.military?.features || []),
+    ]
+      .filter((feature) => feature.properties.label && feature.properties.verificationStatus !== "demo_only")
+      .map((feature) => ({
+        ...feature,
+        id: `label-${feature.id}`,
+        properties: { ...feature.properties, labelKind: "route" },
+      })),
+  ],
+});
+
 const addExhibitionLayers = (map, { light, reducedMotion }) => {
   hideBaseMapLabels(map);
+  if (!map.getSource("historical-terrain-source")) {
+    map.addSource("historical-terrain-source", {
+      type: "geojson",
+      data: {
+        type: "Feature",
+        properties: {},
+        geometry: {
+          type: "Polygon",
+          coordinates: [[[67.5, 39.5], [82, 39.5], [81, 44.3], [70, 44], [67.5, 39.5]]],
+        },
+      },
+    });
+    map.addLayer({
+      id: "historical-terrain-subtle",
+      type: "fill",
+      source: "historical-terrain-source",
+      paint: { "fill-color": "#666a6d", "fill-opacity": light ? 0 : 0.08 },
+    });
+  }
   if (!map.getSource("ex-environment")) {
     map.addSource("ex-environment", { type: "geojson", data: emptyCollection });
     map.addLayer({
@@ -114,6 +180,42 @@ const addExhibitionLayers = (map, { light, reducedMotion }) => {
       type: "line",
       source: "ex-territories",
       paint: TERRITORY_LINE_PAINT,
+    });
+    map.addLayer({
+      id: "historical-boundary-uncertainty",
+      type: "line",
+      source: "ex-territories",
+      filter: ["==", ["get", "uncertaintyVariant"], "soft-edge"],
+      paint: {
+        "line-color": "#f3ead5",
+        "line-width": light ? 3 : 6,
+        "line-opacity": 0.32,
+        "line-blur": light ? 0 : 2,
+      },
+    });
+    map.addLayer({
+      id: "historical-boundary-patterned",
+      type: "line",
+      source: "ex-territories",
+      filter: ["==", ["get", "uncertaintyVariant"], "patterned"],
+      paint: {
+        "line-color": "#ffffff",
+        "line-width": 3,
+        "line-opacity": 0.9,
+        "line-dasharray": [6, 3, 1, 3],
+      },
+    });
+    map.addLayer({
+      id: "historical-boundary-schematic",
+      type: "line",
+      source: "ex-territories",
+      filter: ["==", ["get", "uncertaintyVariant"], "schematic"],
+      paint: {
+        "line-color": "#ffffff",
+        "line-width": 2,
+        "line-opacity": 0.72,
+        "line-dasharray": [2, 3],
+      },
     });
   }
   if (!map.getSource("ex-trade-routes")) {
@@ -182,7 +284,7 @@ const addExhibitionLayers = (map, { light, reducedMotion }) => {
   if (!map.getSource("ex-historical-places")) {
     map.addSource("ex-historical-places", { type: "geojson", data: emptyCollection });
     map.addLayer({
-      id: "ex-historical-places-dot",
+      id: "historical-places-circle",
       type: "circle",
       source: "ex-historical-places",
       minzoom: 3.5,
@@ -194,18 +296,35 @@ const addExhibitionLayers = (map, { light, reducedMotion }) => {
       },
     });
     map.addLayer({
-      id: "ex-historical-places-label",
-      type: "symbol",
+      id: "historical-places-selected",
+      type: "circle",
       source: "ex-historical-places",
-      minzoom: 4.5,
-      layout: { "text-field": ["get", "label"], "text-offset": [0, 1.3], "text-size": 12 },
-      paint: { "text-color": "#fff8e8", "text-halo-color": "#071722", "text-halo-width": 1.5 },
+      paint: {
+        "circle-radius": 9,
+        "circle-color": "transparent",
+        "circle-stroke-color": "#fff",
+        "circle-stroke-width": 3,
+        "circle-opacity": ["case", ["boolean", ["feature-state", "selected"], false], 1, 0],
+      },
+    });
+    map.addLayer({
+      id: "historical-places-capital",
+      type: "circle",
+      source: "ex-historical-places",
+      filter: ["in", "capital", ["get", "placeTypes"]],
+      paint: { "circle-radius": 7, "circle-color": "#f5d879", "circle-stroke-color": "#462f0d", "circle-stroke-width": 2 },
+    });
+    map.addLayer({
+      id: "historical-places-symbol",
+      type: "circle",
+      source: "ex-historical-places",
+      paint: { "circle-radius": 2, "circle-color": "#fff4c9" },
     });
   }
   if (!map.getSource("ex-archaeology")) {
     map.addSource("ex-archaeology", { type: "geojson", data: emptyCollection });
     map.addLayer({
-      id: "ex-archaeology-dot",
+      id: "historical-places-archaeology",
       type: "circle",
       source: "ex-archaeology",
       minzoom: 5,
@@ -217,42 +336,37 @@ const addExhibitionLayers = (map, { light, reducedMotion }) => {
       },
     });
   }
-  if (!map.getSource("ex-places")) {
-    map.addSource("ex-places", { type: "geojson", data: emptyCollection });
+  if (!map.getSource("historical-labels-source")) {
+    map.addSource("historical-labels-source", { type: "geojson", data: emptyCollection });
     map.addLayer({
-      id: "ex-places-dot",
-      type: "circle",
-      source: "ex-places",
-      minzoom: 5,
-      paint: {
-        "circle-radius": 5,
-        "circle-color": "#f1cc84",
-        "circle-stroke-color": "#0b1c29",
-        "circle-stroke-width": 2,
-      },
-    });
-    map.addLayer({
-      id: "ex-places-label",
+      id: "historical-state-labels",
       type: "symbol",
-      source: "ex-places",
-      minzoom: 5.5,
-      layout: { "text-field": ["get", "label"], "text-offset": [0, 1.35], "text-size": 12 },
-      paint: {
-        "text-color": "#f8f5ef",
-        "text-halo-color": "#0b1c29",
-        "text-halo-width": 1.5,
-      },
-    });
-  }
-  if (!map.getSource("ex-entity-label-points")) {
-    map.addSource("ex-entity-label-points", { type: "geojson", data: emptyCollection });
-    map.addLayer({
-      id: "ex-entity-labels",
-      type: "symbol",
-      source: "ex-entity-label-points",
+      source: "historical-labels-source",
+      filter: ["==", ["get", "labelKind"], "state"],
       layout: ENTITY_LABEL_LAYOUT,
       paint: ENTITY_LABEL_PAINT,
     });
+    [
+      ["historical-place-labels", "place", 4.5],
+      ["historical-hydrology-labels", "hydrology", 3.5],
+      ["historical-route-labels", "route", 4],
+    ].forEach(([id, kind, minzoom]) =>
+      map.addLayer({
+        id,
+        type: "symbol",
+        source: "historical-labels-source",
+        filter: ["==", ["get", "labelKind"], kind],
+        minzoom,
+        layout: {
+          "symbol-placement": kind === "route" ? "line" : "point",
+          "text-field": ["get", "label"],
+          "text-size": kind === "place" ? 12 : 11,
+          "text-offset": kind === "place" ? [0, 1.3] : [0, 0],
+          "text-max-width": 12,
+        },
+        paint: { "text-color": "#fff8e8", "text-halo-color": "#071722", "text-halo-width": 1.5 },
+      })
+    );
   }
   if (!map.getSource("ex-comparison")) {
     map.addSource("ex-comparison", { type: "geojson", data: emptyCollection });
@@ -294,7 +408,7 @@ const addExhibitionLayers = (map, { light, reducedMotion }) => {
       },
     });
   }
-  ensureExhibitionLayerOrder(map);
+  ensureHistoricalLayerOrder(map);
 };
 
 const comparisonFeature = (feature, role, id) => ({
@@ -360,6 +474,8 @@ export default function ExhibitionMap({
   archiveOpacity = 0.65,
   archiveAboveReconstruction = false,
   forceFallback = false,
+  officialDemo = false,
+  performanceDegraded = false,
 }) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
@@ -395,7 +511,7 @@ export default function ExhibitionMap({
         mapboxgl.accessToken = mapboxToken;
         map = new mapboxgl.Map({
           container: containerRef.current,
-          style: "mapbox://styles/mapbox/dark-v11",
+          style: createHistoricalBasemapStyle(),
           center: [67.2, 48],
           zoom: 4.05,
           pitch: qualityLight ? 18 : 38,
@@ -415,6 +531,12 @@ export default function ExhibitionMap({
           // Re-apply after every style load so Mapbox labels never return.
           hideBaseMapLabels(map);
           applyPaletteToMap(map, paletteRef.current);
+          const integrity = validateHistoricalBasemap(map);
+          if (!integrity.passed) {
+            recordExhibitionMetric("basemap_policy_violation", 1, {
+              violations: Object.values(integrity.violations).flat().map((layer) => layer.id),
+            });
+          }
           setStyleRevision((revision) => revision + 1);
           setMapFailed(false);
           recordExhibitionMetricOnce("map-first-interactive");
@@ -449,11 +571,11 @@ export default function ExhibitionMap({
           const routeId = event.features?.[0]?.properties?.routeId;
           if (routeId) onSelectRouteRef.current?.(routeId);
         });
-        map.on("click", "ex-historical-places-dot", (event) => {
+        map.on("click", "historical-places-circle", (event) => {
           const placeId = event.features?.[0]?.properties?.id;
           if (placeId) onSelectPlaceRef.current?.(placeId);
         });
-        map.on("click", "ex-archaeology-dot", (event) => {
+        map.on("click", "historical-places-archaeology", (event) => {
           const placeId = event.features?.[0]?.properties?.id;
           if (placeId) onSelectPlaceRef.current?.(placeId);
         });
@@ -476,7 +598,15 @@ export default function ExhibitionMap({
     const map = mapRef.current;
     if (!styleRevision || !map?.isStyleLoaded()) return;
     const frame = requestAnimationFrame(() => {
-      const territories = buildTerritoryCollection(selectedYear);
+      const territoryCollection = buildTerritoryCollection(selectedYear);
+      const territories = officialDemo
+        ? {
+            ...territoryCollection,
+            features: territoryCollection.features.filter((feature) =>
+              isRecordAllowedInOfficialDemo(feature.properties)
+            ),
+          }
+        : territoryCollection;
       timeExhibitionWork("territory-source-update", () =>
         map.getSource("ex-territories")?.setData(territories)
       );
@@ -519,6 +649,9 @@ export default function ExhibitionMap({
         map.getSource("ex-nomadic-routes")?.setData(p1bCollections.nomadic);
         map.getSource("ex-military-routes")?.setData(p1bCollections.military);
       });
+      map
+        .getSource("historical-labels-source")
+        ?.setData(buildHistoricalLabelCollection({ selectedYear, language, collections: p1bCollections }));
       const selectedIds = selectedEntityIdRef.current
         ? getGeometriesAtYear(selectedYear)
             .filter((geometry) => geometry.entityId === selectedEntityIdRef.current)
@@ -531,28 +664,7 @@ export default function ExhibitionMap({
       recordExhibitionMetricOnce("first-timeline-update", selectedYear, { unit: "year" });
     });
     return () => cancelAnimationFrame(frame);
-  }, [selectedYear, comparison, styleRevision, p1bData, language]);
-
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!styleRevision || !map?.isStyleLoaded()) return;
-    map.getSource("ex-entity-label-points")?.setData(buildLabelCollection(selectedYear, language));
-  }, [selectedYear, language, styleRevision]);
-
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!styleRevision || !map?.isStyleLoaded()) return;
-    map.getSource("ex-places")?.setData({
-      type: "FeatureCollection",
-      features: exhibitionPlaces
-        .filter((place) => activeSnapshot?.placeIds?.includes(place.id))
-        .map((place) => ({
-          type: "Feature",
-          properties: { label: local(place.names, language) },
-          geometry: { type: "Point", coordinates: place.coords },
-        })),
-    });
-  }, [activeSnapshot, language, styleRevision]);
+  }, [selectedYear, comparison, styleRevision, p1bData, language, officialDemo]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -648,23 +760,32 @@ export default function ExhibitionMap({
         "ex-territories-extrusion",
         "ex-territories-line",
       ],
-      labels: ["ex-entity-labels"],
-      places: ["ex-places-dot", "ex-places-label"],
+      uncertainty: [
+        "historical-boundary-uncertainty",
+        "historical-boundary-patterned",
+        "historical-boundary-schematic",
+      ],
+      stateLabels: ["historical-state-labels"],
       comparison: ["ex-comparison-fill", "ex-comparison-line"],
       environment: ["ex-environment-fill"],
-      hydrology: ["ex-hydrology-fill", "ex-hydrology-line"],
+      hydrology: ["ex-hydrology-fill", "ex-hydrology-line", "historical-hydrology-labels"],
       tradeRoutes: [
         "ex-trade-route-glow",
         "ex-trade-route-line",
         "ex-trade-route-arrows",
+        "historical-route-labels",
       ],
       nomadicRoutes: ["ex-nomadic-route-line"],
       militaryRoutes: ["ex-military-route-line", "ex-diplomatic-route-line"],
       historicalPlaces: [
-        "ex-historical-places-dot",
-        "ex-historical-places-label",
+        "historical-places-circle",
+        "historical-places-symbol",
+        "historical-places-selected",
+        "historical-places-capital",
+        "historical-place-labels",
       ],
-      archaeology: ["ex-archaeology-dot"],
+      archaeology: ["historical-places-archaeology"],
+      terrain: ["historical-terrain-subtle"],
     };
     Object.entries(groups).forEach(([group, layerIds]) => {
       layerIds.forEach((layerId) => {
@@ -681,6 +802,18 @@ export default function ExhibitionMap({
 
   useEffect(() => {
     const map = mapRef.current;
+    if (!styleRevision || !map?.isStyleLoaded()) return;
+    if (map.getLayer("ex-trade-route-glow")) {
+      map.setPaintProperty(
+        "ex-trade-route-glow",
+        "line-opacity",
+        performanceDegraded ? 0 : qualityLight ? 0 : 0.16
+      );
+    }
+  }, [performanceDegraded, qualityLight, styleRevision]);
+
+  useEffect(() => {
+    const map = mapRef.current;
     if (!styleRevision || !map?.isStyleLoaded()) return undefined;
     if (!archiveOverlayEnabled || !archiveMap) {
       removeArchiveOverlay(map);
@@ -692,10 +825,10 @@ export default function ExhibitionMap({
       opacity: archiveOpacity,
       reducedMotion,
       beforeId: archiveAboveReconstruction
-        ? "ex-entity-labels"
+        ? "historical-state-labels"
         : "ex-environment-fill",
     });
-    if (!archiveAboveReconstruction) ensureExhibitionLayerOrder(map);
+    if (!archiveAboveReconstruction) ensureHistoricalLayerOrder(map);
     return cleanup;
   }, [
     archiveAboveReconstruction,
@@ -747,6 +880,8 @@ export default function ExhibitionMap({
           archiveMap,
           archiveOverlayEnabled,
           archiveOpacity,
+          effectiveQuality,
+          officialDemo,
         }}
       />
     );
@@ -779,6 +914,18 @@ export default function ExhibitionMap({
             )}
           </button>
         ))}
+        <div className="ex-uncertainty-legend">
+          <strong>
+            {language === "en"
+              ? "Reconstruction precision and status"
+              : language === "kk"
+                ? "Реконструкция дәлдігі мен мәртебесі"
+                : "Точность и статус реконструкции"}
+          </strong>
+          <span><i className="is-solid" />{language === "en" ? "Reviewed/generalized" : "Проверенная/обобщённая"}</span>
+          <span><i className="is-soft" />{language === "en" ? "Approximate" : "Приблизительная"}</span>
+          <span><i className="is-patterned" />{language === "en" ? "Disputed/schematic" : "Спорная/схематическая"}</span>
+        </div>
       </aside>
     </>
   );

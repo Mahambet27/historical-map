@@ -16,14 +16,9 @@ const matchesYear = (name, year) =>
 export const getPlaceNameAtYear = (place, year, language = "ru") => {
   if (!place) return "";
   const activeNames = place.names.filter((entry) => matchesYear(entry, year));
-  const latestNames = [...place.names].sort(
-    (a, b) => b.validFromYear - a.validFromYear
-  );
   return (
     activeNames.find((entry) => entry.language === language)?.value ||
     activeNames.find((entry) => entry.language === "ru")?.value ||
-    latestNames.find((entry) => entry.language === language)?.value ||
-    latestNames.find((entry) => entry.language === "ru")?.value ||
     ""
   );
 };

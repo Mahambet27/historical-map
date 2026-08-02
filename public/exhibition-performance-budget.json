@@ -1,0 +1,26 @@
+{
+  "status": "passed",
+  "measured": {
+    "initialJsGzip": 296159,
+    "cssGzip": 23488,
+    "precacheBytes": 1013720,
+    "productionGlbBytes": 1365176
+  },
+  "budgets": {
+    "initialJsGzip": 358400,
+    "cssGzip": 81920,
+    "precacheBytes": 1258291.2,
+    "productionGlbBytes": 2097152
+  },
+  "advisoryRuntimeBudgets": {
+    "startupMs": 1000,
+    "localDatasetMs": 300,
+    "storyOpenMs": 800,
+    "yearChangeMs": 250,
+    "svgFallbackMs": 1000,
+    "routeGuardFps": 20
+  },
+  "hardFailures": [],
+  "warnings": [],
+  "headlessFpsBlocksBuild": false
+}

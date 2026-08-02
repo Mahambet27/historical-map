@@ -34,7 +34,17 @@ export const loadEnvironmentData = (signal) =>
 export const loadHydrologyData = (signal) =>
   load(
     "hydrology",
-    () => import("../../data/exhibition/hydrologySnapshots.js"),
+    () =>
+      Promise.all([
+        import("../../data/exhibition/hydrologySnapshots.js"),
+        import("../../data/exhibition/historicalRiverSnapshots.js"),
+      ]).then(([hydrology, rivers]) => ({
+        ...hydrology,
+        hydrologySnapshots: [
+          ...hydrology.hydrologySnapshots,
+          ...rivers.historicalRiverSnapshots,
+        ],
+      })),
     signal
   );
 
@@ -63,4 +73,3 @@ export const resetP1BDataLoaderForTests = () => {
   cache.clear();
   loadedDatasets.clear();
 };
-

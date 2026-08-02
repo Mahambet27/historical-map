@@ -1,0 +1,102 @@
+[
+  {
+    "id": "adilet-independence-law",
+    "sourceType": "official_portal",
+    "title": "Қазақстан Республикасының мемлекеттік тәуелсіздігі туралы",
+    "author": null,
+    "organization": "Әділет — Қазақстан Республикасы нормативтік құқықтық актілерінің ақпараттық-құқықтық жүйесі",
+    "publicationYear": 1991,
+    "url": "https://adilet.zan.kz/kaz/docs/Z910004400_",
+    "citation": "Қазақстан Республикасының 1991 жылғы 16 желтоқсандағы Конституциялық заңы.",
+    "verificationStatus": "verified"
+  },
+  {
+    "id": "un-kazakhstan",
+    "sourceType": "official_portal",
+    "title": "United Nations Member States — Kazakhstan",
+    "author": null,
+    "organization": "United Nations",
+    "publicationYear": 1992,
+    "url": "https://www.un.org/en/about-us/member-states",
+    "citation": "United Nations. Member States: Kazakhstan, admitted 2 March 1992.",
+    "verificationStatus": "verified"
+  },
+  {
+    "id": "e-history-kazakh-khanate",
+    "sourceType": "official_portal",
+    "title": "Қазақ хандығы (1465–1466 жж.)",
+    "author": "Б. Б. Кәрібаев",
+    "organization": "Қазақстан тарихы ұлттық порталы",
+    "publicationYear": null,
+    "url": "https://e-history.kz/kz/chronology/event/116",
+    "citation": "Кәрібаев Б. Б. Қазақ хандығы (1465–1466 жж.). Қазақстан тарихы ұлттық порталы.",
+    "verificationStatus": "reviewed"
+  },
+  {
+    "id": "e-history-kasym",
+    "sourceType": "official_portal",
+    "title": "Қасым ханның билігі (1511–1521 жж.)",
+    "author": null,
+    "organization": "Қазақстан тарихы ұлттық порталы",
+    "publicationYear": null,
+    "url": "https://e-history.kz/kz/chronology/event/485",
+    "citation": "Қазақстан тарихы ұлттық порталы. Қасым ханның билігі, 1511–1521 жж.",
+    "verificationStatus": "reviewed"
+  },
+  {
+    "id": "cambridge-kazakh-history",
+    "sourceType": "book",
+    "title": "The Cambridge History of Inner Asia: The Chinggisid Age",
+    "author": "Nicola Di Cosmo, Allen J. Frank, Peter B. Golden (eds.)",
+    "organization": "Cambridge University Press",
+    "publicationYear": 2009,
+    "url": "https://doi.org/10.1017/CHO9781139056045",
+    "doi": "10.1017/CHO9781139056045",
+    "citation": "Di Cosmo, N., Frank, A. J., & Golden, P. B. (eds.). Cambridge University Press, 2009.",
+    "verificationStatus": "reviewed"
+  },
+  {
+    "id": "britannica-kazakhstan-history",
+    "sourceType": "encyclopedia",
+    "title": "Kazakhstan — History",
+    "author": null,
+    "organization": "Encyclopaedia Britannica",
+    "publicationYear": null,
+    "url": "https://www.britannica.com/place/Kazakhstan/History",
+    "citation": "Encyclopaedia Britannica. Kazakhstan: History.",
+    "verificationStatus": "reviewed"
+  },
+  {
+    "id": "britannica-turkic-peoples",
+    "sourceType": "encyclopedia",
+    "title": "Turkic peoples",
+    "author": null,
+    "organization": "Encyclopaedia Britannica",
+    "publicationYear": null,
+    "url": "https://www.britannica.com/topic/Turkic-peoples",
+    "citation": "Encyclopaedia Britannica. Turkic peoples.",
+    "verificationStatus": "reviewed"
+  },
+  {
+    "id": "unesco-silk-roads",
+    "sourceType": "official_portal",
+    "title": "The Silk Roads Programme",
+    "author": null,
+    "organization": "UNESCO",
+    "publicationYear": null,
+    "url": "https://www.unesco.org/en/silkroads",
+    "citation": "UNESCO. The Silk Roads Programme.",
+    "verificationStatus": "reviewed"
+  },
+  {
+    "id": "qhm-p1c-educational-overlay",
+    "sourceType": "educational_reconstruction",
+    "title": "Qazaq Heritage Map P1C educational evidence overlay",
+    "author": "Qazaq Heritage Map editorial team",
+    "organization": "Qazaq Heritage Map",
+    "publicationYear": 2026,
+    "url": "/exhibition",
+    "citation": "Qazaq Heritage Map. P1C educational evidence overlay. Original educational reconstruction, 2026.",
+    "verificationStatus": "reviewed"
+  }
+]

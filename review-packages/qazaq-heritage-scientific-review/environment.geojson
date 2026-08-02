@@ -1,0 +1,176 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              55,
+              41
+            ],
+            [
+              77,
+              41
+            ],
+            [
+              78,
+              48
+            ],
+            [
+              58,
+              49
+            ],
+            [
+              55,
+              41
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "southern-steppe-medieval-demo",
+        "subjectType": "environment",
+        "subjectId": "southern-steppe-medieval-demo",
+        "validFromYear": 500,
+        "validToYear": 1500,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Степная зона Южного Казахстана",
+          "kk": "Оңтүстік Қазақстанның дала аймағы",
+          "en": "Southern Kazakhstan steppe zone"
+        },
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "unknown",
+        "sourceIds": [
+          "unesco-silk-roads"
+        ],
+        "claimIds": [
+          "claim-steppe-demo-status"
+        ],
+        "reconstructionMethod": null,
+        "interpolationAllowed": false,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              68,
+              39.5
+            ],
+            [
+              81,
+              39.5
+            ],
+            [
+              80,
+              44
+            ],
+            [
+              70,
+              43.5
+            ],
+            [
+              68,
+              39.5
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "tian-shan-foothills-medieval-demo",
+        "subjectType": "environment",
+        "subjectId": "tian-shan-foothills-medieval-demo",
+        "validFromYear": 500,
+        "validToYear": 1500,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Предгорья Тянь-Шаня",
+          "kk": "Тянь-Шань тау бөктері",
+          "en": "Tian Shan foothills"
+        },
+        "verificationStatus": "demo_only",
+        "scientificReadiness": "demo_only",
+        "confidenceLevel": "low",
+        "spatialPrecision": "unknown",
+        "sourceIds": [
+          "unesco-silk-roads"
+        ],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": false,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              61,
+              41.2
+            ],
+            [
+              69.5,
+              42
+            ],
+            [
+              72,
+              43
+            ],
+            [
+              70.5,
+              44
+            ],
+            [
+              62,
+              42.7
+            ],
+            [
+              61,
+              41.2
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "syr-darya-valley-medieval-demo",
+        "subjectType": "environment",
+        "subjectId": "syr-darya-valley-medieval-demo",
+        "validFromYear": 700,
+        "validToYear": 1500,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Долина Сырдарьи",
+          "kk": "Сырдария аңғары",
+          "en": "Syr Darya valley"
+        },
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "unknown",
+        "sourceIds": [
+          "unesco-silk-roads"
+        ],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": false,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    }
+  ]
+}

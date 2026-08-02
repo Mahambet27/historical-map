@@ -1,0 +1,473 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          71.37,
+          42.9
+        ]
+      },
+      "properties": {
+        "id": "taraz",
+        "subjectType": "place",
+        "subjectId": "taraz",
+        "validFromYear": 500,
+        "validToYear": null,
+        "snapshotYear": null,
+        "names": [
+          {
+            "value": "Талас",
+            "language": "ru",
+            "validFromYear": 500,
+            "validToYear": 1200
+          },
+          {
+            "value": "Талас",
+            "language": "kk",
+            "validFromYear": 500,
+            "validToYear": 1200
+          },
+          {
+            "value": "Talas",
+            "language": "en",
+            "validFromYear": 500,
+            "validToYear": 1200
+          },
+          {
+            "value": "Тараз",
+            "language": "ru",
+            "validFromYear": 1997,
+            "validToYear": null
+          },
+          {
+            "value": "Тараз",
+            "language": "kk",
+            "validFromYear": 1997,
+            "validToYear": null
+          },
+          {
+            "value": "Taraz",
+            "language": "en",
+            "validFromYear": 1997,
+            "validToYear": null
+          }
+        ],
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "approximate",
+        "sourceIds": [
+          "unesco-silk-roads"
+        ],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          68.3,
+          42.85
+        ]
+      },
+      "properties": {
+        "id": "otrar",
+        "subjectType": "place",
+        "subjectId": "otrar",
+        "validFromYear": 500,
+        "validToYear": null,
+        "snapshotYear": null,
+        "names": [
+          {
+            "value": "Отырар",
+            "language": "ru",
+            "validFromYear": 700,
+            "validToYear": null
+          },
+          {
+            "value": "Отырар",
+            "language": "kk",
+            "validFromYear": 700,
+            "validToYear": null
+          },
+          {
+            "value": "Otrar",
+            "language": "en",
+            "validFromYear": 700,
+            "validToYear": null
+          },
+          {
+            "value": "Фараб",
+            "language": "ru",
+            "validFromYear": 800,
+            "validToYear": 1300
+          },
+          {
+            "value": "Farab",
+            "language": "en",
+            "validFromYear": 800,
+            "validToYear": 1300
+          }
+        ],
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "approximate",
+        "sourceIds": [
+          "unesco-silk-roads"
+        ],
+        "claimIds": [
+          "claim-otrar-location"
+        ],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          69.76,
+          42.3
+        ]
+      },
+      "properties": {
+        "id": "sayram",
+        "subjectType": "place",
+        "subjectId": "sayram",
+        "validFromYear": 500,
+        "validToYear": null,
+        "snapshotYear": null,
+        "names": [
+          {
+            "value": "Испиджаб",
+            "language": "ru",
+            "validFromYear": 700,
+            "validToYear": 1200
+          },
+          {
+            "value": "Испиджаб",
+            "language": "kk",
+            "validFromYear": 700,
+            "validToYear": 1200
+          },
+          {
+            "value": "Ispidjab",
+            "language": "en",
+            "validFromYear": 700,
+            "validToYear": 1200
+          },
+          {
+            "value": "Сайрам",
+            "language": "ru",
+            "validFromYear": 1200,
+            "validToYear": null
+          },
+          {
+            "value": "Сайрам",
+            "language": "kk",
+            "validFromYear": 1200,
+            "validToYear": null
+          },
+          {
+            "value": "Sayram",
+            "language": "en",
+            "validFromYear": 1200,
+            "validToYear": null
+          }
+        ],
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "approximate",
+        "sourceIds": [
+          "unesco-silk-roads"
+        ],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          68.25,
+          43.3
+        ]
+      },
+      "properties": {
+        "id": "turkistan",
+        "subjectType": "place",
+        "subjectId": "turkistan",
+        "validFromYear": 500,
+        "validToYear": null,
+        "snapshotYear": null,
+        "names": [
+          {
+            "value": "Ясы",
+            "language": "ru",
+            "validFromYear": 900,
+            "validToYear": 1500
+          },
+          {
+            "value": "Ясы",
+            "language": "kk",
+            "validFromYear": 900,
+            "validToYear": 1500
+          },
+          {
+            "value": "Yasi",
+            "language": "en",
+            "validFromYear": 900,
+            "validToYear": 1500
+          },
+          {
+            "value": "Туркестан",
+            "language": "ru",
+            "validFromYear": 1500,
+            "validToYear": null
+          },
+          {
+            "value": "Түркістан",
+            "language": "kk",
+            "validFromYear": 1500,
+            "validToYear": null
+          },
+          {
+            "value": "Turkistan",
+            "language": "en",
+            "validFromYear": 1500,
+            "validToYear": null
+          }
+        ],
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "approximate",
+        "sourceIds": [
+          "unesco-silk-roads"
+        ],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          66.02,
+          44.17
+        ]
+      },
+      "properties": {
+        "id": "syganak",
+        "subjectType": "place",
+        "subjectId": "syganak",
+        "validFromYear": 500,
+        "validToYear": null,
+        "snapshotYear": null,
+        "names": [
+          {
+            "value": "Сыганак",
+            "language": "ru",
+            "validFromYear": 900,
+            "validToYear": null
+          },
+          {
+            "value": "Сығанақ",
+            "language": "kk",
+            "validFromYear": 900,
+            "validToYear": null
+          },
+          {
+            "value": "Syganak",
+            "language": "en",
+            "validFromYear": 900,
+            "validToYear": null
+          }
+        ],
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "approximate",
+        "sourceIds": [
+          "unesco-silk-roads"
+        ],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          51.73,
+          47.05
+        ]
+      },
+      "properties": {
+        "id": "saraishyk",
+        "subjectType": "place",
+        "subjectId": "saraishyk",
+        "validFromYear": 500,
+        "validToYear": null,
+        "snapshotYear": null,
+        "names": [
+          {
+            "value": "Сарайчик",
+            "language": "ru",
+            "validFromYear": 1200,
+            "validToYear": null
+          },
+          {
+            "value": "Сарайшық",
+            "language": "kk",
+            "validFromYear": 1200,
+            "validToYear": null
+          },
+          {
+            "value": "Saraishyk",
+            "language": "en",
+            "validFromYear": 1200,
+            "validToYear": null
+          }
+        ],
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "approximate",
+        "sourceIds": [
+          "unesco-silk-roads"
+        ],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          75.25,
+          42.75
+        ]
+      },
+      "properties": {
+        "id": "balasagun",
+        "subjectType": "place",
+        "subjectId": "balasagun",
+        "validFromYear": 500,
+        "validToYear": 1400,
+        "snapshotYear": null,
+        "names": [
+          {
+            "value": "Баласагун",
+            "language": "ru",
+            "validFromYear": 900,
+            "validToYear": 1300
+          },
+          {
+            "value": "Баласағұн",
+            "language": "kk",
+            "validFromYear": 900,
+            "validToYear": 1300
+          },
+          {
+            "value": "Balasagun",
+            "language": "en",
+            "validFromYear": 900,
+            "validToYear": 1300
+          }
+        ],
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "approximate",
+        "sourceIds": [
+          "unesco-silk-roads"
+        ],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          69.76,
+          42.3
+        ]
+      },
+      "properties": {
+        "id": "ispidjab",
+        "subjectType": "place",
+        "subjectId": "ispidjab",
+        "validFromYear": 500,
+        "validToYear": 1200,
+        "snapshotYear": null,
+        "names": [
+          {
+            "value": "Испиджаб",
+            "language": "ru",
+            "validFromYear": 700,
+            "validToYear": 1200
+          },
+          {
+            "value": "Испиджаб",
+            "language": "kk",
+            "validFromYear": 700,
+            "validToYear": 1200
+          },
+          {
+            "value": "Ispidjab",
+            "language": "en",
+            "validFromYear": 700,
+            "validToYear": 1200
+          }
+        ],
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "approximate",
+        "sourceIds": [
+          "unesco-silk-roads"
+        ],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    }
+  ]
+}

@@ -50,6 +50,7 @@ export default defineConfig(({ mode }) => ({
     p2a5LocalVerificationPlugin(),
     VitePWA({
       registerType: "prompt",
+      cacheId: "qazaq-heritage-map",
       includeAssets: [
         "icons/*.svg",
         "offline.html",

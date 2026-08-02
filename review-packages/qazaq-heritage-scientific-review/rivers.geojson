@@ -1,0 +1,279 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            70.5,
+            41.2
+          ],
+          [
+            68.2,
+            42.7
+          ],
+          [
+            65,
+            44
+          ],
+          [
+            61.2,
+            45.2
+          ]
+        ]
+      },
+      "properties": {
+        "id": "syr-darya-medieval",
+        "subjectType": "river",
+        "subjectId": "syr-darya",
+        "validFromYear": 500,
+        "validToYear": 1500,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Сырдарья",
+          "kk": "Сырдария",
+          "en": "Syr Darya"
+        },
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "generalized",
+        "sourceIds": [
+          "unesco-silk-roads"
+        ],
+        "claimIds": [],
+        "reconstructionMethod": "generalized historical corridor; not a metric channel",
+        "interpolationAllowed": false,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            80.2,
+            43.5
+          ],
+          [
+            77.5,
+            43.7
+          ],
+          [
+            75.2,
+            45
+          ]
+        ]
+      },
+      "properties": {
+        "id": "ili-medieval",
+        "subjectType": "river",
+        "subjectId": "ili",
+        "validFromYear": 500,
+        "validToYear": 1500,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Или",
+          "kk": "Іле",
+          "en": "Ili"
+        },
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "generalized",
+        "sourceIds": [
+          "unesco-silk-roads"
+        ],
+        "claimIds": [],
+        "reconstructionMethod": "generalized historical corridor; not a metric channel",
+        "interpolationAllowed": false,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            84.5,
+            47.5
+          ],
+          [
+            82,
+            49
+          ],
+          [
+            79.5,
+            51
+          ]
+        ]
+      },
+      "properties": {
+        "id": "irtysh-medieval",
+        "subjectType": "river",
+        "subjectId": "irtysh",
+        "validFromYear": 500,
+        "validToYear": 1500,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Иртыш",
+          "kk": "Ертіс",
+          "en": "Irtysh"
+        },
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "generalized",
+        "sourceIds": [
+          "unesco-silk-roads"
+        ],
+        "claimIds": [],
+        "reconstructionMethod": "generalized historical corridor; not a metric channel",
+        "interpolationAllowed": false,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            55.2,
+            51.2
+          ],
+          [
+            52.5,
+            49.5
+          ],
+          [
+            51.4,
+            47
+          ]
+        ]
+      },
+      "properties": {
+        "id": "ural-medieval",
+        "subjectType": "river",
+        "subjectId": "ural",
+        "validFromYear": 500,
+        "validToYear": 1500,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Урал",
+          "kk": "Жайық",
+          "en": "Ural"
+        },
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "generalized",
+        "sourceIds": [
+          "unesco-silk-roads"
+        ],
+        "claimIds": [],
+        "reconstructionMethod": "generalized historical corridor; not a metric channel",
+        "interpolationAllowed": false,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            75.5,
+            42.8
+          ],
+          [
+            73.7,
+            43.3
+          ],
+          [
+            70.5,
+            44
+          ]
+        ]
+      },
+      "properties": {
+        "id": "chu-medieval",
+        "subjectType": "river",
+        "subjectId": "chu",
+        "validFromYear": 500,
+        "validToYear": 1500,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Чу",
+          "kk": "Шу",
+          "en": "Chu"
+        },
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "generalized",
+        "sourceIds": [
+          "unesco-silk-roads"
+        ],
+        "claimIds": [],
+        "reconstructionMethod": "generalized historical corridor; not a metric channel",
+        "interpolationAllowed": false,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            72.7,
+            42.5
+          ],
+          [
+            71.4,
+            42.9
+          ],
+          [
+            69.8,
+            43.5
+          ]
+        ]
+      },
+      "properties": {
+        "id": "talas-medieval",
+        "subjectType": "river",
+        "subjectId": "talas",
+        "validFromYear": 500,
+        "validToYear": 1500,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Талас",
+          "kk": "Талас",
+          "en": "Talas"
+        },
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "generalized",
+        "sourceIds": [
+          "unesco-silk-roads"
+        ],
+        "claimIds": [],
+        "reconstructionMethod": "generalized historical corridor; not a metric channel",
+        "interpolationAllowed": false,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    }
+  ]
+}

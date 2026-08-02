@@ -1,0 +1,63 @@
+{
+  "releaseVersion": "2026.08-stable1",
+  "gitCommit": "c586dd0",
+  "releaseChannel": "exhibition-stable",
+  "integrityStatus": "READY",
+  "status": "passed",
+  "deploymentPerformed": false,
+  "databaseVerification": "blocked_without_docker_or_podman",
+  "results": [
+    {
+      "script": "exhibition:release:generate",
+      "passed": true
+    },
+    {
+      "script": "science:validate:temporal",
+      "passed": true
+    },
+    {
+      "script": "science:validate:spatial",
+      "passed": true
+    },
+    {
+      "script": "science:validate:evidence",
+      "passed": true
+    },
+    {
+      "script": "exhibition:preflight",
+      "passed": true
+    },
+    {
+      "script": "build",
+      "passed": true
+    },
+    {
+      "script": "exhibition:budget",
+      "passed": true
+    },
+    {
+      "script": "exhibition:offline:build",
+      "passed": true
+    },
+    {
+      "script": "exhibition:checksums",
+      "passed": true
+    },
+    {
+      "script": "exhibition:integrity",
+      "passed": true
+    },
+    {
+      "script": "exhibition:online:build",
+      "passed": true
+    },
+    {
+      "script": "exhibition:release:verify",
+      "passed": true
+    },
+    {
+      "script": "exhibition:stable:preflight",
+      "passed": true
+    }
+  ]
+}

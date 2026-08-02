@@ -117,6 +117,7 @@ test("loaded P1A remains usable offline and legacy map still opens", async ({
   await goToYear(page, 1511);
   await expect(page.locator(".ex-change-prompt")).toBeVisible();
   await goToYear(page, 1465);
+  await page.locator(".ex-change-prompt .ex-icon-button").click();
   await expect(page.locator(".ex-change-prompt")).toHaveCount(0);
   await context.setOffline(true);
   await goToYear(page, 1511);

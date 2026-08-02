@@ -66,8 +66,17 @@ const STATIC_PALETTES = {
   },
 };
 
-export const resolveMapPalette = ({ mode = "era", eraId, year } = {}) =>
-  mode === "era" ? getEraTheme({ eraId, year }) : STATIC_PALETTES[mode] || getEraTheme({ eraId, year });
+export const resolveMapPalette = ({ mode = "era", eraId, year } = {}) => ({
+    ...(mode === "era"
+      ? getEraTheme({ eraId, year })
+      : STATIC_PALETTES[mode] || getEraTheme({ eraId, year })),
+    basemapBackground:
+      mode === "dark" ? "#25282c"
+        : mode === "atlas" ? "#d8d1c2"
+          : mode === "high-contrast" ? "#161616"
+            : mode === "light" ? "#d7d9dc"
+              : "#d5d7d9",
+});
 
 export const readStoredMapStyle = (storage = window.localStorage) => {
   try {
@@ -99,4 +108,5 @@ export const paletteToCssVariables = (palette) => ({
   "--ex-muted": palette.muted,
   "--ex-water": palette.water,
   "--ex-land": palette.land,
+  "--ex-map-bg": palette.basemapBackground,
 });

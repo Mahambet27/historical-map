@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, useRef } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import { recordExhibitionMetric } from "../performanceTelemetry.js";
 import HistoricalStoryControls from "./HistoricalStoryControls.jsx";
 import HistoricalStoryStep from "./HistoricalStoryStep.jsx";
@@ -11,6 +11,7 @@ import {
   scheduleStoryAdvance,
   shouldPauseStoryForVisibility,
 } from "./historicalStoryModel.js";
+import { filterOfficialStorySteps } from "../officialDemoMode.js";
 
 const local = (value, language) => value?.[language] || value?.ru || "";
 
@@ -25,8 +26,16 @@ export default function HistoricalStoryPlayer({
   onOpenSources,
   onOpenComparison,
   onShowChange,
+  officialDemo = false,
 }) {
-  const story = storyOverride || getHistoricalStory(storyId);
+  const baseStory = storyOverride || getHistoricalStory(storyId);
+  const story = useMemo(
+    () =>
+      officialDemo && baseStory
+        ? { ...baseStory, steps: filterOfficialStorySteps(baseStory) }
+        : baseStory,
+    [baseStory, officialDemo]
+  );
   const [session, dispatch] = useReducer(
     historicalStoryReducer,
     undefined,

@@ -24,7 +24,16 @@ const dictionaries = {
 const I18nContext = createContext(null);
 
 export function I18nProvider({ children }) {
-  const [language, setLanguageState] = useState(() => localStorage.getItem("qhm-language") || "ru");
+  const [language, setLanguageState] = useState(() => {
+    const requested = new URLSearchParams(window.location.search).get("lang");
+    if (
+      window.location.pathname.startsWith("/demo") &&
+      ["ru", "kk", "en"].includes(requested)
+    ) {
+      return requested;
+    }
+    return localStorage.getItem("qhm-language") || "ru";
+  });
   useEffect(() => {
     document.documentElement.lang = language;
   }, [language]);

@@ -1,0 +1,181 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            69.76,
+            42.3
+          ],
+          [
+            70.5,
+            42.55
+          ],
+          [
+            71.37,
+            42.9
+          ]
+        ]
+      },
+      "properties": {
+        "id": "silk-sayram-taraz",
+        "subjectType": "route_segment",
+        "subjectId": "silk-road-southern-kazakhstan",
+        "validFromYear": 700,
+        "validToYear": 1500,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "low",
+        "spatialPrecision": "schematic",
+        "sourceIds": [
+          "unesco-silk-roads"
+        ],
+        "claimIds": [
+          "claim-silk-road-direction"
+        ],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            71.37,
+            42.9
+          ],
+          [
+            70.2,
+            42.6
+          ],
+          [
+            69.2,
+            42.65
+          ],
+          [
+            68.3,
+            42.85
+          ]
+        ]
+      },
+      "properties": {
+        "id": "silk-taraz-otrar",
+        "subjectType": "route_segment",
+        "subjectId": "silk-road-southern-kazakhstan",
+        "validFromYear": 700,
+        "validToYear": 1500,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "low",
+        "spatialPrecision": "schematic",
+        "sourceIds": [
+          "unesco-silk-roads"
+        ],
+        "claimIds": [
+          "claim-silk-road-direction"
+        ],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            68.3,
+            42.85
+          ],
+          [
+            68.15,
+            43.05
+          ],
+          [
+            68.25,
+            43.3
+          ]
+        ]
+      },
+      "properties": {
+        "id": "silk-otrar-turkistan",
+        "subjectType": "route_segment",
+        "subjectId": "silk-road-southern-kazakhstan",
+        "validFromYear": 700,
+        "validToYear": 1500,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "low",
+        "spatialPrecision": "schematic",
+        "sourceIds": [
+          "unesco-silk-roads"
+        ],
+        "claimIds": [
+          "claim-silk-road-direction"
+        ],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            68.25,
+            43.3
+          ],
+          [
+            67.2,
+            43.7
+          ],
+          [
+            66.02,
+            44.17
+          ]
+        ]
+      },
+      "properties": {
+        "id": "silk-turkistan-syganak",
+        "subjectType": "route_segment",
+        "subjectId": "silk-road-southern-kazakhstan",
+        "validFromYear": 700,
+        "validToYear": 1500,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "low",
+        "spatialPrecision": "schematic",
+        "sourceIds": [
+          "unesco-silk-roads"
+        ],
+        "claimIds": [
+          "claim-silk-road-direction"
+        ],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    }
+  ]
+}

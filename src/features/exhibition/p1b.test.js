@@ -35,7 +35,9 @@ describe("P1B temporal datasets", () => {
     expect(getHydrologySnapshotAtYear("aral-sea", 1991)?.id).toBe(
       "aral-sea-circa-1985-demo"
     );
-    expect(getHydrologySnapshotAtYear("aral-sea", 1950)).toBeNull();
+    expect(getHydrologySnapshotAtYear("aral-sea", 1950)?.id).toBe(
+      "aral-sea-historical-coarse"
+    );
   });
 
   it("selects environment snapshots by year", () => {
@@ -178,11 +180,10 @@ describe("P1B story, fallback data and local agent", () => {
       segments: routeSegments.length,
     }).toEqual({
       environment: 3,
-      hydrology: 5,
+      hydrology: 6,
       places: 8,
       routes: 2,
       segments: 4,
     });
   });
 });
-

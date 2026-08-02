@@ -10,6 +10,8 @@ import {
   buildHydrologyCollection,
   buildRouteCollections,
 } from "./p1bMapDataUtils.js";
+import { getUncertaintyStyle } from "./uncertaintyStyleRegistry.js";
+import { isRecordAllowedInOfficialDemo } from "./officialDemoMode.js";
 
 const entityById = new Map(allHistoricalEntities.map((entity) => [entity.id, entity]));
 const local = (value, language) => value?.[language] || value?.ru || "";
@@ -36,7 +38,6 @@ const getOuterRing = (geometry) =>
 
 export default function ExhibitionMapFallback({
   selectedYear,
-  activeSnapshot,
   language,
   text,
   comparison,
@@ -52,10 +53,17 @@ export default function ExhibitionMapFallback({
   archiveMap,
   archiveOverlayEnabled = false,
   archiveOpacity = 0.65,
+  effectiveQuality = "auto",
+  officialDemo = false,
 }) {
-  const territories = getFallbackEntitiesAtYear(selectedYear).sort(
+  const territories = getFallbackEntitiesAtYear(selectedYear)
+    .filter(
+      ({ geometry }) =>
+        !officialDemo || isRecordAllowedInOfficialDemo(geometry)
+    )
+    .sort(
     (a, b) => Number(a.entity.id === selectedEntityId) - Number(b.entity.id === selectedEntityId)
-  );
+    );
   const labels = getEntityLabelsAtYear(selectedYear);
   const comparisonTerritories = comparison
     ? [
@@ -108,10 +116,6 @@ export default function ExhibitionMapFallback({
     <div className="ex-map-fallback" role="img" aria-label={`${text.mapLabel}. ${text.mapUnavailable}`}>
       <svg viewBox="0 0 900 430" aria-hidden="true">
         <defs>
-          <radialGradient id="ex-sea" cx="55%" cy="45%">
-            <stop offset="0" stopColor="#17434c" />
-            <stop offset="1" stopColor="#081a25" />
-          </radialGradient>
           <filter id="ex-soft-shadow" x="-20%" y="-20%" width="140%" height="150%">
             <feDropShadow dx="0" dy="7" stdDeviation="7" floodColor="#02080d" floodOpacity=".58" />
           </filter>
@@ -119,7 +123,7 @@ export default function ExhibitionMapFallback({
             <line x1="0" y1="0" x2="0" y2="8" stroke="#fff" strokeWidth="1" opacity=".08" />
           </pattern>
         </defs>
-        <rect width="900" height="430" fill="url(#ex-sea)" />
+        <rect width="900" height="430" fill="var(--ex-map-bg, #d5d7d9)" />
         {archiveOverlayEnabled && archiveMap?.imageUrl && (
           <image
             href={archiveMap.imageUrl}
@@ -131,8 +135,12 @@ export default function ExhibitionMapFallback({
             preserveAspectRatio="none"
           />
         )}
-        <path className="ex-map-fallback__grid" d="M0 90H900M0 170H900M0 250H900M0 330H900M150 0V430M300 0V430M450 0V430M600 0V430M750 0V430" />
-        <path className="ex-map-fallback__water" d="M33 170C65 148 102 159 115 212C126 255 84 304 27 298Z" />
+        {visible("terrain") && effectiveQuality !== "light" && (
+          <path
+            className="ex-map-fallback__terrain"
+            d={polygonPath([[67.5, 39.5], [82, 39.5], [81, 44.3], [70, 44], [67.5, 39.5]])}
+          />
+        )}
         {visible("environment") && environment.features.map((feature) => (
           <path
             key={feature.id}
@@ -144,7 +152,11 @@ export default function ExhibitionMapFallback({
           <path
             key={feature.id}
             className="ex-map-fallback__historical-water"
-            d={polygonPath(getOuterRing(feature.geometry))}
+            d={
+              feature.geometry.type === "LineString"
+                ? linePath(feature.geometry.coordinates)
+                : polygonPath(getOuterRing(feature.geometry))
+            }
           />
         ))}
 
@@ -182,6 +194,12 @@ export default function ExhibitionMapFallback({
                 opacity={selected ? ".92" : ".72"}
                 filter="url(#ex-soft-shadow)"
               />
+              {visible("uncertainty") && (
+                <path
+                  d={path}
+                  className={`ex-map-fallback__uncertainty is-${getUncertaintyStyle(geometry).status}`}
+                />
+              )}
               {geometry.verificationStatus === "needs_review" && <path d={path} fill="url(#ex-review-pattern)" />}
             </g>
           );
@@ -221,7 +239,7 @@ export default function ExhibitionMapFallback({
           );
         })}
 
-        {labels.map((item) => {
+        {visible("stateLabels") && labels.map((item) => {
           const entity = entityById.get(item.entityId);
           const point = projectExhibitionCoordinate(item.labelPoint);
           if (!entity) return null;
@@ -238,13 +256,6 @@ export default function ExhibitionMapFallback({
           );
         })}
 
-        {(activeSnapshot?.placeIds || []).slice(0, 4).map((placeId) => {
-          const knownPoints = { "chu-valley": [73.7,43.3], turkistan: [68.25,43.3], saraishyk: [51.73,47.05], almaty: [76.89,43.24], astana: [71.43,51.13] };
-          const coordinate = knownPoints[placeId];
-          if (!coordinate) return null;
-          const point = projectExhibitionCoordinate(coordinate);
-          return <circle key={placeId} cx={point.x} cy={point.y} r="4" className="ex-map-fallback__point" />;
-        })}
       </svg>
       {archiveOverlayEnabled && archiveMap && (
         <div className="ex-archive-attribution">
@@ -262,6 +273,18 @@ export default function ExhibitionMapFallback({
             {geometry.verificationStatus === "needs_review" && <small title={text.needsReview}>○</small>}
           </button>
         ))}
+        <div className="ex-uncertainty-legend">
+          <strong>
+            {language === "en"
+              ? "Reconstruction precision and status"
+              : language === "kk"
+                ? "Реконструкция дәлдігі мен мәртебесі"
+                : "Точность и статус реконструкции"}
+          </strong>
+          <span><i className="is-solid" />{language === "en" ? "Reviewed/generalized" : "Проверенная/обобщённая"}</span>
+          <span><i className="is-soft" />{language === "en" ? "Approximate" : "Приблизительная"}</span>
+          <span><i className="is-patterned" />{language === "en" ? "Disputed/schematic" : "Спорная/схематическая"}</span>
+        </div>
       </aside>
       <div className="ex-map-fallback__status">
         <span>◈</span>

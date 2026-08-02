@@ -1,0 +1,1555 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              48,
+              44
+            ],
+            [
+              55,
+              51
+            ],
+            [
+              72,
+              54
+            ],
+            [
+              87,
+              49
+            ],
+            [
+              83,
+              41
+            ],
+            [
+              64,
+              40
+            ],
+            [
+              48,
+              44
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "saka-550",
+        "subjectType": "geometry",
+        "subjectId": "saka-communities",
+        "validFromYear": -800,
+        "validToYear": -300,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "reviewed",
+        "scientificReadiness": "exhibition_ready",
+        "confidenceLevel": "low",
+        "spatialPrecision": "coarse_reconstruction",
+        "sourceIds": [
+          "britannica-kazakhstan-history"
+        ],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              46,
+              41
+            ],
+            [
+              52,
+              54
+            ],
+            [
+              75,
+              58
+            ],
+            [
+              94,
+              50
+            ],
+            [
+              88,
+              39
+            ],
+            [
+              67,
+              38
+            ],
+            [
+              46,
+              41
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "turkic-552",
+        "subjectType": "geometry",
+        "subjectId": "first-turkic-khaganate",
+        "validFromYear": 552,
+        "validToYear": 603,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "reviewed",
+        "scientificReadiness": "exhibition_ready",
+        "confidenceLevel": "low",
+        "spatialPrecision": "coarse_reconstruction",
+        "sourceIds": [
+          "britannica-turkic-peoples"
+        ],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              51,
+              42
+            ],
+            [
+              55,
+              52
+            ],
+            [
+              73,
+              55
+            ],
+            [
+              84,
+              48
+            ],
+            [
+              80,
+              40
+            ],
+            [
+              63,
+              39
+            ],
+            [
+              51,
+              42
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "western-turkic-604",
+        "subjectType": "geometry",
+        "subjectId": "western-turkic-khaganate",
+        "validFromYear": 604,
+        "validToYear": 703,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "coarse_reconstruction",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              64,
+              41
+            ],
+            [
+              68,
+              47
+            ],
+            [
+              77,
+              49
+            ],
+            [
+              82,
+              44
+            ],
+            [
+              77,
+              40
+            ],
+            [
+              69,
+              40
+            ],
+            [
+              64,
+              41
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "turgesh-704",
+        "subjectType": "geometry",
+        "subjectId": "turgesh-khaganate",
+        "validFromYear": 704,
+        "validToYear": 755,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "coarse_reconstruction",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              65,
+              41
+            ],
+            [
+              68,
+              47
+            ],
+            [
+              78,
+              48
+            ],
+            [
+              81,
+              43
+            ],
+            [
+              75,
+              40
+            ],
+            [
+              65,
+              41
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "karluk-756",
+        "subjectType": "geometry",
+        "subjectId": "karluk-state",
+        "validFromYear": 756,
+        "validToYear": 839,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "coarse_reconstruction",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              50,
+              43
+            ],
+            [
+              54,
+              49
+            ],
+            [
+              66,
+              50
+            ],
+            [
+              69,
+              44
+            ],
+            [
+              62,
+              40
+            ],
+            [
+              50,
+              43
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "oghuz-756",
+        "subjectType": "geometry",
+        "subjectId": "oghuz-state",
+        "validFromYear": 756,
+        "validToYear": 941,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "coarse_reconstruction",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              62,
+              48
+            ],
+            [
+              68,
+              55
+            ],
+            [
+              82,
+              56
+            ],
+            [
+              86,
+              49
+            ],
+            [
+              77,
+              46
+            ],
+            [
+              62,
+              48
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "kimak-840",
+        "subjectType": "geometry",
+        "subjectId": "kimak-khaganate",
+        "validFromYear": 840,
+        "validToYear": 941,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "coarse_reconstruction",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              61,
+              39
+            ],
+            [
+              65,
+              45
+            ],
+            [
+              76,
+              46
+            ],
+            [
+              80,
+              40
+            ],
+            [
+              72,
+              37
+            ],
+            [
+              61,
+              39
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "karakhanid-840",
+        "subjectType": "geometry",
+        "subjectId": "karakhanid-state",
+        "validFromYear": 840,
+        "validToYear": 941,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "coarse_reconstruction",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              51,
+              45
+            ],
+            [
+              56,
+              53
+            ],
+            [
+              69,
+              55
+            ],
+            [
+              77,
+              50
+            ],
+            [
+              72,
+              44
+            ],
+            [
+              61,
+              42
+            ],
+            [
+              51,
+              45
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "abulkhair-1428",
+        "subjectType": "geometry",
+        "subjectId": "abulkhair-state",
+        "validFromYear": 1428,
+        "validToYear": 1468,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "coarse_reconstruction",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              68,
+              40
+            ],
+            [
+              70,
+              47
+            ],
+            [
+              82,
+              49
+            ],
+            [
+              88,
+              43
+            ],
+            [
+              81,
+              38
+            ],
+            [
+              72,
+              38
+            ],
+            [
+              68,
+              40
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "moghulistan-1347",
+        "subjectType": "geometry",
+        "subjectId": "moghulistan",
+        "validFromYear": 1347,
+        "validToYear": 1514,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "coarse_reconstruction",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              43,
+              45
+            ],
+            [
+              47,
+              53
+            ],
+            [
+              58,
+              54
+            ],
+            [
+              63,
+              48
+            ],
+            [
+              57,
+              42
+            ],
+            [
+              48,
+              42
+            ],
+            [
+              43,
+              45
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "nogai-1440",
+        "subjectType": "geometry",
+        "subjectId": "nogai-horde",
+        "validFromYear": 1440,
+        "validToYear": 1634,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "coarse_reconstruction",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              55,
+              35
+            ],
+            [
+              59,
+              43
+            ],
+            [
+              71,
+              44
+            ],
+            [
+              76,
+              37
+            ],
+            [
+              67,
+              33
+            ],
+            [
+              55,
+              35
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "timurid-1370",
+        "subjectType": "geometry",
+        "subjectId": "timurid-state",
+        "validFromYear": 1370,
+        "validToYear": 1507,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "coarse_reconstruction",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              61,
+              52
+            ],
+            [
+              66,
+              59
+            ],
+            [
+              82,
+              60
+            ],
+            [
+              88,
+              54
+            ],
+            [
+              79,
+              50
+            ],
+            [
+              61,
+              52
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "sibir-1468",
+        "subjectType": "geometry",
+        "subjectId": "sibir-khanate",
+        "validFromYear": 1468,
+        "validToYear": 1598,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "coarse_reconstruction",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              64,
+              42
+            ],
+            [
+              69,
+              44
+            ],
+            [
+              76,
+              43
+            ],
+            [
+              78,
+              47
+            ],
+            [
+              73,
+              50
+            ],
+            [
+              66,
+              49
+            ],
+            [
+              62,
+              46
+            ],
+            [
+              64,
+              42
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "khanate-1465",
+        "subjectType": "geometry",
+        "subjectId": "kazakh-khanate",
+        "validFromYear": 1465,
+        "validToYear": 1509,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "reviewed",
+        "scientificReadiness": "exhibition_ready",
+        "confidenceLevel": "medium",
+        "spatialPrecision": "generalized",
+        "sourceIds": [
+          "e-history-kazakh-khanate",
+          "cambridge-kazakh-history"
+        ],
+        "claimIds": [
+          "claim-khanate-1465-territory"
+        ],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              57,
+              43
+            ],
+            [
+              61,
+              51
+            ],
+            [
+              71,
+              53
+            ],
+            [
+              80,
+              48
+            ],
+            [
+              76,
+              41
+            ],
+            [
+              65,
+              40
+            ],
+            [
+              57,
+              43
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "khanate-1510",
+        "subjectType": "geometry",
+        "subjectId": "kazakh-khanate",
+        "validFromYear": 1510,
+        "validToYear": 1512,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "reviewed",
+        "scientificReadiness": "exhibition_ready",
+        "confidenceLevel": "low",
+        "spatialPrecision": "coarse_reconstruction",
+        "sourceIds": [
+          "e-history-kasym",
+          "cambridge-kazakh-history"
+        ],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              51,
+              44
+            ],
+            [
+              56,
+              51
+            ],
+            [
+              68,
+              54
+            ],
+            [
+              81,
+              49
+            ],
+            [
+              78,
+              42
+            ],
+            [
+              65,
+              40
+            ],
+            [
+              51,
+              44
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "khanate-1513",
+        "subjectType": "geometry",
+        "subjectId": "kazakh-khanate",
+        "validFromYear": 1513,
+        "validToYear": 1521,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "reviewed",
+        "scientificReadiness": "exhibition_ready",
+        "confidenceLevel": "low",
+        "spatialPrecision": "coarse_reconstruction",
+        "sourceIds": [
+          "e-history-kasym",
+          "cambridge-kazakh-history"
+        ],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              52,
+              44
+            ],
+            [
+              57,
+              52
+            ],
+            [
+              70,
+              54
+            ],
+            [
+              80,
+              48
+            ],
+            [
+              76,
+              41
+            ],
+            [
+              63,
+              40
+            ],
+            [
+              52,
+              44
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "khanate-1522",
+        "subjectType": "geometry",
+        "subjectId": "kazakh-khanate",
+        "validFromYear": 1522,
+        "validToYear": 1634,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "coarse_reconstruction",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              51,
+              44
+            ],
+            [
+              56,
+              52
+            ],
+            [
+              70,
+              54
+            ],
+            [
+              77,
+              49
+            ],
+            [
+              73,
+              42
+            ],
+            [
+              62,
+              40
+            ],
+            [
+              51,
+              44
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "khanate-1635",
+        "subjectType": "geometry",
+        "subjectId": "kazakh-khanate",
+        "validFromYear": 1635,
+        "validToYear": 1722,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "coarse_reconstruction",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              50,
+              44
+            ],
+            [
+              55,
+              52
+            ],
+            [
+              67,
+              53
+            ],
+            [
+              73,
+              48
+            ],
+            [
+              69,
+              42
+            ],
+            [
+              59,
+              40
+            ],
+            [
+              50,
+              44
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "khanate-1723",
+        "subjectType": "geometry",
+        "subjectId": "kazakh-khanate",
+        "validFromYear": 1723,
+        "validToYear": 1730,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "coarse_reconstruction",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              49,
+              44
+            ],
+            [
+              54,
+              53
+            ],
+            [
+              68,
+              54
+            ],
+            [
+              76,
+              49
+            ],
+            [
+              73,
+              41
+            ],
+            [
+              60,
+              40
+            ],
+            [
+              49,
+              44
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "khanate-1731",
+        "subjectType": "geometry",
+        "subjectId": "kazakh-khanate",
+        "validFromYear": 1731,
+        "validToYear": 1847,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "coarse_reconstruction",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              73,
+              41
+            ],
+            [
+              75,
+              50
+            ],
+            [
+              85,
+              52
+            ],
+            [
+              91,
+              46
+            ],
+            [
+              87,
+              39
+            ],
+            [
+              78,
+              38
+            ],
+            [
+              73,
+              41
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "dzungar-1635",
+        "subjectType": "geometry",
+        "subjectId": "dzungar-khanate",
+        "validFromYear": 1635,
+        "validToYear": 1758,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "coarse_reconstruction",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              57,
+              37
+            ],
+            [
+              59,
+              43
+            ],
+            [
+              69,
+              44
+            ],
+            [
+              73,
+              38
+            ],
+            [
+              66,
+              35
+            ],
+            [
+              57,
+              37
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "bukhara-1500",
+        "subjectType": "geometry",
+        "subjectId": "bukhara-khanate",
+        "validFromYear": 1500,
+        "validToYear": 1785,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "coarse_reconstruction",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              52,
+              38
+            ],
+            [
+              53,
+              45
+            ],
+            [
+              62,
+              46
+            ],
+            [
+              65,
+              40
+            ],
+            [
+              60,
+              36
+            ],
+            [
+              52,
+              38
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "khiva-1511",
+        "subjectType": "geometry",
+        "subjectId": "khiva-khanate",
+        "validFromYear": 1511,
+        "validToYear": 1847,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "coarse_reconstruction",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              43,
+              50
+            ],
+            [
+              47,
+              61
+            ],
+            [
+              78,
+              61
+            ],
+            [
+              82,
+              54
+            ],
+            [
+              70,
+              51
+            ],
+            [
+              55,
+              50
+            ],
+            [
+              43,
+              50
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "russian-1721",
+        "subjectType": "geometry",
+        "subjectId": "russian-empire",
+        "validFromYear": 1721,
+        "validToYear": 1847,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "coarse_reconstruction",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              82,
+              37
+            ],
+            [
+              84,
+              50
+            ],
+            [
+              96,
+              53
+            ],
+            [
+              99,
+              40
+            ],
+            [
+              91,
+              34
+            ],
+            [
+              82,
+              37
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "qing-1644",
+        "subjectType": "geometry",
+        "subjectId": "qing-empire",
+        "validFromYear": 1644,
+        "validToYear": 1847,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "educational_reconstruction",
+        "confidenceLevel": "low",
+        "spatialPrecision": "coarse_reconstruction",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              46.5,
+              49.2
+            ],
+            [
+              51,
+              55
+            ],
+            [
+              61,
+              55.4
+            ],
+            [
+              72,
+              54.2
+            ],
+            [
+              87.3,
+              49.1
+            ],
+            [
+              85,
+              46
+            ],
+            [
+              80,
+              42
+            ],
+            [
+              67,
+              40.7
+            ],
+            [
+              55,
+              42.2
+            ],
+            [
+              46.5,
+              49.2
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "kazakh-ssr-1936",
+        "subjectType": "geometry",
+        "subjectId": "kazakh-ssr",
+        "validFromYear": 1936,
+        "validToYear": 1990,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "reviewed",
+        "scientificReadiness": "exhibition_ready",
+        "confidenceLevel": "high",
+        "spatialPrecision": "generalized",
+        "sourceIds": [
+          "britannica-kazakhstan-history"
+        ],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              46.5,
+              49.2
+            ],
+            [
+              51,
+              55
+            ],
+            [
+              61,
+              55.4
+            ],
+            [
+              72,
+              54.2
+            ],
+            [
+              87.3,
+              49.1
+            ],
+            [
+              85,
+              46
+            ],
+            [
+              80,
+              42
+            ],
+            [
+              67,
+              40.7
+            ],
+            [
+              55,
+              42.2
+            ],
+            [
+              46.5,
+              49.2
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "republic-1991",
+        "subjectType": "geometry",
+        "subjectId": "republic-kazakhstan",
+        "validFromYear": 1991,
+        "validToYear": null,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "verified",
+        "scientificReadiness": "exhibition_ready",
+        "confidenceLevel": "high",
+        "spatialPrecision": "generalized",
+        "sourceIds": [
+          "adilet-independence-law"
+        ],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    }
+  ]
+}

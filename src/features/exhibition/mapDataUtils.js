@@ -1,6 +1,9 @@
 import { getGeometriesAtYear } from "../../data/exhibition/entityGeometries.js";
 import { allHistoricalEntities } from "../../data/exhibition/entities.js";
 import { getEntityStyle } from "./theme/entityStyleRegistry.js";
+import { getScientificReadiness } from "./scientificReadiness.js";
+import { getSpatialPrecision } from "./spatialPrecision.js";
+import { getUncertaintyVariant } from "./uncertaintyStyleRegistry.js";
 
 const entityById = new Map(allHistoricalEntities.map((entity) => [entity.id, entity]));
 const local = (value, language) => value?.[language] || value?.ru || "";
@@ -20,6 +23,13 @@ export const buildTerritoryCollection = (selectedYear) => ({
         borderColor: style.borderColor,
         extrusionColor: style.extrusionColor,
         pattern: style.pattern,
+        reconstructionStatus: item.geometryType,
+        confidenceLevel: item.confidenceLevel,
+        verificationStatus: item.verificationStatus,
+        sourceIds: item.sourceIds,
+        scientificReadiness: getScientificReadiness(item),
+        spatialPrecision: getSpatialPrecision(item),
+        uncertaintyVariant: getUncertaintyVariant(item),
       },
     };
   }),

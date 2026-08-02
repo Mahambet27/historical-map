@@ -1,0 +1,588 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "saka-communities",
+        "subjectType": "entity",
+        "subjectId": "saka-communities",
+        "validFromYear": -800,
+        "validToYear": -300,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Сакские сообщества",
+          "kk": "Сақ қауымдары",
+          "en": "Saka communities"
+        },
+        "verificationStatus": "reviewed",
+        "scientificReadiness": "exhibition_ready",
+        "confidenceLevel": "low",
+        "spatialPrecision": "unknown",
+        "sourceIds": [
+          "britannica-kazakhstan-history"
+        ],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "first-turkic-khaganate",
+        "subjectType": "entity",
+        "subjectId": "first-turkic-khaganate",
+        "validFromYear": 552,
+        "validToYear": 603,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Тюркский каганат",
+          "kk": "Түрік қағанаты",
+          "en": "First Turkic Khaganate"
+        },
+        "verificationStatus": "reviewed",
+        "scientificReadiness": "exhibition_ready",
+        "confidenceLevel": "low",
+        "spatialPrecision": "unknown",
+        "sourceIds": [
+          "britannica-turkic-peoples",
+          "unesco-silk-roads"
+        ],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "kazakh-khanate",
+        "subjectType": "entity",
+        "subjectId": "kazakh-khanate",
+        "validFromYear": 1465,
+        "validToYear": 1847,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Казахское ханство",
+          "kk": "Қазақ хандығы",
+          "en": "Kazakh Khanate"
+        },
+        "verificationStatus": "reviewed",
+        "scientificReadiness": "exhibition_ready",
+        "confidenceLevel": "medium",
+        "spatialPrecision": "unknown",
+        "sourceIds": [
+          "e-history-kazakh-khanate",
+          "cambridge-kazakh-history",
+          "e-history-kasym"
+        ],
+        "claimIds": [
+          "claim-khanate-foundation-1465"
+        ],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "kazakh-ssr",
+        "subjectType": "entity",
+        "subjectId": "kazakh-ssr",
+        "validFromYear": 1936,
+        "validToYear": 1991,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Казахская ССР",
+          "kk": "Қазақ КСР",
+          "en": "Kazakh SSR"
+        },
+        "verificationStatus": "reviewed",
+        "scientificReadiness": "exhibition_ready",
+        "confidenceLevel": "high",
+        "spatialPrecision": "unknown",
+        "sourceIds": [
+          "britannica-kazakhstan-history"
+        ],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "republic-kazakhstan",
+        "subjectType": "entity",
+        "subjectId": "republic-kazakhstan",
+        "validFromYear": 1991,
+        "validToYear": null,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Республика Казахстан",
+          "kk": "Қазақстан Республикасы",
+          "en": "Republic of Kazakhstan"
+        },
+        "verificationStatus": "reviewed",
+        "scientificReadiness": "exhibition_ready",
+        "confidenceLevel": "high",
+        "spatialPrecision": "unknown",
+        "sourceIds": [
+          "adilet-independence-law",
+          "un-kazakhstan"
+        ],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "western-turkic-khaganate",
+        "subjectType": "entity",
+        "subjectId": "western-turkic-khaganate",
+        "validFromYear": 603,
+        "validToYear": 704,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Западно-Тюркский каганат",
+          "kk": "Батыс Түрік қағанаты",
+          "en": "Western Turkic Khaganate"
+        },
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "low",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "turgesh-khaganate",
+        "subjectType": "entity",
+        "subjectId": "turgesh-khaganate",
+        "validFromYear": 704,
+        "validToYear": 756,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Тюргешский каганат",
+          "kk": "Түргеш қағанаты",
+          "en": "Turgesh Khaganate"
+        },
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "low",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "karluk-state",
+        "subjectType": "entity",
+        "subjectId": "karluk-state",
+        "validFromYear": 756,
+        "validToYear": 940,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Карлукское государство",
+          "kk": "Қарлұқ мемлекеті",
+          "en": "Karluk state"
+        },
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "low",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "oghuz-state",
+        "subjectType": "entity",
+        "subjectId": "oghuz-state",
+        "validFromYear": 756,
+        "validToYear": 1055,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Огузское государство",
+          "kk": "Оғыз мемлекеті",
+          "en": "Oghuz state"
+        },
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "low",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "kimak-khaganate",
+        "subjectType": "entity",
+        "subjectId": "kimak-khaganate",
+        "validFromYear": 840,
+        "validToYear": 1050,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Кимакский каганат",
+          "kk": "Қимақ қағанаты",
+          "en": "Kimak Khaganate"
+        },
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "low",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "karakhanid-state",
+        "subjectType": "entity",
+        "subjectId": "karakhanid-state",
+        "validFromYear": 840,
+        "validToYear": 1212,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Караханидское государство",
+          "kk": "Қарахан мемлекеті",
+          "en": "Karakhanid state"
+        },
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "low",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "abulkhair-state",
+        "subjectType": "entity",
+        "subjectId": "abulkhair-state",
+        "validFromYear": 1428,
+        "validToYear": 1468,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Государство Абулхаира",
+          "kk": "Әбілқайыр мемлекеті",
+          "en": "Abu'l-Khayr state"
+        },
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "low",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "moghulistan",
+        "subjectType": "entity",
+        "subjectId": "moghulistan",
+        "validFromYear": 1347,
+        "validToYear": 1514,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Могулистан",
+          "kk": "Моғолстан",
+          "en": "Moghulistan"
+        },
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "low",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "nogai-horde",
+        "subjectType": "entity",
+        "subjectId": "nogai-horde",
+        "validFromYear": 1440,
+        "validToYear": 1634,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Ногайская Орда",
+          "kk": "Ноғай Ордасы",
+          "en": "Nogai Horde"
+        },
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "low",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "timurid-state",
+        "subjectType": "entity",
+        "subjectId": "timurid-state",
+        "validFromYear": 1370,
+        "validToYear": 1507,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Государство Тимуридов",
+          "kk": "Темір әулеті мемлекеті",
+          "en": "Timurid state"
+        },
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "low",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "sibir-khanate",
+        "subjectType": "entity",
+        "subjectId": "sibir-khanate",
+        "validFromYear": 1468,
+        "validToYear": 1598,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Сибирское ханство",
+          "kk": "Сібір хандығы",
+          "en": "Sibir Khanate"
+        },
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "low",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "dzungar-khanate",
+        "subjectType": "entity",
+        "subjectId": "dzungar-khanate",
+        "validFromYear": 1635,
+        "validToYear": 1758,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Джунгарское ханство",
+          "kk": "Жоңғар хандығы",
+          "en": "Dzungar Khanate"
+        },
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "low",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "bukhara-khanate",
+        "subjectType": "entity",
+        "subjectId": "bukhara-khanate",
+        "validFromYear": 1500,
+        "validToYear": 1785,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Бухарское ханство",
+          "kk": "Бұхара хандығы",
+          "en": "Bukhara Khanate"
+        },
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "low",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "khiva-khanate",
+        "subjectType": "entity",
+        "subjectId": "khiva-khanate",
+        "validFromYear": 1511,
+        "validToYear": 1920,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Хивинское ханство",
+          "kk": "Хиуа хандығы",
+          "en": "Khiva Khanate"
+        },
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "low",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "russian-empire",
+        "subjectType": "entity",
+        "subjectId": "russian-empire",
+        "validFromYear": 1721,
+        "validToYear": 1917,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Российская империя",
+          "kk": "Ресей империясы",
+          "en": "Russian Empire"
+        },
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "low",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "qing-empire",
+        "subjectType": "entity",
+        "subjectId": "qing-empire",
+        "validFromYear": 1644,
+        "validToYear": 1912,
+        "snapshotYear": null,
+        "names": {
+          "ru": "Цинская империя",
+          "kk": "Цин империясы",
+          "en": "Qing Empire"
+        },
+        "verificationStatus": "needs_review",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "low",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    }
+  ]
+}

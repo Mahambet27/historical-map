@@ -42,6 +42,29 @@ import { readLocalReviews } from "./review/localReviewStore.js";
 import { parseP1BUrlState } from "./p1bUrlState.js";
 import { getP1CDataDiagnostics } from "./p1cDataLoader.js";
 import useHistoricalRepositoryStatus from "./hooks/useHistoricalRepositoryStatus.js";
+import {
+  createHistoricalBasemapStyle,
+  inspectHistoricalBasemap,
+} from "./historicalBasemapPolicy.js";
+import {
+  getEnvironmentAtYear,
+  getHistoricalTerrainContext,
+  getHydrologyAtYear,
+} from "./temporalGeographyModel.js";
+import { getGeometriesAtYear } from "../../data/exhibition/entityGeometries.js";
+import { getEntityLabelsAtYear } from "../../data/exhibition/entityLabels.js";
+import { getHistoricalSettlementsAtYear } from "../../data/exhibition/historicalSettlements.js";
+import { EXHIBITION_RELEASE } from "../../config/exhibitionRelease.js";
+import {
+  OFFLINE_EXHIBITION,
+  RELEASE_CHANNEL,
+} from "../../config/releaseChannel.js";
+import {
+  detectDeviceProfile,
+  getSafeDeviceProfileSummary,
+} from "./demo/deviceProfile.js";
+import { runDemoHealthCheck } from "./demo/demoHealthCheck.js";
+import { isDemoPath } from "./demo/demoRoute.js";
 
 const checkWebGl = () => {
   try {
@@ -58,14 +81,25 @@ const metricByName = (name) =>
 
 export default function ExhibitionDiagnosticsPage() {
   const { language } = useI18n();
-  const [supabase, setSupabase] = useState({ configured: null, connected: null });
+  const [supabase, setSupabase] = useState(() =>
+    OFFLINE_EXHIBITION
+      ? { configured: false, connected: false, error: "offline build" }
+      : { configured: null, connected: null }
+  );
   const [posterReady, setPosterReady] = useState(null);
   const [modelCached, setModelCached] = useState(null);
   const [p2a5, setP2a5] = useState(null);
+  const [releaseManifest, setReleaseManifest] = useState(null);
+  const [preflight, setPreflight] = useState(null);
+  const [demoHealth, setDemoHealth] = useState(null);
   const repository = useHistoricalRepositoryStatus();
   const requestedQuality = readStoredQualityMode();
   const effectiveQuality = detectExhibitionQuality({ requested: requestedQuality });
   const webGlReady = useMemo(() => checkWebGl(), []);
+  const deviceProfile = useMemo(
+    () => getSafeDeviceProfileSummary(detectDeviceProfile()),
+    []
+  );
   const saveData = Boolean(navigator.connection?.saveData);
   const effectiveType = navigator.connection?.effectiveType || "unknown";
   const lastError = metricByName("3d-last-model-error");
@@ -94,10 +128,12 @@ export default function ExhibitionDiagnosticsPage() {
 
   useEffect(() => {
     let active = true;
-    getHistoricalRepository().catch(() => {});
-    checkSupabaseConnection().then((result) => {
-      if (active) setSupabase(result);
-    });
+    getHistoricalRepository({ dataSource: OFFLINE_EXHIBITION ? "local" : undefined }).catch(() => {});
+    if (!OFFLINE_EXHIBITION) {
+      checkSupabaseConnection().then((result) => {
+        if (active) setSupabase(result);
+      });
+    }
     const image = new Image();
     image.onload = () => active && setPosterReady(true);
     image.onerror = () => active && setPosterReady(false);
@@ -122,6 +158,17 @@ export default function ExhibitionDiagnosticsPage() {
           if (active) setP2a5(null);
         });
     }
+    fetch("/exhibition-release.json", { cache: "no-store" })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((value) => active && setReleaseManifest(value))
+      .catch(() => active && setReleaseManifest(null));
+    fetch("/exhibition-preflight.json", { cache: "no-store" })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((value) => active && setPreflight(value))
+      .catch(() => active && setPreflight(null));
+    runDemoHealthCheck()
+      .then((value) => active && setDemoHealth(value))
+      .catch(() => active && setDemoHealth(null));
     return () => {
       active = false;
       image.onload = null;
@@ -243,6 +290,143 @@ export default function ExhibitionDiagnosticsPage() {
     diagnostic("p2a-errors", "Repository errors", repository.repositoryErrors ? "fallback" : "ok", `${repository.repositoryErrors || 0}${repository.lastErrorCode ? ` · ${repository.lastErrorCode}` : ""}`),
     diagnostic("p2a-seed", "Seed validation", P2A_VALIDATION_SUMMARY.seed.errors ? "error" : "ok", `${P2A_VALIDATION_SUMMARY.seed.records} records · ${P2A_VALIDATION_SUMMARY.seed.errors} errors · ${P2A_VALIDATION_SUMMARY.seed.warnings} warnings`),
     diagnostic("p2a-geometry", "Geometry validation", P2A_VALIDATION_SUMMARY.geometry.errors ? "error" : "optional", `${P2A_VALIDATION_SUMMARY.geometry.records} records · ${P2A_VALIDATION_SUMMARY.geometry.errors} errors · ${P2A_VALIDATION_SUMMARY.geometry.warnings} warnings`),
+  ];
+  const historicalBasemap = inspectHistoricalBasemap(
+    createHistoricalBasemapStyle()
+  );
+  const diagnosticYear = 1465;
+  const activeHydrology = getHydrologyAtYear(diagnosticYear);
+  const activeEnvironment = getEnvironmentAtYear(diagnosticYear);
+  const historicalBasemapChecks = [
+    diagnostic("p2a6-labels", "modern labels visible", historicalBasemap.modernLabelsVisible ? "error" : "ok", historicalBasemap.modernLabelsVisible ? "yes" : "no"),
+    diagnostic("p2a6-roads", "modern roads visible", historicalBasemap.modernRoadsVisible ? "error" : "ok", historicalBasemap.modernRoadsVisible ? "yes" : "no"),
+    diagnostic("p2a6-buildings", "modern buildings visible", historicalBasemap.modernBuildingsVisible ? "error" : "ok", historicalBasemap.modernBuildingsVisible ? "yes" : "no"),
+    diagnostic("p2a6-admin", "modern admin borders visible", historicalBasemap.modernAdministrativeBordersVisible ? "error" : "ok", historicalBasemap.modernAdministrativeBordersVisible ? "yes" : "no"),
+    diagnostic("p2a6-hydrology", "modern hydrology visible", historicalBasemap.modernHydrologyVisible ? "error" : "ok", historicalBasemap.modernHydrologyVisible ? "yes" : "no"),
+    diagnostic("p2a6-territories", "active historical territory count", "ok", String(getGeometriesAtYear(diagnosticYear).length)),
+    diagnostic("p2a6-places", "active historical place count", "ok", String(getHistoricalSettlementsAtYear(diagnosticYear).length)),
+    diagnostic("p2a6-active-hydrology", "active hydrology snapshot", activeHydrology.length ? "ok" : "optional", activeHydrology.map((item) => item.id).join(", ") || "data unavailable"),
+    diagnostic("p2a6-active-environment", "active temporal context", activeEnvironment.length ? "ok" : "optional", activeEnvironment.map((item) => item.id).join(", ") || "data unavailable"),
+    diagnostic("p2a6-terrain", "terrain mode", "ok", getHistoricalTerrainContext(diagnosticYear, { quality: effectiveQuality }).mode),
+    diagnostic("p2a6-label-count", "historical label count", "ok", String(getEntityLabelsAtYear(diagnosticYear).length)),
+    diagnostic("p2a6-unavailable", "unavailable geography count", activeHydrology.length || activeEnvironment.length ? "ok" : "optional", String(Number(!activeHydrology.length) + Number(!activeEnvironment.length))),
+    diagnostic("p2a6-policy", "basemap policy", historicalBasemap.passed ? "ok" : "error", historicalBasemap.passed ? "passed" : "failed"),
+  ];
+  const scienceSummary = releaseManifest?.scientificValidationSummary;
+  const scientificReleaseChecks = [
+    diagnostic("p2a7-release", "Release version", "ok", EXHIBITION_RELEASE.version),
+    diagnostic("p2a7-dataset", "Dataset version", "ok", EXHIBITION_RELEASE.datasetVersion),
+    diagnostic("p2a7-validation", "Scientific validation status", scienceSummary && Object.values(scienceSummary).every((item) => item.errors === 0) ? "ok" : "checking", scienceSummary ? "validators completed" : "manifest not loaded"),
+    diagnostic("p2a7-temporal", "Temporal errors / warnings", scienceSummary?.temporal?.errors ? "error" : "ok", scienceSummary ? `${scienceSummary.temporal.errors} / ${scienceSummary.temporal.warnings}` : "not loaded"),
+    diagnostic("p2a7-spatial", "Spatial errors / warnings", scienceSummary?.spatial?.errors ? "error" : "ok", scienceSummary ? `${scienceSummary.spatial.errors} / ${scienceSummary.spatial.warnings}` : "not loaded"),
+    diagnostic("p2a7-evidence", "Evidence errors / warnings", scienceSummary?.evidence?.errors ? "error" : "ok", scienceSummary ? `${scienceSummary.evidence.errors} / ${scienceSummary.evidence.warnings}` : "not loaded"),
+    diagnostic("p2a7-ready", "exhibition_ready count", "ok", String(releaseManifest?.verifiedRecordCount ?? "not loaded")),
+    diagnostic("p2a7-educational", "educational reconstruction count", "ok", String(releaseManifest?.educationalReconstructionCount ?? "not loaded")),
+    diagnostic("p2a7-review", "needs_review count", "optional", String(releaseManifest?.needsReviewCount ?? "not loaded")),
+    diagnostic("p2a7-demo", "demo_only count", "optional", String(releaseManifest?.demoOnlyCount ?? "not loaded")),
+    diagnostic("p2a7-blocked", "blocked count", "optional", String(releaseManifest?.blockedCount ?? EXHIBITION_RELEASE.blockedRecordIds.length)),
+    diagnostic("p2a7-official", "official demo mode", "ok", new URLSearchParams(window.location.search).get("officialDemo") === "true" ? "on" : "off"),
+    diagnostic("p2a7-official-records", "official demo records", "ok", String(releaseManifest?.officialDemoRecordCount ?? "not loaded")),
+    diagnostic("p2a7-gis", "GIS review package generated", releaseManifest?.gisReviewPackageGenerated ? "ok" : "optional", releaseManifest?.gisReviewPackageGenerated ? "yes" : "not confirmed"),
+    diagnostic("p2a7-preflight", "preflight status", preflight?.status === "passed" ? "ok" : preflight?.status === "failed" ? "error" : "checking", preflight?.status || "not loaded"),
+    diagnostic("p2a7-basemap", "basemap policy", historicalBasemap.passed ? "ok" : "error", historicalBasemap.passed ? "passed" : "failed"),
+    diagnostic("p2a7-channel", "build channel", "ok", releaseManifest?.releaseChannel || "release-candidate"),
+  ];
+  const officialOperationsChecks = [
+    diagnostic("p2a8-channel", "Release channel", "ok", RELEASE_CHANNEL),
+    diagnostic(
+      "p2a8-official",
+      "Official mode",
+      "ok",
+      isDemoPath() ||
+        new URLSearchParams(window.location.search).get("officialDemo") === "true"
+        ? "on"
+        : "off"
+    ),
+    diagnostic(
+      "p2a8-offline-build",
+      "Offline build",
+      OFFLINE_EXHIBITION ? "ok" : "optional",
+      OFFLINE_EXHIBITION ? "yes" : "no"
+    ),
+    diagnostic(
+      "p2a8-local-server",
+      "Local server",
+      ["127.0.0.1", "localhost"].includes(window.location.hostname)
+        ? "ok"
+        : "optional",
+      ["127.0.0.1", "localhost"].includes(window.location.hostname)
+        ? "loopback"
+        : "hosted"
+    ),
+    diagnostic(
+      "p2a8-startup",
+      "Startup status",
+      metricByName("demo_boot_completed") ? "ok" : "optional",
+      metricByName("demo_boot_completed")?.status || "not measured"
+    ),
+    diagnostic(
+      "p2a8-device",
+      "Device profile",
+      "ok",
+      deviceProfile.profile
+    ),
+    diagnostic("p2a8-quality", "Selected quality", "ok", effectiveQuality),
+    diagnostic(
+      "p2a8-performance",
+      "Performance guard",
+      metricByName("performance_guard_triggered") ? "fallback" : "ok",
+      metricByName("performance_guard_triggered") ? "activated" : "standby"
+    ),
+    diagnostic(
+      "p2a8-sw",
+      "Service worker",
+      "serviceWorker" in navigator ? "ok" : "optional",
+      navigator.serviceWorker?.controller ? "controlling" : "available"
+    ),
+    diagnostic("p2a8-cache", "Cache version", "ok", THREE_D_CACHE_NAME),
+    diagnostic(
+      "p2a8-integrity",
+      "Release integrity",
+      preflight?.status === "passed" ? "ok" : "checking",
+      preflight?.status || "not loaded"
+    ),
+    diagnostic(
+      "p2a8-story",
+      "Official story",
+      "ok",
+      EXHIBITION_RELEASE.officialDemoStoryId
+    ),
+    diagnostic(
+      "p2a8-year",
+      "Default year",
+      "ok",
+      String(EXHIBITION_RELEASE.officialDemoDefaultYear)
+    ),
+    diagnostic("p2a8-svg", "Fallback readiness", "ok", "SVG local"),
+    diagnostic(
+      "p2a8-3d",
+      "3D asset readiness",
+      posterReady ? "ok" : posterReady === false ? "error" : "checking",
+      posterReady ? "poster and local model" : "checking"
+    ),
+    diagnostic("p2a8-operator", "Operator menu", "ok", "Ctrl+Shift+O"),
+    diagnostic(
+      "p2a8-reset",
+      "Last reset",
+      "ok",
+      sessionStorage.getItem("qhm.demo.lastReset") ? "this session" : "none"
+    ),
+    diagnostic(
+      "p2a8-health",
+      "Health check summary",
+      demoHealth?.summary?.status === "failed"
+        ? "error"
+        : demoHealth?.summary?.status === "warning"
+          ? "optional"
+          : "ok",
+      demoHealth?.summary?.status || "checking"
+    ),
   ];
   const p2a5Sections = p2a5?.sections || {};
   const p2a5Status = (section) =>
@@ -420,6 +604,42 @@ export default function ExhibitionDiagnosticsPage() {
         </button>
         <div className="ex-diagnostics__grid">
           {p2aChecks.map((item) => (
+            <article key={item.id} data-status={item.status}>
+              <span>{item.status}</span>
+              <h2>{item.label}</h2>
+              <p>{item.detail}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+      <section className="ex-diagnostics__section" aria-labelledby="p2a6-readiness">
+        <h2 id="p2a6-readiness">Historical Basemap Integrity</h2>
+        <div className="ex-diagnostics__grid">
+          {historicalBasemapChecks.map((item) => (
+            <article key={item.id} data-status={item.status}>
+              <span>{item.status}</span>
+              <h2>{item.label}</h2>
+              <p>{item.detail}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+      <section className="ex-diagnostics__section" aria-labelledby="p2a7-readiness">
+        <h2 id="p2a7-readiness">Scientific and Release Readiness</h2>
+        <div className="ex-diagnostics__grid">
+          {scientificReleaseChecks.map((item) => (
+            <article key={item.id} data-status={item.status}>
+              <span>{item.status}</span>
+              <h2>{item.label}</h2>
+              <p>{item.detail}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+      <section className="ex-diagnostics__section" aria-labelledby="p2a8-operations">
+        <h2 id="p2a8-operations">Official Demo Operations</h2>
+        <div className="ex-diagnostics__grid">
+          {officialOperationsChecks.map((item) => (
             <article key={item.id} data-status={item.status}>
               <span>{item.status}</span>
               <h2>{item.label}</h2>

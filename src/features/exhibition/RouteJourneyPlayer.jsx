@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useRef } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import { recordExhibitionMetric } from "./performanceTelemetry.js";
 import {
   createRouteJourneySession,
@@ -9,6 +9,10 @@ import {
   shouldPauseJourneyForVisibility,
 } from "./routeJourneyModel.js";
 import { getPlaceNameAtYear } from "./historicalPlaceNames.js";
+import {
+  evaluatePerformanceGuard,
+  getPerformanceGuardFpsOverride,
+} from "./performanceGuard.js";
 
 const local = (value, language) => value?.[language] || value?.ru || "";
 
@@ -23,6 +27,8 @@ export default function RouteJourneyPlayer({
   onOpenPlace,
   onOpenSources,
   onClose,
+  onDegradedMode,
+  officialDemo = false,
 }) {
   const [session, dispatch] = useReducer(
     routeJourneyReducer,
@@ -30,6 +36,11 @@ export default function RouteJourneyPlayer({
     () => ({ ...createRouteJourneySession(), playing: true })
   );
   const startedRef = useRef(false);
+  const [guard, setGuard] = useState({
+    mode: "continuous",
+    triggered: false,
+    message: "",
+  });
   const lastIndex = Math.max(0, stops.length - 1);
   const current = stops[session.index] || null;
   const next = stops[Math.min(lastIndex, session.index + 1)] || null;
@@ -54,12 +65,14 @@ export default function RouteJourneyPlayer({
       }
     };
     if (
+      guard.mode !== "continuous" ||
       !shouldAnimateJourney({
         quality,
         reducedMotion,
         hidden: document.hidden,
       })
     ) {
+      if (guard.mode === "stopped") return undefined;
       return scheduleJourneyStep({
         callback: finishStep,
         delay: Math.round(2600 / session.speed),
@@ -79,6 +92,27 @@ export default function RouteJourneyPlayer({
           routeId: route.id,
           unit: "fps",
         });
+        const measuredFps = (frames * 1000) / elapsed;
+        const nextGuard = evaluatePerformanceGuard(
+          getPerformanceGuardFpsOverride() ?? measuredFps,
+          { headless: Boolean(navigator.webdriver) }
+        );
+        if (nextGuard.triggered) {
+          setGuard(nextGuard);
+          onDegradedMode?.(nextGuard);
+          recordExhibitionMetric("performance_guard_triggered", nextGuard.mode === "stopped" ? 2 : 1, {
+            fps: getPerformanceGuardFpsOverride() ?? measuredFps,
+            headless: nextGuard.headless,
+          });
+          if (nextGuard.mode === "step") {
+            recordExhibitionMetric("journey_step_mode_activated", 1);
+          }
+          if (officialDemo) {
+            recordExhibitionMetric("official_demo_degraded_mode", 1, {
+              mode: nextGuard.mode,
+            });
+          }
+        }
         finishStep();
       }
       else cancel = scheduleJourneyFrame({ callback: tick });
@@ -87,6 +121,7 @@ export default function RouteJourneyPlayer({
     return () => cancel();
   }, [
     current,
+    guard.mode,
     lastIndex,
     quality,
     reducedMotion,
@@ -94,6 +129,8 @@ export default function RouteJourneyPlayer({
     session.index,
     session.playing,
     session.speed,
+    officialDemo,
+    onDegradedMode,
   ]);
 
   useEffect(() => {
@@ -145,6 +182,15 @@ export default function RouteJourneyPlayer({
       </div>
       <progress value={session.index + session.progress} max={stops.length - 1 || 1} />
       <p>{local(route.summaries, language)}</p>
+      {guard.triggered && (
+        <p className="ex-performance-guard" role="status">
+          {language === "ru"
+            ? guard.mode === "stopped"
+              ? "Непрерывное движение остановлено. Используйте пошаговый режим."
+              : "Для плавной работы включён пошаговый режим."
+            : guard.message}
+        </p>
+      )}
       <ol className="ex-route-journey__stops">
         {stops.map((place, index) => (
           <li key={place.id} className={index === session.index ? "is-active" : ""}>

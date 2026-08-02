@@ -1,7 +1,11 @@
 export const EXHIBITION_SYMBOL_LAYER_IDS = new Set([
+  // Legacy project-owned id remains allow-listed for compatibility with
+  // persisted/reloaded styles, but new Exhibition styles do not create it.
   "ex-entity-labels",
-  "ex-places-label",
-  "ex-event-labels",
+  "historical-state-labels",
+  "historical-place-labels",
+  "historical-hydrology-labels",
+  "historical-route-labels",
 ]);
 
 export const hideBaseMapLabels = (map) => {
@@ -87,21 +91,21 @@ export const applyPaletteToMap = (map, palette) => {
     if (!map.getLayer?.(layer.id)) return;
     const id = layer.id.toLowerCase();
     if (layer.type === "background") {
-      setPaint(map, layer.id, "background-color", palette.background);
+      setPaint(map, layer.id, "background-color", palette.basemapBackground || palette.background);
     } else if (layer.type === "fill" && id.includes("water")) {
       setPaint(map, layer.id, "fill-color", palette.water);
     } else if (layer.type === "line" && id.includes("water")) {
       setPaint(map, layer.id, "line-color", palette.water);
     }
   });
-  setPaint(map, "ex-places-dot", "circle-color", palette.accentLight);
-  setPaint(map, "ex-places-dot", "circle-stroke-color", palette.halo);
-  setPaint(map, "ex-places-label", "text-color", palette.text);
-  setPaint(map, "ex-places-label", "text-halo-color", palette.halo);
-  setPaint(map, "ex-entity-labels", "text-color", palette.text);
-  setPaint(map, "ex-entity-labels", "text-halo-color", palette.halo);
+  setPaint(map, "historical-places-circle", "circle-color", palette.accentLight);
+  setPaint(map, "historical-places-circle", "circle-stroke-color", palette.halo);
+  ["historical-state-labels", "historical-place-labels", "historical-hydrology-labels", "historical-route-labels"].forEach((id) => {
+    setPaint(map, id, "text-color", palette.text);
+    setPaint(map, id, "text-halo-color", palette.halo);
+  });
   map.setFog?.({
-    color: palette.background,
+    color: palette.basemapBackground || palette.background,
     "high-color": palette.surfaceStrong,
     "horizon-blend": 0.08,
   });

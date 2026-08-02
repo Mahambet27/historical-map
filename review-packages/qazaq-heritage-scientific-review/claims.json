@@ -1,0 +1,241 @@
+[
+  {
+    "id": "claim-khanate-foundation-1465",
+    "subjectType": "entity",
+    "subjectId": "kazakh-khanate",
+    "predicate": "foundation_period",
+    "valueType": "year_range",
+    "value": {
+      "startYear": 1465,
+      "endYear": 1466
+    },
+    "labels": {
+      "ru": "Формирование Казахского ханства традиционно датируют приблизительно 1465–1466 годами",
+      "kk": "Қазақ хандығының құрылуы дәстүрлі түрде шамамен 1465–1466 жылдармен белгіленеді",
+      "en": "The formation of the Kazakh Khanate is conventionally dated to approximately 1465–1466"
+    },
+    "sourceIds": [
+      "e-history-kazakh-khanate",
+      "cambridge-kazakh-history"
+    ],
+    "evidenceType": "academic_interpretation",
+    "confidenceLevel": "high",
+    "verificationStatus": "reviewed",
+    "interpretationNotes": {
+      "ru": "Это традиционная датировка периода формирования, а не доказательство одного точного дня.",
+      "kk": "Бұл бір нақты күннің дәлелі емес, қалыптасу кезеңінің дәстүрлі мерзімдемесі.",
+      "en": "This is a conventional chronology for a formation period, not proof of one exact day."
+    },
+    "reviewedBy": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "claim-independence-1991",
+    "subjectType": "event",
+    "subjectId": "independence-kazakhstan",
+    "predicate": "event_date",
+    "valueType": "date",
+    "value": {
+      "year": 1991,
+      "month": 12,
+      "day": 16
+    },
+    "labels": {
+      "ru": "Конституционный закон о государственной независимости принят 16 декабря 1991 года",
+      "kk": "Мемлекеттік тәуелсіздік туралы Конституциялық заң 1991 жылғы 16 желтоқсанда қабылданды",
+      "en": "The Constitutional Law on State Independence was adopted on 16 December 1991"
+    },
+    "sourceIds": [
+      "adilet-independence-law"
+    ],
+    "evidenceType": "official_document",
+    "confidenceLevel": "high",
+    "verificationStatus": "verified",
+    "interpretationNotes": {
+      "ru": "Утверждение относится к дате официального правового акта.",
+      "kk": "Тұжырым ресми құқықтық актінің күніне қатысты.",
+      "en": "The claim concerns the date of the official legal act."
+    },
+    "reviewedBy": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "claim-khanate-1465-territory",
+    "subjectType": "geometry",
+    "subjectId": "khanate-1465",
+    "predicate": "territorial_extent",
+    "valueType": "geometry_reference",
+    "value": {
+      "geometryId": "khanate-1465",
+      "represents": "interpretive_extent"
+    },
+    "labels": {
+      "ru": "Контур 1465 года показывает интерпретируемый охват, а не точную государственную границу",
+      "kk": "1465 жылғы контур нақты мемлекеттік шекараны емес, түсіндірмелік қамтуды көрсетеді",
+      "en": "The 1465 outline represents an interpretive extent, not an exact state border"
+    },
+    "sourceIds": [
+      "e-history-kazakh-khanate",
+      "cambridge-kazakh-history"
+    ],
+    "evidenceType": "educational_reconstruction",
+    "confidenceLevel": "low",
+    "verificationStatus": "needs_review",
+    "interpretationNotes": {
+      "ru": "Источники дают исторический контекст, но не подтверждают каждую вершину полигона.",
+      "kk": "Дереккөздер тарихи контекст береді, бірақ полигонның әр төбесін растамайды.",
+      "en": "The sources provide historical context but do not validate every polygon vertex."
+    },
+    "reviewedBy": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "claim-otrar-location",
+    "subjectType": "place",
+    "subjectId": "otrar",
+    "predicate": "place_location",
+    "valueType": "coordinates",
+    "value": {
+      "coordinates": [
+        68.3,
+        42.85
+      ],
+      "precision": "approximate"
+    },
+    "labels": {
+      "ru": "Отырар показан приблизительной точкой исторического центра",
+      "kk": "Отырар тарихи орталықтың шамамен алынған нүктесімен көрсетілген",
+      "en": "Otrar is shown with an approximate point for the historical centre"
+    },
+    "sourceIds": [
+      "unesco-silk-roads"
+    ],
+    "evidenceType": "educational_reconstruction",
+    "confidenceLevel": "low",
+    "verificationStatus": "needs_review",
+    "interpretationNotes": {
+      "ru": "Точка предназначена для навигации и не задаёт границы археологического комплекса.",
+      "kk": "Нүкте навигацияға арналған және археологиялық кешеннің шекарасын белгілемейді.",
+      "en": "The point supports navigation and does not define the archaeological complex boundary."
+    },
+    "reviewedBy": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "claim-silk-road-direction",
+    "subjectType": "route",
+    "subjectId": "silk-road-southern-kazakhstan",
+    "predicate": "route_direction",
+    "valueType": "route_reference",
+    "value": {
+      "routeId": "silk-road-southern-kazakhstan",
+      "status": "reconstructed_direction"
+    },
+    "labels": {
+      "ru": "Линия показывает реконструированное южноказахстанское направление Шёлкового пути",
+      "kk": "Сызық Жібек жолының Оңтүстік Қазақстандағы реконструкцияланған бағытын көрсетеді",
+      "en": "The line shows a reconstructed Southern Kazakhstan direction of the Silk Road"
+    },
+    "sourceIds": [
+      "unesco-silk-roads",
+      "cambridge-kazakh-history"
+    ],
+    "evidenceType": "educational_reconstruction",
+    "confidenceLevel": "medium",
+    "verificationStatus": "needs_review",
+    "interpretationNotes": {
+      "ru": "Это обобщённое направление между городами, а не записанный точный трек.",
+      "kk": "Бұл қалалар арасындағы жалпыланған бағыт, нақты жазылған трек емес.",
+      "en": "This is a generalized direction between cities, not a recorded exact track."
+    },
+    "reviewedBy": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "claim-steppe-demo-status",
+    "subjectType": "environment",
+    "subjectId": "southern-steppe-medieval-demo",
+    "predicate": "environmental_state",
+    "valueType": "status",
+    "value": {
+      "status": "educational_reconstruction"
+    },
+    "labels": {
+      "ru": "Природная зона является образовательной схемой и требует научной проверки",
+      "kk": "Табиғи аймақ — ғылыми тексеруді қажет ететін оқу схемасы",
+      "en": "The environment zone is an educational diagram requiring scholarly review"
+    },
+    "sourceIds": [
+      "qhm-p1c-educational-overlay"
+    ],
+    "evidenceType": "educational_reconstruction",
+    "confidenceLevel": "low",
+    "verificationStatus": "needs_review",
+    "interpretationNotes": {
+      "ru": "Схема не является детальной палеоклиматической реконструкцией.",
+      "kk": "Схема егжей-тегжейлі палеоклиматтық реконструкция емес.",
+      "en": "The diagram is not a detailed palaeoclimate reconstruction."
+    },
+    "reviewedBy": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "claim-change-1511-1521",
+    "subjectType": "historical_change",
+    "subjectId": "kazakh-khanate-1511-to-1521",
+    "predicate": "territorial_extent",
+    "valueType": "comparison",
+    "value": {
+      "fromYear": 1511,
+      "toYear": 1521,
+      "conclusion": "displayed_outlines_differ"
+    },
+    "labels": {
+      "ru": "Отображаемые контуры 1511 и 1521 годов различаются, но разница не доказывает точную динамику границ",
+      "kk": "1511 және 1521 жылдардағы контурлар өзгеше, бірақ айырмашылық шекаралардың нақты динамикасын дәлелдемейді",
+      "en": "The displayed 1511 and 1521 outlines differ, but the difference does not prove exact border dynamics"
+    },
+    "sourceIds": [
+      "e-history-kasym",
+      "cambridge-kazakh-history"
+    ],
+    "evidenceType": "academic_interpretation",
+    "confidenceLevel": "low",
+    "verificationStatus": "needs_review",
+    "interpretationNotes": {
+      "ru": "Геометрическая разница служит объектом анализа, а не самостоятельным источником.",
+      "kk": "Геометриялық айырмашылық дербес дереккөз емес, талдау нысаны.",
+      "en": "The geometric difference is an object of analysis, not independent evidence."
+    },
+    "reviewedBy": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "claim-overlay-educational",
+    "subjectType": "story",
+    "subjectId": "historical-evidence",
+    "predicate": "relationship",
+    "valueType": "archive_map_reference",
+    "value": {
+      "archiveMapId": "qhm-evidence-overlay-demo"
+    },
+    "labels": {
+      "ru": "Демонстрационная карта создана проектом для обучения анализу источников и не является архивным оригиналом",
+      "kk": "Демонстрациялық картаны жоба дереккөздерді талдауды үйрету үшін жасаған және ол архивтік түпнұсқа емес",
+      "en": "The demonstration map was created by the project for source-analysis education and is not an archival original"
+    },
+    "sourceIds": [
+      "qhm-p1c-educational-overlay"
+    ],
+    "evidenceType": "educational_reconstruction",
+    "confidenceLevel": "high",
+    "verificationStatus": "reviewed",
+    "interpretationNotes": {
+      "ru": "Совпадение схемы с реконструкцией не доказывает точность исторических границ.",
+      "kk": "Схеманың реконструкциямен сәйкес келуі тарихи шекаралардың дәлдігін дәлелдемейді.",
+      "en": "Alignment with the reconstruction does not prove historical border accuracy."
+    },
+    "reviewedBy": null,
+    "reviewedAt": null
+  }
+]

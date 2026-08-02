@@ -1,0 +1,44 @@
+{
+  "applicationVersion": "0.0.0",
+  "datasetVersion": "p2a-2026-08",
+  "releaseVersion": "2026.08-stable1",
+  "releaseChannel": "exhibition-stable",
+  "buildDate": "2026-08-02",
+  "buildTimestamp": "2026-08-02T14:58:54.286Z",
+  "gitCommit": "c586dd0",
+  "integrityStatus": "READY",
+  "supportedLanguages": [
+    "ru",
+    "kk",
+    "en"
+  ],
+  "availableStories": [
+    "formation-and-consolidation-kazakh-khanate",
+    "historical-evidence"
+  ],
+  "availableRoutes": [
+    "silk-road-southern-kazakhstan"
+  ],
+  "verifiedRecordCount": 26,
+  "educationalReconstructionCount": 43,
+  "needsReviewCount": 72,
+  "demoOnlyCount": 2,
+  "blockedCount": 5,
+  "scientificValidationSummary": {
+    "temporal": {
+      "errors": 0,
+      "warnings": 81
+    },
+    "spatial": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "evidence": {
+      "errors": 0,
+      "warnings": 35
+    }
+  },
+  "officialDemoRecordCount": 27,
+  "gisReviewPackageGenerated": true,
+  "noSecrets": true
+}

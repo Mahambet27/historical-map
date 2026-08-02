@@ -1,0 +1,16 @@
+{
+  "device": "",
+  "date": "",
+  "operator": "",
+  "screen": "",
+  "offline": "not-tested",
+  "online": "not-tested",
+  "projector": "not-tested",
+  "kiosk": "not-tested",
+  "svgFallback": "not-tested",
+  "threeD": "not-tested",
+  "reset": "not-tested",
+  "recovery": "not-tested",
+  "scenario": "not-tested",
+  "issues": []
+}

@@ -1,0 +1,48 @@
+{
+  "status": "passed",
+  "failed": 0,
+  "warnings": 0,
+  "results": [
+    {
+      "id": "release-manifest",
+      "status": "passed"
+    },
+    {
+      "id": "preflight",
+      "status": "passed"
+    },
+    {
+      "id": "offline-shell",
+      "status": "passed"
+    },
+    {
+      "id": "pwa-manifest",
+      "status": "passed"
+    },
+    {
+      "id": "3d-poster",
+      "status": "passed"
+    },
+    {
+      "id": "production-glb",
+      "status": "passed"
+    },
+    {
+      "id": "meshopt",
+      "status": "passed"
+    },
+    {
+      "id": "official-story",
+      "status": "passed"
+    },
+    {
+      "id": "local-dataset",
+      "status": "passed"
+    },
+    {
+      "id": "release-version",
+      "status": "passed"
+    }
+  ],
+  "databaseVerification": "blocked_without_docker_or_podman"
+}

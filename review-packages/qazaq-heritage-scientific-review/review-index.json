@@ -1,0 +1,31 @@
+{
+  "packageVersion": "2026.08-rc1",
+  "generatedAt": "2026-08-01",
+  "coordinateReferenceSystem": "EPSG:4326",
+  "featureCounts": {
+    "entities.geojson": 21,
+    "territories.geojson": 27,
+    "places.geojson": 8,
+    "routes.geojson": 4,
+    "hydrology.geojson": 6,
+    "rivers.geojson": 6,
+    "environment.geojson": 3,
+    "labels.geojson": 24
+  },
+  "validations": {
+    "temporal": {
+      "errors": 0,
+      "warnings": 81
+    },
+    "spatial": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "evidence": {
+      "errors": 0,
+      "warnings": 35
+    }
+  },
+  "containsSecrets": false,
+  "includesRestrictedImages": false
+}

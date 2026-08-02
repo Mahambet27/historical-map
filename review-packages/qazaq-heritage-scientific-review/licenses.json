@@ -1,0 +1,34 @@
+[
+  {
+    "id": "qhm-evidence-overlay-demo",
+    "attribution": "© Qazaq Heritage Map, educational reconstruction, 2026",
+    "license": {
+      "status": "permission_granted",
+      "name": "Project-owned educational asset",
+      "url": null,
+      "attributionRequired": true,
+      "commercialUseAllowed": false,
+      "modificationAllowed": true,
+      "downloadAllowed": false,
+      "cacheAllowed": true,
+      "exportAllowed": false
+    },
+    "imageIncluded": false
+  },
+  {
+    "id": "future-institutional-archive-placeholder",
+    "attribution": "Rights and institution must be confirmed before display",
+    "license": {
+      "status": "unknown",
+      "name": null,
+      "url": null,
+      "attributionRequired": true,
+      "commercialUseAllowed": null,
+      "modificationAllowed": null,
+      "downloadAllowed": null,
+      "cacheAllowed": false,
+      "exportAllowed": false
+    },
+    "imageIncluded": false
+  }
+]

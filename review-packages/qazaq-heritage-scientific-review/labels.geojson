@@ -1,0 +1,701 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          68,
+          47
+        ]
+      },
+      "properties": {
+        "id": "saka-label",
+        "subjectType": "label",
+        "subjectId": "saka-communities",
+        "validFromYear": -800,
+        "validToYear": -300,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "missing",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "unknown",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          70,
+          48
+        ]
+      },
+      "properties": {
+        "id": "first-turkic-label",
+        "subjectType": "label",
+        "subjectId": "first-turkic-khaganate",
+        "validFromYear": 552,
+        "validToYear": 603,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "missing",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "unknown",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          68,
+          46.5
+        ]
+      },
+      "properties": {
+        "id": "western-turkic-label",
+        "subjectType": "label",
+        "subjectId": "western-turkic-khaganate",
+        "validFromYear": 604,
+        "validToYear": 704,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "missing",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "unknown",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.5,
+          44.5
+        ]
+      },
+      "properties": {
+        "id": "turgesh-label",
+        "subjectType": "label",
+        "subjectId": "turgesh-khaganate",
+        "validFromYear": 704,
+        "validToYear": 756,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "missing",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "unknown",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          73,
+          44.2
+        ]
+      },
+      "properties": {
+        "id": "karluk-label",
+        "subjectType": "label",
+        "subjectId": "karluk-state",
+        "validFromYear": 756,
+        "validToYear": 840,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "missing",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "unknown",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          61,
+          45.5
+        ]
+      },
+      "properties": {
+        "id": "oghuz-label",
+        "subjectType": "label",
+        "subjectId": "oghuz-state",
+        "validFromYear": 756,
+        "validToYear": 942,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "missing",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "unknown",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76,
+          50.5
+        ]
+      },
+      "properties": {
+        "id": "kimak-label",
+        "subjectType": "label",
+        "subjectId": "kimak-khaganate",
+        "validFromYear": 840,
+        "validToYear": 942,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "missing",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "unknown",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          70,
+          42.8
+        ]
+      },
+      "properties": {
+        "id": "karakhanid-label",
+        "subjectType": "label",
+        "subjectId": "karakhanid-state",
+        "validFromYear": 840,
+        "validToYear": 942,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "missing",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "unknown",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          70.5,
+          46.5
+        ]
+      },
+      "properties": {
+        "id": "kazakh-1465-label",
+        "subjectType": "label",
+        "subjectId": "kazakh-khanate",
+        "validFromYear": 1465,
+        "validToYear": 1509,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "missing",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "unknown",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          67.5,
+          47.5
+        ]
+      },
+      "properties": {
+        "id": "kazakh-1510-label",
+        "subjectType": "label",
+        "subjectId": "kazakh-khanate",
+        "validFromYear": 1510,
+        "validToYear": 1512,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "missing",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "unknown",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          65.5,
+          48
+        ]
+      },
+      "properties": {
+        "id": "kazakh-1513-label",
+        "subjectType": "label",
+        "subjectId": "kazakh-khanate",
+        "validFromYear": 1513,
+        "validToYear": 1521,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "missing",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "unknown",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          67,
+          47.8
+        ]
+      },
+      "properties": {
+        "id": "kazakh-late-label",
+        "subjectType": "label",
+        "subjectId": "kazakh-khanate",
+        "validFromYear": 1522,
+        "validToYear": 1847,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "missing",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "unknown",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          67,
+          50
+        ]
+      },
+      "properties": {
+        "id": "abulkhair-label",
+        "subjectType": "label",
+        "subjectId": "abulkhair-state",
+        "validFromYear": 1428,
+        "validToYear": 1468,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "missing",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "unknown",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77,
+          44.5
+        ]
+      },
+      "properties": {
+        "id": "moghulistan-label",
+        "subjectType": "label",
+        "subjectId": "moghulistan",
+        "validFromYear": 1347,
+        "validToYear": 1514,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "missing",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "unknown",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          53.5,
+          49
+        ]
+      },
+      "properties": {
+        "id": "nogai-label",
+        "subjectType": "label",
+        "subjectId": "nogai-horde",
+        "validFromYear": 1440,
+        "validToYear": 1634,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "missing",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "unknown",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          66.5,
+          40.5
+        ]
+      },
+      "properties": {
+        "id": "timurid-label",
+        "subjectType": "label",
+        "subjectId": "timurid-state",
+        "validFromYear": 1370,
+        "validToYear": 1507,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "missing",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "unknown",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          74,
+          55
+        ]
+      },
+      "properties": {
+        "id": "sibir-label",
+        "subjectType": "label",
+        "subjectId": "sibir-khanate",
+        "validFromYear": 1468,
+        "validToYear": 1598,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "missing",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "unknown",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          81,
+          46.5
+        ]
+      },
+      "properties": {
+        "id": "dzungar-label",
+        "subjectType": "label",
+        "subjectId": "dzungar-khanate",
+        "validFromYear": 1635,
+        "validToYear": 1758,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "missing",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "unknown",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          65,
+          40.5
+        ]
+      },
+      "properties": {
+        "id": "bukhara-label",
+        "subjectType": "label",
+        "subjectId": "bukhara-khanate",
+        "validFromYear": 1500,
+        "validToYear": 1785,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "missing",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "unknown",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          58.5,
+          41.5
+        ]
+      },
+      "properties": {
+        "id": "khiva-label",
+        "subjectType": "label",
+        "subjectId": "khiva-khanate",
+        "validFromYear": 1511,
+        "validToYear": 1920,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "missing",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "unknown",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          60,
+          55
+        ]
+      },
+      "properties": {
+        "id": "russian-label",
+        "subjectType": "label",
+        "subjectId": "russian-empire",
+        "validFromYear": 1721,
+        "validToYear": 1847,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "missing",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "unknown",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88,
+          44
+        ]
+      },
+      "properties": {
+        "id": "qing-label",
+        "subjectType": "label",
+        "subjectId": "qing-empire",
+        "validFromYear": 1644,
+        "validToYear": 1847,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "missing",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "unknown",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          67,
+          48
+        ]
+      },
+      "properties": {
+        "id": "kazakh-ssr-label",
+        "subjectType": "label",
+        "subjectId": "kazakh-ssr",
+        "validFromYear": 1936,
+        "validToYear": 1990,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "missing",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "unknown",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          67,
+          48
+        ]
+      },
+      "properties": {
+        "id": "republic-label",
+        "subjectType": "label",
+        "subjectId": "republic-kazakhstan",
+        "validFromYear": 1991,
+        "validToYear": null,
+        "snapshotYear": null,
+        "names": null,
+        "verificationStatus": "missing",
+        "scientificReadiness": "scientific_review_required",
+        "confidenceLevel": "unknown",
+        "spatialPrecision": "unknown",
+        "sourceIds": [],
+        "claimIds": [],
+        "reconstructionMethod": null,
+        "interpolationAllowed": null,
+        "licenseStatus": "not_applicable",
+        "reviewNotesPlaceholder": ""
+      }
+    }
+  ]
+}

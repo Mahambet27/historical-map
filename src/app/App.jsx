@@ -4,6 +4,7 @@ import { useRoute } from "./router.jsx";
 import LandingPage from "../pages/LandingPage.jsx";
 import SiteLayout from "../components/layout/SiteLayout.jsx";
 import ErrorBoundary from "../components/ui/ErrorBoundary.jsx";
+import { RELEASE_CHANNEL_POLICY } from "../config/releaseChannel.js";
 
 const MapExperience = lazy(() => import("../features/map/MapExperience.jsx"));
 const TimelinePage = lazy(() => import("../pages/TimelinePage.jsx"));
@@ -14,6 +15,9 @@ const NotFoundPage = lazy(() => import("../pages/NotFoundPage.jsx"));
 const ExhibitionPage = lazy(() => import("../features/exhibition/ExhibitionPage.jsx"));
 const ExhibitionDiagnosticsPage = lazy(
   () => import("../features/exhibition/ExhibitionDiagnosticsPage.jsx")
+);
+const DemoEntryPage = lazy(
+  () => import("../features/exhibition/demo/DemoEntryPage.jsx")
 );
 
 const catalogRoutes = {
@@ -59,11 +63,23 @@ function RouteContent() {
 
 function AppRoutes() {
   const { path } = useRoute();
-  if (path === "/exhibition/diagnostics") {
+  if (
+    path === "/exhibition/diagnostics" ||
+    path === "/demo/diagnostics"
+  ) {
     return (
       <Suspense fallback={<MapRouteLoading />}>
         <ErrorBoundary name="exhibition-diagnostics">
           <ExhibitionDiagnosticsPage />
+        </ErrorBoundary>
+      </Suspense>
+    );
+  }
+  if (path === "/demo" || (path === "/" && RELEASE_CHANNEL_POLICY.defaultOfficialDemo)) {
+    return (
+      <Suspense fallback={<MapRouteLoading />}>
+        <ErrorBoundary name="official-demo">
+          <DemoEntryPage />
         </ErrorBoundary>
       </Suspense>
     );

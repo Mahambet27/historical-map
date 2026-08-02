@@ -9,6 +9,7 @@ export default defineConfig([
     "dist",
     "coverage",
     "playwright-report",
+    "release-packages",
     "test-results",
     "public/vendor",
   ]),

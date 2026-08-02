@@ -1,9 +1,14 @@
 import { EXHIBITION_LAYERS } from "./layerRegistry.js";
 import HistoricalDataStatus from "./HistoricalDataStatus.jsx";
+import {
+  DEFAULT_HISTORICAL_MAP_PRESET,
+  HISTORICAL_MAP_PRESETS,
+} from "./historicalMapPresets.js";
 
 const copy = {
   ru: {
     title: "Слои карты",
+    view: "Вид карты",
     reset: "Сбросить слои",
     categories: {
       politics: "Политика",
@@ -15,6 +20,8 @@ const copy = {
     },
     layers: {
       politicalTerritories: "Политические территории",
+      stateLabels: "Названия государств",
+      uncertainty: "Неопределённость границ",
       historicalPlaces: "Исторические города",
       archaeology: "Археологические объекты",
       tradeRoutes: "Торговые маршруты",
@@ -22,6 +29,7 @@ const copy = {
       militaryRoutes: "Военные маршруты",
       hydrology: "Реки и водоёмы",
       environment: "Природные зоны",
+      terrain: "Рельеф",
       events: "События",
       people: "Личности",
       "3dObjects": "3D-объекты",
@@ -31,6 +39,7 @@ const copy = {
   },
   kk: {
     title: "Карта қабаттары",
+    view: "Карта көрінісі",
     reset: "Қабаттарды қалпына келтіру",
     categories: {
       politics: "Саясат",
@@ -44,6 +53,7 @@ const copy = {
   },
   en: {
     title: "Map layers",
+    view: "Map view",
     reset: "Reset layers",
     categories: {
       politics: "Politics",
@@ -55,6 +65,8 @@ const copy = {
     },
     layers: {
       politicalTerritories: "Political territories",
+      stateLabels: "State names",
+      uncertainty: "Boundary uncertainty",
       historicalPlaces: "Historical cities",
       archaeology: "Archaeological sites",
       tradeRoutes: "Trade routes",
@@ -62,6 +74,7 @@ const copy = {
       militaryRoutes: "Military routes",
       hydrology: "Rivers and water bodies",
       environment: "Environment zones",
+      terrain: "Terrain",
       events: "Events",
       people: "People",
       "3dObjects": "3D objects",
@@ -81,6 +94,9 @@ copy.kk.layers = {
   hydrology: "Өзендер мен су айдындары",
   environment: "Табиғи аймақтар",
   atmosphere: "Дәуір атмосферасы",
+  stateLabels: "Мемлекет атаулары",
+  uncertainty: "Шекара белгісіздігі",
+  terrain: "Жер бедері",
 };
 
 export default function ExhibitionLayerPanel({
@@ -90,6 +106,8 @@ export default function ExhibitionLayerPanel({
   quality,
   onToggle,
   onReset,
+  preset = DEFAULT_HISTORICAL_MAP_PRESET,
+  onPreset,
   onOpenArchive,
   dataStatus,
   onRetryData,
@@ -106,6 +124,22 @@ export default function ExhibitionLayerPanel({
         </div>
         <button className="ex-icon-button" onClick={onClose} aria-label={text.close}>×</button>
       </header>
+      <label className="ex-layer-panel__preset">
+        <span>{t.view}</span>
+        <select value={preset} onChange={(event) => onPreset?.(event.target.value)}>
+          {Object.keys(HISTORICAL_MAP_PRESETS).map((id) => (
+            <option key={id} value={id}>
+              {id === "clean"
+                ? language === "en" ? "Clean historical" : language === "kk" ? "Таза тарихи" : "Чистая историческая"
+                : id === "political"
+                  ? language === "en" ? "Political" : language === "kk" ? "Саяси" : "Политическая"
+                  : id === "geography"
+                    ? language === "en" ? "Era geography" : language === "kk" ? "Дәуір географиясы" : "География эпохи"
+                    : language === "en" ? "Routes" : language === "kk" ? "Бағыттар" : "Маршруты"}
+            </option>
+          ))}
+        </select>
+      </label>
       {categories.map((category) => (
         <fieldset key={category}>
           <legend>{t.categories[category]}</legend>

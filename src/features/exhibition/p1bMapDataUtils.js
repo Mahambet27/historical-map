@@ -1,22 +1,17 @@
 const emptyCollection = () => ({ type: "FeatureCollection", features: [] });
 const local = (value, language) => value?.[language] || value?.ru || "";
-const activeAtYear = (item, year) =>
+export const activeAtYear = (item, year) =>
   item.validFromYear <= year &&
-  (item.validToYear === null || item.validToYear >= year);
-const activeName = (place, year, language) => {
+  (item.validToYear === null || item.validToYear === undefined || item.validToYear >= year);
+export const activeName = (place, year, language) => {
   const names = place.names.filter(
     (entry) =>
       entry.validFromYear <= year &&
       (entry.validToYear === null || entry.validToYear >= year)
   );
-  const latestNames = [...place.names].sort(
-    (a, b) => b.validFromYear - a.validFromYear
-  );
   return (
     names.find((entry) => entry.language === language)?.value ||
     names.find((entry) => entry.language === "ru")?.value ||
-    latestNames.find((entry) => entry.language === language)?.value ||
-    latestNames.find((entry) => entry.language === "ru")?.value ||
     ""
   );
 };

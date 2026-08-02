@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "releaseVersion": "2026.08-stable1",
+  "buildChannel": "exhibition-stable",
+  "errors": [],
+  "warnings": [
+    {
+      "code": "temporal_warnings",
+      "detail": 81
+    },
+    {
+      "code": "evidence_warnings",
+      "detail": 35
+    }
+  ],
+  "basemapPolicy": "passed",
+  "databaseVerification": "blocked_without_docker_or_podman",
+  "gisReviewPackageGenerated": true,
+  "generatedAt": "2026-08-02"
+}

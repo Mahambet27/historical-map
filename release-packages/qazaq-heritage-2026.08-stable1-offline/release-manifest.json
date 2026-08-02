@@ -4,8 +4,8 @@
   "releaseVersion": "2026.08-stable1",
   "releaseChannel": "exhibition-stable",
   "buildDate": "2026-08-02",
-  "buildTimestamp": "2026-08-02T14:58:54.286Z",
-  "gitCommit": "c586dd0",
+  "buildTimestamp": "2026-08-02T16:05:55.019Z",
+  "gitCommit": "a19aa65",
   "integrityStatus": "READY",
   "supportedLanguages": [
     "ru",

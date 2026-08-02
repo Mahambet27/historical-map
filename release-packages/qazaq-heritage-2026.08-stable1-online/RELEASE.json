@@ -1,6 +1,6 @@
 {
   "releaseVersion": "2026.08-stable1",
-  "expectedCommit": "c586dd0",
+  "expectedCommit": "a19aa65",
   "expectedTag": "TAG_PLACEHOLDER",
   "deploymentPerformed": false,
   "credentialsIncluded": false

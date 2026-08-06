@@ -1,0 +1,105 @@
+{
+  "generatedAt": "2026-08-06",
+  "coverage": [
+    {
+      "eraId": "saka",
+      "fromYear": -800,
+      "toYear": -300,
+      "states": 1,
+      "boundarySnapshots": 1,
+      "events": 1,
+      "people": 0,
+      "historicalPlaces": 0,
+      "routes": 1,
+      "hydrologySnapshots": 0,
+      "sources": 1,
+      "reviewed": 1,
+      "needs_review": 1,
+      "disputed": 0,
+      "missing": 0,
+      "dataGaps": [
+        "Historical places, people, hydrology, and additional reviewed boundaries are missing."
+      ]
+    },
+    {
+      "eraId": "turkic",
+      "fromYear": 552,
+      "toYear": 942,
+      "states": 7,
+      "boundarySnapshots": 7,
+      "events": 1,
+      "people": 1,
+      "historicalPlaces": 8,
+      "routes": 2,
+      "hydrologySnapshots": 7,
+      "sources": 3,
+      "reviewed": 1,
+      "needs_review": 23,
+      "disputed": 0,
+      "missing": 0,
+      "dataGaps": [
+        "Most boundaries and all medieval hydrology require expert review."
+      ]
+    },
+    {
+      "eraId": "kazakh-khanate",
+      "fromYear": 1465,
+      "toYear": 1847,
+      "states": 11,
+      "boundarySnapshots": 17,
+      "events": 2,
+      "people": 3,
+      "historicalPlaces": 6,
+      "routes": 2,
+      "hydrologySnapshots": 7,
+      "sources": 4,
+      "reviewed": 3,
+      "needs_review": 29,
+      "disputed": 0,
+      "missing": 0,
+      "dataGaps": [
+        "Reviewed boundaries after 1521, person life dates, and post-1500 routes are incomplete."
+      ]
+    },
+    {
+      "eraId": "kazakh-ssr",
+      "fromYear": 1936,
+      "toYear": 1990,
+      "states": 1,
+      "boundarySnapshots": 1,
+      "events": 1,
+      "people": 0,
+      "historicalPlaces": 6,
+      "routes": 1,
+      "hydrologySnapshots": 3,
+      "sources": 2,
+      "reviewed": 1,
+      "needs_review": 9,
+      "disputed": 0,
+      "missing": 0,
+      "dataGaps": [
+        "Reviewed Aral snapshots, people, and year-bounded historical place names are incomplete."
+      ]
+    },
+    {
+      "eraId": "independent-kazakhstan",
+      "fromYear": 1991,
+      "toYear": 2026,
+      "states": 1,
+      "boundarySnapshots": 1,
+      "events": 1,
+      "people": 0,
+      "historicalPlaces": 6,
+      "routes": 1,
+      "hydrologySnapshots": 4,
+      "sources": 3,
+      "reviewed": 1,
+      "needs_review": 11,
+      "disputed": 0,
+      "missing": 0,
+      "dataGaps": [
+        "Reviewed Aral snapshots and explicit place-name intervals are incomplete."
+      ]
+    }
+  ]
+}

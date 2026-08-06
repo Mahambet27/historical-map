@@ -33,7 +33,16 @@ import {
   TOUR_STEP_MS,
   getKioskEnabled,
 } from "./exhibitionScenario.js";
-import { resolveEraSelection, resolveYearSelection } from "./historicalYearModel.js";
+import {
+  resolveEraSelection,
+  resolveTimelineUrlState,
+  resolveYearSelection,
+  writeTimelineUrlState,
+} from "./historicalYearModel.js";
+import {
+  getNextHistoricalYear,
+  getPreviousHistoricalYear,
+} from "./timeline/historicalYear.js";
 import { CLOSED_PANEL, closePanel, openPanel, setPanelMode } from "./panelState.js";
 import {
   detectExhibitionQuality,
@@ -161,6 +170,7 @@ export default function ExhibitionPage({
   const cleanHistorical =
     initialForceSvgFallback &&
     new URLSearchParams(window.location.search).get("legacyUi") !== "true";
+  const [initialTimelineSelection] = useState(resolveTimelineUrlState);
   const [started, setStarted] = useState(
     () =>
       p1bUrlState.layers.length > 0 ||
@@ -175,9 +185,16 @@ export default function ExhibitionPage({
           p1cUrlState.story
       )
   );
-  const [selectedYear, setSelectedYear] = useState(1465);
-  const [selectedEraId, setSelectedEraId] = useState("kazakh-khanate");
-  const [activeSnapshot, setActiveSnapshot] = useState(initialTimelineState);
+  const [selectedYear, setSelectedYear] = useState(
+    initialTimelineSelection.selectedYear
+  );
+  const [selectedEraId, setSelectedEraId] = useState(
+    initialTimelineSelection.selectedEraId
+  );
+  const [activeSnapshot, setActiveSnapshot] = useState(
+    initialTimelineSelection.activeSnapshot || initialTimelineState
+  );
+  const activeEra = getEraById(selectedEraId);
   const [tour, setTour] = useState({
     active: false,
     index: 2,
@@ -187,7 +204,10 @@ export default function ExhibitionPage({
   const [speed, setSpeed] = useState(1);
   const [panel, setPanel] = useState(CLOSED_PANEL);
   const [selectedEntity, setSelectedEntity] = useState(() =>
-    getPrimaryEntity(initialTimelineState, 1465)
+    getPrimaryEntity(
+      initialTimelineSelection.activeSnapshot || initialTimelineState,
+      initialTimelineSelection.selectedYear
+    )
   );
   const [comparison, setComparison] = useState(null);
   const [activeChange, setActiveChange] = useState(null);
@@ -251,7 +271,7 @@ export default function ExhibitionPage({
   const warningTimer = useRef(null);
   const resetTimer = useRef(null);
   const changePromptTimer = useRef(null);
-  const selectedYearRef = useRef(1465);
+  const selectedYearRef = useRef(initialTimelineSelection.selectedYear);
   const shownChangePromptsRef = useRef(new Set());
   const storyStartedAtRef = useRef(0);
   const panelBackdropRef = useRef(null);
@@ -642,6 +662,10 @@ export default function ExhibitionPage({
     });
   }, [selectedPlaceId, selectedYear]);
 
+  useEffect(() => {
+    if (selectedEraId) writeTimelineUrlState(selectedEraId, selectedYear);
+  }, [selectedEraId, selectedYear]);
+
   const handleYearChange = useCallback((year) => {
     const selection = resolveYearSelection(year);
     const { selectedYear: exactYear, selectedEraId: eraId, activeSnapshot: snapshot } = selection;
@@ -819,9 +843,9 @@ export default function ExhibitionPage({
       if (action === "toggle-play") {
         setTour((current) => ({ ...current, playing: !current.playing }));
       } else if (action === "previous-year") {
-        handleYearChange(Math.max(-3000, selectedYear - 1));
+        handleYearChange(getPreviousHistoricalYear(selectedYear));
       } else if (action === "next-year") {
-        handleYearChange(Math.min(2026, selectedYear + 1));
+        handleYearChange(getNextHistoricalYear(selectedYear));
       } else if (action === "lesson") {
         showPanel("lesson");
       } else if (action === "agent") {
@@ -873,15 +897,18 @@ export default function ExhibitionPage({
   useEffect(() => {
     if (!tour.playing || !started) return undefined;
     const timer = window.setTimeout(() => {
-      const nextIndex = tour.index + 1;
-      if (nextIndex >= timelineStates.length) {
+      let nextYear = selectedYear;
+      for (let index = 0; index < speed; index += 1) {
+        nextYear = getNextHistoricalYear(nextYear);
+      }
+      if (!activeEra || nextYear > activeEra.toYear) {
         setTour((current) => ({ ...current, playing: false }));
         return;
       }
-      handleYearChange(timelineStates[nextIndex].year);
-    }, TOUR_STEP_MS / speed);
+      handleYearChange(nextYear);
+    }, Math.min(1000, TOUR_STEP_MS));
     return () => window.clearTimeout(timer);
-  }, [tour.playing, tour.index, started, speed, handleYearChange]);
+  }, [tour.playing, started, speed, selectedYear, activeEra, handleYearChange]);
 
   useEffect(() => {
     if (!kiosk || !started || recordingMode) return undefined;
@@ -1192,7 +1219,6 @@ export default function ExhibitionPage({
   const referenceItem = selectedReference?.type === "person"
     ? historicalPeople.find((item) => item.id === selectedReference.id)
     : historicalEvents.find((item) => item.id === selectedReference?.id);
-  const activeEra = getEraById(selectedEraId);
   const selectedRoute =
     p1bData?.historicalRoutes?.find((route) => route.id === selectedRouteId) ||
     null;
@@ -1686,17 +1712,21 @@ export default function ExhibitionPage({
         </Suspense>
       )}
 
-      <div className={cleanHistorical ? "ex-clean-time-dock" : "ex-time-dock"}>
-        {!cleanHistorical && (
-          <ExhibitionEraSelector
-            eras={historicalEras}
-            {...{ selectedEraId, language, text }}
-            onSelect={handleEraChange}
-          />
-        )}
+      <div className="ex-time-dock">
+        <ExhibitionEraSelector
+          eras={historicalEras}
+          {...{ selectedEraId, language, text }}
+          onSelect={handleEraChange}
+        />
         <ExhibitionYearSlider
-          {...{ selectedYear, language, text }}
+          {...{ selectedYear, language, text, activeEra }}
           onChange={handleYearChange}
+          playing={tour.playing}
+          onTogglePlay={() =>
+            setTour((current) => ({ ...current, playing: !current.playing }))
+          }
+          playbackStep={speed}
+          onPlaybackStepChange={setSpeed}
         />
         {cleanHistorical ? (
           <button

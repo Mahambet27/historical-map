@@ -44,6 +44,15 @@ test("root is the clean historical product at 1366x768", async ({ page }) => {
   });
 });
 
+test("map route is the clean historical product at 1366x768", async ({ page }) => {
+  await page.setViewportSize({ width: 1366, height: 768 });
+  await openHistoricalRoute(page, "/map");
+  await page.screenshot({
+    path: "artifacts/visual/map-1366x768.png",
+    fullPage: true,
+  });
+});
+
 test("demo is the same clean historical product", async ({ page }) => {
   await page.setViewportSize({ width: 1366, height: 768 });
   await openHistoricalRoute(page, "/demo");

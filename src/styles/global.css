@@ -1705,6 +1705,132 @@ button, a, select, input { -webkit-tap-highlight-color: transparent; }
   font-weight: 800;
   cursor: pointer;
 }
+
+.ex-clean-play {
+  display: none;
+}
+
+.ex-tour-transport {
+  display: none;
+}
+
+@media (max-width: 430px) {
+  .ex-year-slider .ex-year-slider__steps button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* Canonical two-level historical timeline */
+.ex-era-selector > div {
+  scrollbar-width: thin;
+}
+
+.ex-era-selector button {
+  min-width: 10.5rem;
+}
+
+.ex-era-selector__meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  margin-top: 0.25rem;
+  font-size: 0.68rem;
+  opacity: 0.78;
+}
+
+.ex-era-selector__meta i {
+  display: inline-grid;
+  width: 1.1rem;
+  height: 1.1rem;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-style: normal;
+}
+
+.ex-year-slider input[type="range"] {
+  min-height: 44px;
+  touch-action: pan-x;
+}
+
+.ex-year-slider__steps button {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.ex-year-slider__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.72rem;
+}
+
+.ex-year-slider__footer label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ex-year-slider__footer select {
+  min-height: 32px;
+}
+
+.ex-year-availability {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.ex-year-availability::before {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: #879086;
+  content: "";
+}
+
+.ex-year-availability.is-exact::before {
+  background: #4d7b57;
+}
+
+.ex-year-availability.is-approximate::before {
+  background: #a9772d;
+}
+
+.ex-year-availability.is-unavailable::before {
+  background: #8c4949;
+}
+
+@media (max-width: 430px) {
+  .ex-time-dock {
+    max-height: min(42vh, 21rem);
+    overflow-y: auto;
+  }
+
+  .ex-era-selector > div {
+    display: flex;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x proximity;
+  }
+
+  .ex-era-selector button {
+    min-width: 9rem;
+    scroll-snap-align: start;
+  }
+
+  .ex-year-slider__footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .ex-year-slider__marks {
+    overflow-x: auto;
+  }
+}
 .exhibition .ex-change-button { color: #15252d; }
 
 /* Clean production historical map shared by /, /demo and /exhibition. */
@@ -2543,5 +2669,34 @@ button, a, select, input { -webkit-tap-highlight-color: transparent; }
   .ex-route-journey__controls {
     grid-template-columns: repeat(7,minmax(44px,1fr));
     overflow-x: auto;
+  }
+}
+
+/* The canonical slider now owns playback controls on clean historical routes. */
+.ex-clean-play {
+  display: none;
+}
+
+@media (max-width: 430px) {
+  .ex-year-slider__header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .ex-year-slider__header > div:first-child {
+    justify-content: space-between;
+  }
+
+  .ex-year-slider__steps {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(44px, 1fr));
+    width: 100%;
+  }
+
+  .ex-year-slider .ex-year-slider__steps button {
+    width: 100%;
+    min-width: 44px;
+    min-height: 44px;
   }
 }

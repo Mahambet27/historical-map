@@ -18,7 +18,7 @@ const features = [
 ];
 
 const sections = [
-  ["/map", "Карта", "Исследовать объекты и территории", "⌖"], ["/events", "События", "Хронология ключевых событий", "◫"],
+  ["/demo", "Карта", "Исследовать объекты и территории", "⌖"], ["/events", "События", "Хронология ключевых событий", "◫"],
   ["/people", "Личности", "Правители, учёные и деятели", "◎"], ["/heritage", "Археология", "Памятники и древние города", "△"],
   ["/museums", "Музеи", "Коллекции и учреждения", "▣"], ["/education", "Образование", "Сценарии для школ и вузов", "◇"],
   ["/routes", "Маршруты", "Исторические и туристические пути", "↝"], ["/research", "Исследования", "Источники и научные данные", "≡"],
@@ -38,7 +38,7 @@ export default function LandingPage() {
             <h1>История <em>Казахстана</em><br />на одной карте</h1>
             <p className="hero__subtitle">{t.subtitle}</p>
             <p className="hero__description">{t.description}</p>
-            <div className="hero__actions"><Link className="button button--gold" to="/map">{t.openMap} <span>→</span></Link><Link className="button button--ghost" to="/timeline">{t.explore} <span>⌄</span></Link></div>
+            <div className="hero__actions"><Link className="button button--gold" to="/demo">{t.openMap} <span>→</span></Link><Link className="button button--ghost" to="/timeline">{t.explore} <span>⌄</span></Link></div>
             <div className="hero__stats"><div><strong>5 000+</strong><span>исторических объектов</span></div><div><strong>25</strong><span>веков истории</span></div><div><strong>3</strong><span>языка платформы</span></div></div>
           </div>
           <div className="hero-map" aria-label="Схематичная карта Казахстана">

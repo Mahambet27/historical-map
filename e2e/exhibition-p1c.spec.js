@@ -4,7 +4,7 @@ test.describe.configure({ mode: "serial" });
 
 const openExhibition = async (page, query = "?quality=light") => {
   await page.addInitScript(() => localStorage.clear());
-  await page.goto(`/exhibition${query}`);
+  await page.goto(`/exhibition${query}${query.includes("?") ? "&" : "?"}legacyUi=true`);
   const hero = page.locator(".ex-hero__actions");
   const autoStarts = /[?&](archiveMap|evidence|review|story)=/.test(query);
   if (!autoStarts) {
@@ -132,7 +132,7 @@ test("unknown-license URL is blocked and never requests a full image", async ({ 
   expect(imageRequests).toEqual([]);
 });
 
-test("ordinary exhibition and /map do not request P1C datasets or full images", async ({ page }) => {
+test("ordinary exhibition and /legacy-map do not request P1C datasets or full images", async ({ page }) => {
   const p1cRequests = [];
   page.on("request", (request) => {
     if (/sourceClaims|sourceDisputes|archiveMaps|qhm-evidence-overlay/.test(request.url())) {
@@ -142,7 +142,7 @@ test("ordinary exhibition and /map do not request P1C datasets or full images", 
   await openExhibition(page);
   await page.waitForTimeout(500);
   expect(p1cRequests).toEqual([]);
-  await page.goto("/map");
+  await page.goto("/legacy-map");
   await expect(page.locator(".map-experience, .route-loading, [role=alert]").first()).toBeVisible();
   await page.waitForTimeout(500);
   expect(p1cRequests).toEqual([]);

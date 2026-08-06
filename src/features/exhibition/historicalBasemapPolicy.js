@@ -13,7 +13,7 @@ export const HISTORICAL_BASEMAP_POLICY = Object.freeze({
 });
 
 export const HISTORICAL_BASEMAP_STYLE_NAME =
-  "Qazaq Heritage Neutral Historical Base";
+  "Qazaq Heritage Historical Canvas";
 
 export const HISTORICAL_BACKGROUND_COLORS = Object.freeze({
   era: "#d5d7d9",
@@ -23,14 +23,13 @@ export const HISTORICAL_BACKGROUND_COLORS = Object.freeze({
   "high-contrast": "#161616",
 });
 
-export const createHistoricalBasemapStyle = (backgroundColor = "#d5d7d9") => ({
+export const createHistoricalBasemapStyle = (backgroundColor = "#d8dadd") => ({
   version: 8,
   name: HISTORICAL_BASEMAP_STYLE_NAME,
-  glyphs: "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
   sources: {},
   layers: [
     {
-      id: "historical-neutral-background",
+      id: "historical-background",
       type: "background",
       paint: { "background-color": backgroundColor },
     },
@@ -47,7 +46,7 @@ const FORBIDDEN = {
 
 const isVisible = (layer) =>
   layer?.layout?.visibility !== "none" &&
-  layer?.id !== "historical-neutral-background" &&
+  layer?.id !== "historical-background" &&
   !String(layer?.id || "").startsWith("historical-") &&
   !String(layer?.id || "").startsWith("ex-") &&
   !String(layer?.id || "").startsWith("archive-");

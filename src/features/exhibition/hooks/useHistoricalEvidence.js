@@ -9,6 +9,7 @@ export default function useHistoricalEvidence({
   subjectId,
   language = "ru",
   enabled = true,
+  dataSource,
 } = {}) {
   const [state, setState] = useState({
     data: null,
@@ -21,18 +22,18 @@ export default function useHistoricalEvidence({
   const [retryVersion, setRetryVersion] = useState(0);
   const retry = useCallback(async () => {
     try {
-      await retryHistoricalRepository();
+      await retryHistoricalRepository({ dataSource });
     } catch {
       // The hook exposes the safe repository error state below.
     }
     setRetryVersion((value) => value + 1);
-  }, []);
+  }, [dataSource]);
 
   useEffect(() => {
     if (!enabled || !subjectType || !subjectId) return undefined;
     const controller = new AbortController();
     const currentRequest = ++requestId.current;
-    getHistoricalRepository()
+    getHistoricalRepository({ dataSource })
       .then((repository) => {
         setState((current) => ({
           ...current,
@@ -67,7 +68,7 @@ export default function useHistoricalEvidence({
         }));
       });
     return () => controller.abort();
-  }, [enabled, language, retryVersion, subjectId, subjectType]);
+  }, [dataSource, enabled, language, retryVersion, subjectId, subjectType]);
 
   return { ...state, retry };
 }

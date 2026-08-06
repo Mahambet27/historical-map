@@ -11,7 +11,7 @@ export default function SiteLayout({ children }) {
   const { path } = useRoute();
   const { language, setLanguage, t } = useI18n();
   const [open, setOpen] = useState(false);
-  const primary = [["/map", t.nav.map], ["/timeline", t.nav.timeline], ["/events", t.nav.events], ["/people", t.nav.people], ["/heritage", t.nav.heritage]];
+  const primary = [["/demo", t.nav.map], ["/timeline", t.nav.timeline], ["/events", t.nav.events], ["/people", t.nav.people], ["/heritage", t.nav.heritage]];
 
   return (
     <div className={`site-shell${path === "/map" ? " site-shell--map" : ""}`}>
@@ -31,7 +31,7 @@ export default function SiteLayout({ children }) {
             <span className="sr-only">{t.language}</span>
             <select value={language} onChange={(e) => setLanguage(e.target.value)}><option value="kk">ҚАЗ</option><option value="ru">РУС</option><option value="en">ENG</option></select>
           </label>
-          <Link className="header-map-button" to="/map">{t.openMap} <span>↗</span></Link>
+          <Link className="header-map-button" to="/demo">{t.openMap} <span>↗</span></Link>
           <button className="menu-button" aria-expanded={open} aria-label={t.menu} onClick={() => setOpen(!open)}><span></span><span></span></button>
         </div>
       </header>

@@ -1,10 +1,9 @@
 import { expect, test } from "@playwright/test";
 
 const start = async (page, query) => {
-  await page.goto(`/demo${query}`);
-  const button = page.locator(".ex-demo-startup__actions button").first();
-  await expect(button).toBeEnabled();
-  await button.click();
+  await page.goto(
+    `/demo${query}${query.includes("?") ? "&" : "?"}legacyUi=true`
+  );
   await expect(page.locator(".exhibition")).toBeVisible();
 };
 

@@ -3,15 +3,16 @@ import { expect, test } from "@playwright/test";
 test.describe.configure({ mode: "serial" });
 
 const openStartup = async (page, query = "") => {
-  await page.goto(`/demo${query}`);
+  await page.goto(
+    `/demo${query}${query.includes("?") ? "&" : "?"}startup=true`
+  );
   await expect(page.locator(".ex-demo-startup")).toBeVisible();
 };
 
 const startDemo = async (page, query = "") => {
-  await openStartup(page, query);
-  const start = page.locator(".ex-demo-startup__actions button").first();
-  await expect(start).toBeEnabled();
-  await start.click();
+  await page.goto(
+    `/demo${query}${query.includes("?") ? "&" : "?"}legacyUi=true`
+  );
   await expect(page.locator(".exhibition")).toBeVisible();
 };
 
@@ -174,8 +175,8 @@ test("/exhibition remains independent", async ({ page }) => {
   await expect(page.locator(".exhibition")).toBeVisible();
 });
 
-test("/map remains independent", async ({ page }) => {
-  await page.goto("/map");
+test("/legacy-map remains independent", async ({ page }) => {
+  await page.goto("/legacy-map");
   await expect(page.locator(".map-page, .map-view, main").first()).toBeVisible();
   await expect(page.locator(".ex-demo-startup")).toHaveCount(0);
 });

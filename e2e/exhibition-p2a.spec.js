@@ -17,7 +17,7 @@ const installDataSource = async (page, dataSource) => {
 };
 
 const openExhibition = async (page, query = "?quality=light") => {
-  await page.goto(`/exhibition${query}`);
+  await page.goto(`/exhibition${query}${query.includes("?") ? "&" : "?"}legacyUi=true`);
   const hero = page.locator(".ex-hero__actions");
   await expect(hero).toBeVisible();
   await hero.locator("button").last().click();
@@ -181,13 +181,13 @@ test("fallback remains responsive on mobile, reduced motion and high contrast", 
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 });
 
-test("/map and kiosk mode make no P2A network request", async ({ page }) => {
+test("/legacy-map and kiosk mode make no P2A network request", async ({ page }) => {
   await installDataSource(page, "auto");
   const requests = [];
   page.on("request", (request) => {
     if (request.url().includes("p2a.test.invalid")) requests.push(request.url());
   });
-  await page.goto("/map");
+  await page.goto("/legacy-map");
   await expect(
     page.locator(".map-experience, .route-loading, [role=alert]").first()
   ).toBeVisible();

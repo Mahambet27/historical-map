@@ -4,7 +4,7 @@ test.describe.configure({ mode: "serial" });
 
 const clearAndOpen = async (page, query) => {
   await page.addInitScript(() => localStorage.clear());
-  await page.goto(`/exhibition${query}`);
+  await page.goto(`/exhibition${query}${query.includes("?") ? "&" : "?"}legacyUi=true`);
   await expect(page.locator(".exhibition")).toBeVisible();
 };
 
@@ -105,7 +105,7 @@ test("ordinary map does not load scientific review UI", async ({ page }) => {
       scientificChunks.push(response.url());
     }
   });
-  await page.goto("/map");
+  await page.goto("/legacy-map");
   await expect(page.locator(".map-page, .map-view, main").first()).toBeVisible();
   expect(scientificChunks).toEqual([]);
 });

@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 test.describe.configure({ mode: "serial" });
 
 const openExhibition = async (page, query = "?quality=light") => {
-  await page.goto(`/exhibition${query}`);
+  await page.goto(`/exhibition${query}${query.includes("?") ? "&" : "?"}legacyUi=true`);
   await page.locator(".ex-hero__actions button").last().click();
   await expect(page.locator(".exhibition")).toBeVisible();
 };
@@ -126,7 +126,7 @@ test("loaded P1A remains usable offline and legacy map still opens", async ({
   ).toBeVisible();
   await expect(page.locator("main [role=alert]")).toHaveCount(0);
   await context.setOffline(false);
-  await page.goto("/map");
+  await page.goto("/legacy-map");
   await expect(
     page.locator(".map-experience, .route-loading, [role=alert]").first()
   ).toBeVisible();

@@ -158,6 +158,9 @@ export default function ExhibitionPage({
   );
   const { language, setLanguage } = useI18n();
   const text = getExhibitionText(language);
+  const cleanHistorical =
+    initialForceSvgFallback &&
+    new URLSearchParams(window.location.search).get("legacyUi") !== "true";
   const [started, setStarted] = useState(
     () =>
       p1bUrlState.layers.length > 0 ||
@@ -281,10 +284,12 @@ export default function ExhibitionPage({
           : layerState,
     [effectiveQuality, layerState, mapStyleMode, recordingMode]
   );
+  const repositoryDataSource = officialDemo ? "local" : undefined;
   const repositorySnapshot = useHistoricalSnapshot({
     year: selectedYear,
     language,
     enabled: started,
+    dataSource: repositoryDataSource,
   });
   const needsRepositoryRoutes =
     layerState.tradeRoutes ||
@@ -296,6 +301,7 @@ export default function ExhibitionPage({
     year: selectedYear,
     language,
     enabled: needsRepositoryRoutes,
+    dataSource: repositoryDataSource,
   });
   const repositoryEvidence = useHistoricalEvidence({
     subjectType: evidenceTarget?.subjectType,
@@ -304,6 +310,7 @@ export default function ExhibitionPage({
     enabled:
       ["evidence", "scientific"].includes(panel.type) &&
       Boolean(evidenceTarget),
+    dataSource: repositoryDataSource,
   });
   const p1bData = useMemo(() => {
     const snapshot = repositorySnapshot.data;
@@ -434,7 +441,7 @@ export default function ExhibitionPage({
   useEffect(() => {
     if (!storyId) return undefined;
     const controller = new AbortController();
-    getHistoricalRepository()
+    getHistoricalRepository({ dataSource: repositoryDataSource })
       .then((repository) =>
         repository.getStory(storyId, {
           language,
@@ -452,7 +459,7 @@ export default function ExhibitionPage({
         }
       });
     return () => controller.abort();
-  }, [language, storyId]);
+  }, [language, repositoryDataSource, storyId]);
 
   useEffect(() => {
     const needsEnvironment =
@@ -533,6 +540,7 @@ export default function ExhibitionPage({
     p1bUrlState.story,
     panel.type,
     repositorySnapshot.activeRepository,
+    repositoryDataSource,
   ]);
 
   useEffect(() => {
@@ -551,7 +559,7 @@ export default function ExhibitionPage({
     if (needsArchive) {
       if (repositorySnapshot.activeRepository === "supabase") {
         tasks.push(
-          getHistoricalRepository()
+          getHistoricalRepository({ dataSource: repositoryDataSource })
             .then((repository) =>
               repository.getArchiveMaps({ signal: controller.signal })
             )
@@ -598,6 +606,7 @@ export default function ExhibitionPage({
     p1cUrlState.story,
     panel.type,
     repositorySnapshot.activeRepository,
+    repositoryDataSource,
     storyId,
   ]);
 
@@ -1365,7 +1374,7 @@ export default function ExhibitionPage({
         cursorHidden ? "is-cursor-hidden" : ""
       } ${kiosk ? "is-kiosk" : ""} ${recordingMode ? "is-recording" : ""} ${
         projectorMode ? "is-projector" : ""
-      }`}
+      } ${cleanHistorical ? "is-clean-historical" : ""}`}
       style={{ "--ex-scale": settings.scale, ...paletteToCssVariables(palette) }}
       data-theme={palette.id}
       data-quality={effectiveQuality}
@@ -1373,22 +1382,60 @@ export default function ExhibitionPage({
       data-projector={projectorMode ? "true" : "false"}
       data-atmosphere-animation={atmosphereAnimating ? "running" : "idle"}
     >
-      <ExhibitionControls
-        {...{ text, language, setLanguage, officialDemo }}
-        onHome={reset}
-        onAgent={() => showPanel("agent")}
-        onSources={() => openSources()}
-        onCompare={() => {
-          openComparison(1465, 1511);
-        }}
-        onLesson={() => showPanel("lesson")}
-        onLayers={() => showPanel("layers")}
-        onStory={() =>
-          startHistoricalStory("formation-and-consolidation-kazakh-khanate")
-        }
-        onThreeD={() => showPanel("3d")}
-        onAccess={() => showPanel("access")}
-      />
+      {cleanHistorical ? (
+        <header className="ex-clean-header">
+          <button
+            className="ex-wordmark"
+            onClick={reset}
+            aria-label="Qazaq Heritage Map"
+          >
+            <span>Q</span>
+            <strong>Qazaq Heritage Map</strong>
+          </button>
+          <div className="ex-clean-header__actions">
+            <div className="ex-language" aria-label="Language">
+              {["kk", "ru", "en"].map((code) => (
+                <button
+                  key={code}
+                  className={language === code ? "is-active" : ""}
+                  onClick={() => setLanguage(code)}
+                >
+                  {code.toUpperCase()}
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              className="ex-clean-fullscreen"
+              onClick={() => document.documentElement.requestFullscreen?.()}
+            >
+              <span aria-hidden="true">⛶</span>
+              {language === "en"
+                ? "Fullscreen"
+                : language === "kk"
+                  ? "Толық экран"
+                  : "Полный экран"}
+            </button>
+          </div>
+        </header>
+      ) : (
+        <ExhibitionControls
+          {...{ text, language, setLanguage, officialDemo }}
+          onHome={reset}
+          onAgent={() => showPanel("agent")}
+          onSources={() => openSources()}
+          onCompare={() => {
+            openComparison(1465, 1511);
+          }}
+          onLesson={() => showPanel("lesson")}
+          onLayers={() => showPanel("layers")}
+          onStory={() =>
+            startHistoricalStory("formation-and-consolidation-kazakh-khanate")
+          }
+          onThreeD={() => showPanel("3d")}
+          onAccess={() => showPanel("access")}
+        />
+      )}
       {kiosk && !recordingMode && !document.fullscreenElement && (
         <button
           type="button"
@@ -1422,7 +1469,7 @@ export default function ExhibitionPage({
           }
         />
       )}
-      {(repositorySnapshot.fallback || (import.meta.env.DEV && !officialDemo)) && (
+      {!officialDemo && (repositorySnapshot.fallback || import.meta.env.DEV) && (
         <HistoricalDataStatus
           language={language}
           activeRepository={repositorySnapshot.activeRepository}
@@ -1433,7 +1480,7 @@ export default function ExhibitionPage({
         />
       )}
       <section className="ex-stage">
-        {officialDemo &&
+        {!cleanHistorical && officialDemo &&
           getGeometriesAtYear(selectedYear).some(
             (record) => record.verificationStatus === "needs_review"
           ) && (
@@ -1490,20 +1537,20 @@ export default function ExhibitionPage({
             onAnimationState={setAtmosphereAnimating}
           />
         </Suspense>
-        <div className="ex-stage__wash" />
+        {!cleanHistorical && <div className="ex-stage__wash" />}
         {environmentScreenReaderText && (
           <div className="sr-only" aria-live="polite">
             {environmentScreenReaderText}
           </div>
         )}
-        {comparison && (
+        {!cleanHistorical && comparison && (
           <HistoricalChangeLegend
             language={language}
             mode={comparison.mode || "overlay"}
             compact
           />
         )}
-        {currentAvailableChange && !storyId && (
+        {!cleanHistorical && currentAvailableChange && !storyId && (
           <button
             type="button"
             className="ex-change-button"
@@ -1516,7 +1563,7 @@ export default function ExhibitionPage({
                 : "Почему изменилась карта?"}
           </button>
         )}
-        {scientificReviewEnabled && !storyId && (
+        {!cleanHistorical && scientificReviewEnabled && !storyId && (
           <button
             type="button"
             className="ex-scientific-review-button"
@@ -1526,7 +1573,7 @@ export default function ExhibitionPage({
             ◉ Scientific review
           </button>
         )}
-        {effectiveLayerState.tradeRoutes &&
+        {!cleanHistorical && effectiveLayerState.tradeRoutes &&
           p1bData?.historicalRoutes?.[0] &&
           !storyId && (
             <button
@@ -1541,7 +1588,23 @@ export default function ExhibitionPage({
                   : "Великий Шёлковый путь"}
             </button>
           )}
-        <ExhibitionStoryPanel
+        {cleanHistorical && selectedEntity && (
+          <aside className="ex-clean-selection">
+            <span className="ex-kicker">
+              {language === "en"
+                ? "Selected historical state"
+                : language === "kk"
+                  ? "Таңдалған тарихи мемлекет"
+                  : "Выбранное историческое государство"}
+            </span>
+            <h2>{selectedEntity.names?.[language] || selectedEntity.names?.ru}</h2>
+            <p>
+              {selectedEntity.descriptions?.[language] ||
+                selectedEntity.descriptions?.ru}
+            </p>
+          </aside>
+        )}
+        {!cleanHistorical && <ExhibitionStoryPanel
           state={displayedSnapshot}
           {...{ language, text, tour }}
           onPrevious={() =>
@@ -1560,9 +1623,11 @@ export default function ExhibitionPage({
           }
           onEntity={() => selectedEntity && showPanel("entity")}
           onSources={() => openSources()}
-        />
-        <div className="ex-disclaimer ex-disclaimer--map">ⓘ {text.disclaimer}</div>
-        {geographyUnavailable && (
+        />}
+        {!cleanHistorical && (
+          <div className="ex-disclaimer ex-disclaimer--map">ⓘ {text.disclaimer}</div>
+        )}
+        {!cleanHistorical && geographyUnavailable && (
           <div className="ex-geography-unavailable" role="status">
             {language === "en"
               ? "No verified geographic snapshot is available for the selected period."
@@ -1621,24 +1686,40 @@ export default function ExhibitionPage({
         </Suspense>
       )}
 
-      <div className="ex-time-dock">
-        <ExhibitionEraSelector
-          eras={historicalEras}
-          {...{ selectedEraId, language, text }}
-          onSelect={handleEraChange}
-        />
+      <div className={cleanHistorical ? "ex-clean-time-dock" : "ex-time-dock"}>
+        {!cleanHistorical && (
+          <ExhibitionEraSelector
+            eras={historicalEras}
+            {...{ selectedEraId, language, text }}
+            onSelect={handleEraChange}
+          />
+        )}
         <ExhibitionYearSlider
           {...{ selectedYear, language, text }}
           onChange={handleYearChange}
         />
-        <ExhibitionTimeline
-          {...{ text, speed }}
-          playing={tour.playing}
-          onTogglePlay={() =>
-            setTour((current) => ({ ...current, playing: !current.playing }))
-          }
-          onSpeed={setSpeed}
-        />
+        {cleanHistorical ? (
+          <button
+            type="button"
+            className="ex-clean-play"
+            onClick={() =>
+              setTour((current) => ({ ...current, playing: !current.playing }))
+            }
+            aria-label={tour.playing ? text.pause : text.play}
+          >
+            <span aria-hidden="true">{tour.playing ? "Ⅱ" : "▶"}</span>
+            {tour.playing ? text.pause : text.play}
+          </button>
+        ) : (
+          <ExhibitionTimeline
+            {...{ text, speed }}
+            playing={tour.playing}
+            onTogglePlay={() =>
+              setTour((current) => ({ ...current, playing: !current.playing }))
+            }
+            onSpeed={setSpeed}
+          />
+        )}
       </div>
 
       {panel.type && (

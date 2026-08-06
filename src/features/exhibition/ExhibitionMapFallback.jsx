@@ -113,7 +113,7 @@ export default function ExhibitionMapFallback({
     : { trade: { features: [] }, nomadic: { features: [] }, military: { features: [] } };
 
   return (
-    <div className="ex-map-fallback" role="img" aria-label={`${text.mapLabel}. ${text.mapUnavailable}`}>
+    <div className="ex-map-fallback" role="group" aria-label={`${text.mapLabel}. ${text.mapUnavailable}`}>
       <svg viewBox="0 0 900 430" aria-hidden="true">
         <defs>
           <filter id="ex-soft-shadow" x="-20%" y="-20%" width="140%" height="150%">

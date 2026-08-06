@@ -4,7 +4,6 @@ import { useRoute } from "./router.jsx";
 import LandingPage from "../pages/LandingPage.jsx";
 import SiteLayout from "../components/layout/SiteLayout.jsx";
 import ErrorBoundary from "../components/ui/ErrorBoundary.jsx";
-import { RELEASE_CHANNEL_POLICY } from "../config/releaseChannel.js";
 
 const MapExperience = lazy(() => import("../features/map/MapExperience.jsx"));
 const TimelinePage = lazy(() => import("../pages/TimelinePage.jsx"));
@@ -39,7 +38,7 @@ function RouteContent() {
   const { path } = useRoute();
 
   if (path === "/") return <LandingPage />;
-  if (path === "/map") {
+  if (path === "/legacy-map") {
     return (
       <div className="platform-map-page">
         <Suspense fallback={<MapRouteLoading />}>
@@ -75,7 +74,7 @@ function AppRoutes() {
       </Suspense>
     );
   }
-  if (path === "/demo" || (path === "/" && RELEASE_CHANNEL_POLICY.defaultOfficialDemo)) {
+  if (path === "/demo") {
     return (
       <Suspense fallback={<MapRouteLoading />}>
         <ErrorBoundary name="official-demo">
@@ -84,11 +83,20 @@ function AppRoutes() {
       </Suspense>
     );
   }
+  if (["/", "/map"].includes(path)) {
+    return (
+      <Suspense fallback={<MapRouteLoading />}>
+        <ErrorBoundary name="official-historical-map">
+          <ExhibitionPage forceOfficialDemo initialForceSvgFallback />
+        </ErrorBoundary>
+      </Suspense>
+    );
+  }
   if (path === "/exhibition") {
     return (
       <Suspense fallback={<MapRouteLoading />}>
-        <ErrorBoundary name="exhibition">
-          <ExhibitionPage />
+        <ErrorBoundary name="historical-exhibition">
+          <ExhibitionPage initialForceSvgFallback />
         </ErrorBoundary>
       </Suspense>
     );

@@ -179,7 +179,7 @@ test.describe("P2A.5 real local Supabase", () => {
     );
   });
 
-  test("local mode and /map make no local database requests", async ({ page }) => {
+  test("local mode and /legacy-map make no local database requests", async ({ page }) => {
     await installMode(page, "local");
     const databaseRequests = [];
     page.on("request", (browserRequest) => {
@@ -191,7 +191,7 @@ test.describe("P2A.5 real local Supabase", () => {
     await expect(page.locator(".ex-data-status")).toContainText(/локальные/i);
     expect(databaseRequests).toEqual([]);
 
-    await page.goto("/map");
+    await page.goto("/legacy-map");
     await expect(
       page.locator(".map-experience, .route-loading, [role=alert]").first()
     ).toBeVisible();

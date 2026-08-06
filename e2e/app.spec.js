@@ -1,16 +1,15 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-test("landing page renders and navigates to the map", async ({ page }) => {
+test("root renders the official historical map", async ({ page }) => {
   await page.goto("/");
-  await expect(page.locator("h1")).toBeVisible();
-  await page.locator('a[href="/map"]').first().click();
-  await expect(page).toHaveURL(/\/map$/);
-  await expect(page.locator(".map-experience, .route-loading, [role=alert]").first()).toBeVisible();
+  await expect(page.locator(".exhibition")).toBeVisible();
+  await expect(page.locator(".ex-map-fallback")).toBeVisible();
+  await expect(page.locator(".map-experience")).toHaveCount(0);
 });
 
 test("language selection updates the document language", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/events");
   await page.locator(".language-switcher select").selectOption("en");
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await page.reload();
@@ -43,10 +42,10 @@ test("landing page has no serious axe violations", async ({ page }) => {
 });
 
 test("exhibition route starts the offline-capable historical experience", async ({ page }) => {
-  await page.goto("/exhibition");
-  await expect(page.getByRole("heading", { name: /Qazaq/i })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Начать демонстрацию" })).toBeVisible();
-  await page.getByRole("button", { name: "Исследовать самостоятельно" }).click();
+  await page.goto("/exhibition?legacyUi=true");
+  await page.locator(".ex-hero__actions button").last().click();
+  await expect(page.locator(".exhibition")).toBeVisible();
+  await expect(page.locator(".ex-map-fallback")).toBeVisible();
   await expect(page.locator(".ex-era-selector button")).toHaveCount(5);
   await expect(page.locator(".ex-year-slider input")).toHaveValue("1465");
   await page.locator(".ex-era-selector button").nth(1).click();

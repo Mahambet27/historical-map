@@ -1514,7 +1514,7 @@ button, a, select, input { -webkit-tap-highlight-color: transparent; }
   text-align: left;
   cursor: pointer;
 }
-.ex-era-selector button small { overflow: hidden; color: rgba(255,255,255,.33); font: 700 7px/1 sans-serif; letter-spacing: .08em; text-overflow: ellipsis; }
+.ex-era-selector button small { overflow: hidden; color: rgba(255,255,255,.72); font: 700 7px/1 sans-serif; letter-spacing: .08em; text-overflow: ellipsis; }
 .ex-era-selector button.is-active {
   border-color: var(--ex-gold);
   color: var(--ex-text);
@@ -1550,7 +1550,7 @@ button, a, select, input { -webkit-tap-highlight-color: transparent; }
   min-height: 24px;
   border: 0;
   padding: 0 2px;
-  color: rgba(255,255,255,.35);
+  color: rgba(255,255,255,.72);
   background: transparent;
   font-size: 7px;
   cursor: pointer;
@@ -1576,7 +1576,7 @@ button, a, select, input { -webkit-tap-highlight-color: transparent; }
   font-size: 9px;
   cursor: pointer;
 }
-.ex-tour-transport label { display: grid; gap: 3px; color: rgba(255,255,255,.4); font-size: 7px; }
+.ex-tour-transport label { display: grid; gap: 3px; color: rgba(255,255,255,.72); font-size: 7px; }
 .ex-map-legend {
   position: absolute;
   top: 70px;
@@ -1704,6 +1704,205 @@ button, a, select, input { -webkit-tap-highlight-color: transparent; }
   font-size: 10px;
   font-weight: 800;
   cursor: pointer;
+}
+.exhibition .ex-change-button { color: #15252d; }
+
+/* Clean production historical map shared by /, /demo and /exhibition. */
+.exhibition.is-clean-historical {
+  --ex-clean-edge: rgba(20, 29, 36, .18);
+  color: #17212a;
+  background: #d8dadd;
+}
+.ex-clean-header {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 70;
+  display: flex;
+  height: 64px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(18px, 3vw, 42px);
+  border-bottom: 1px solid var(--ex-clean-edge);
+  background: rgba(239, 240, 241, .94);
+  backdrop-filter: blur(14px);
+}
+.ex-clean-header .ex-wordmark { color: #17212a; }
+.ex-clean-header .ex-wordmark > span {
+  border-color: #876626;
+  color: #6d511d;
+}
+.ex-clean-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.ex-clean-header .ex-language button {
+  color: #53606a;
+}
+.ex-clean-header .ex-language button.is-active {
+  border-color: #806127;
+  color: #2e2515;
+  background: rgba(128, 97, 39, .1);
+}
+.ex-clean-fullscreen {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #8d9499;
+  padding: 0 13px;
+  color: #26323b !important;
+  background: rgba(255, 255, 255, .45);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.is-clean-historical .ex-stage {
+  top: 64px;
+  bottom: 112px;
+  background: #d8dadd;
+}
+.is-clean-historical .ex-map-fallback {
+  background: #d8dadd;
+}
+.is-clean-historical .ex-map-fallback svg {
+  opacity: 1;
+}
+.is-clean-historical .ex-map-legend,
+.is-clean-historical .ex-map-fallback__status,
+.is-clean-historical .ex-archive-attribution {
+  display: none;
+}
+.ex-clean-selection {
+  position: absolute;
+  top: 28px;
+  left: clamp(18px, 3vw, 42px);
+  z-index: 12;
+  width: min(310px, calc(100vw - 36px));
+  border: 1px solid rgba(27, 37, 44, .22);
+  padding: 16px 17px;
+  color: #1c2831;
+  background: rgba(242, 243, 243, .9);
+  box-shadow: 0 12px 35px rgba(24, 33, 39, .12);
+  backdrop-filter: blur(10px);
+}
+.ex-clean-selection .ex-kicker { color: #72551f; }
+.ex-clean-selection h2 {
+  margin: 7px 0 8px;
+  color: #1b252c;
+  font: 500 25px/1.05 Georgia, serif;
+}
+.ex-clean-selection p {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 0;
+  color: #4e5961;
+  font-size: 11px;
+  line-height: 1.5;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+.ex-clean-time-dock {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 60;
+  display: grid;
+  height: 112px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 24px;
+  padding: 15px clamp(18px, 3vw, 42px);
+  border-top: 1px solid var(--ex-clean-edge);
+  background: rgba(239, 240, 241, .96);
+}
+.ex-clean-time-dock .ex-year-slider {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+.ex-clean-time-dock .ex-year-slider__header > div:first-child {
+  align-items: center;
+}
+.ex-clean-time-dock .ex-year-slider__header strong {
+  color: #604719;
+}
+.ex-clean-time-dock .ex-kicker {
+  color: #59646c;
+}
+.ex-clean-time-dock .ex-year-slider__steps,
+.ex-clean-time-dock .ex-year-slider__marks {
+  display: none;
+}
+.ex-clean-time-dock .ex-year-slider > input {
+  margin-top: 10px;
+  accent-color: #8b6829;
+}
+.ex-clean-play {
+  display: inline-flex;
+  min-width: 145px;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid #75571f;
+  color: #2c2519 !important;
+  background: rgba(139, 104, 41, .1);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.ex-clean-play span { font-size: 15px; }
+
+@media (max-width: 760px) {
+  .ex-clean-header {
+    height: 58px;
+    padding: 0 12px;
+  }
+  .ex-clean-header .ex-wordmark strong { display: none; }
+  .ex-clean-header .ex-wordmark > span {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+  .ex-clean-header__actions { gap: 6px; }
+  .ex-clean-header .ex-language button {
+    min-width: 30px;
+    min-height: 32px;
+    padding: 0;
+  }
+  .ex-clean-fullscreen {
+    width: 36px;
+    min-height: 34px;
+    justify-content: center;
+    padding: 0;
+    font-size: 0;
+  }
+  .ex-clean-fullscreen span { font-size: 17px; }
+  .is-clean-historical .ex-stage {
+    top: 58px;
+    bottom: 118px;
+  }
+  .ex-clean-selection {
+    top: auto;
+    bottom: 14px;
+    padding: 12px 13px;
+  }
+  .ex-clean-selection h2 { font-size: 20px; }
+  .ex-clean-selection p { -webkit-line-clamp: 2; }
+  .ex-clean-time-dock {
+    height: 118px;
+    gap: 10px;
+    padding: 12px;
+  }
+  .ex-clean-time-dock .ex-year-slider__header strong { font-size: 18px; }
+  .ex-clean-time-dock .ex-year-slider__header .ex-kicker { display: block; }
+  .ex-clean-play {
+    min-width: 48px;
+    width: 48px;
+    padding: 0;
+    font-size: 0;
+  }
+  .ex-clean-play span { font-size: 15px; }
 }
 .ex-change-prompt {
   position: fixed;

@@ -14,7 +14,9 @@ export default function DemoEntryPage() {
   const params = parseDemoParams();
   const { language, setLanguage } = useI18n();
   const [boot, setBoot] = useState(createInitialDemoBootState);
-  const [started, setStarted] = useState(false);
+  const [started, setStarted] = useState(
+    () => new URLSearchParams(window.location.search).get("startup") !== "true"
+  );
   const [recovery, setRecovery] = useState(params.recovery);
 
   const check = () => {
@@ -86,7 +88,7 @@ export default function DemoEntryPage() {
       <ExhibitionPage
         forceOfficialDemo
         demoBoot={boot}
-        initialForceSvgFallback={boot.forceSvgFallback}
+        initialForceSvgFallback
         recordingMode={params.recording}
         kioskMode={params.kiosk}
         projectorMode={params.projector}

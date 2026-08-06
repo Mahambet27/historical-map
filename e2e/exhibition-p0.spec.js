@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test("exhibition P0 settings and diagnostics are reachable", async ({ page }) => {
-  await page.goto("/exhibition");
+  await page.goto("/exhibition?legacyUi=true");
   await page.locator(".ex-hero__actions button").last().click();
   await page.locator(".ex-appbar nav button").last().click();
   await page.locator(".ex-access-options select").first().selectOption("atlas");

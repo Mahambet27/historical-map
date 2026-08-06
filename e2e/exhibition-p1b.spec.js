@@ -4,7 +4,7 @@ test.describe.configure({ mode: "serial" });
 
 const openExhibition = async (page, query = "?quality=light") => {
   await page.addInitScript(() => localStorage.clear());
-  await page.goto(`/exhibition${query}`);
+  await page.goto(`/exhibition${query}${query.includes("?") ? "&" : "?"}legacyUi=true`);
   const hero = page.locator(".ex-hero__actions");
   const autoStarts = /[?&](layers|route|place|story)=/.test(query);
   if (!autoStarts) {
@@ -120,7 +120,7 @@ test("URL place, offline shell, legacy map and diagnostics remain available", as
   await page.getByRole("button", { name: /Слои/ }).click();
   await expect(page.locator(".ex-layer-panel")).toBeVisible();
   await context.setOffline(false);
-  await page.goto("/map");
+  await page.goto("/legacy-map");
   await expect(
     page.locator(".map-experience, .route-loading, [role=alert]").first()
   ).toBeVisible();
@@ -149,7 +149,7 @@ test("ordinary map route does not request P1B data chunks", async ({ page }) => 
     }
   });
 
-  await page.goto("/map");
+  await page.goto("/legacy-map");
   await expect(
     page.locator(".map-experience, .route-loading, [role=alert]").first()
   ).toBeVisible();

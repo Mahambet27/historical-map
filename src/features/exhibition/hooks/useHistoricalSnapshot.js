@@ -15,6 +15,7 @@ export default function useHistoricalSnapshot({
   language,
   enabled = true,
   debounceMs = 250,
+  dataSource,
 } = {}) {
   const repositoryStatus = useHistoricalRepositoryStatus();
   const [state, setState] = useState({
@@ -29,16 +30,16 @@ export default function useHistoricalSnapshot({
   const bboxKey = useMemo(() => bbox.join(","), [bbox]);
   const retry = useCallback(async () => {
     try {
-      await retryHistoricalRepository();
+      await retryHistoricalRepository({ dataSource });
     } catch {
       // Explicit supabase mode keeps the visible error state without fallback.
     }
     setRetryVersion((value) => value + 1);
-  }, []);
+  }, [dataSource]);
 
   useEffect(() => {
     if (!enabled) {
-      getHistoricalRepository().catch(() => {});
+      getHistoricalRepository({ dataSource }).catch(() => {});
       setState((current) => ({ ...current, loading: false, refreshing: false }));
       return undefined;
     }
@@ -54,7 +55,7 @@ export default function useHistoricalSnapshot({
         stale: Boolean(current.data),
       }));
       try {
-        const repository = await getHistoricalRepository();
+        const repository = await getHistoricalRepository({ dataSource });
         const data = await repository.getSnapshot(
           normalizeRepositoryOptions({
             year,
@@ -86,7 +87,7 @@ export default function useHistoricalSnapshot({
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [bbox, bboxKey, debounceMs, enabled, language, retryVersion, year]);
+  }, [bbox, bboxKey, dataSource, debounceMs, enabled, language, retryVersion, year]);
 
   return {
     ...state,

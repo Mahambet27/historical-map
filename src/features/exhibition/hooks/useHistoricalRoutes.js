@@ -8,6 +8,7 @@ export default function useHistoricalRoutes({
   year,
   language = "ru",
   enabled = false,
+  dataSource,
 } = {}) {
   const [state, setState] = useState({
     data: null,
@@ -20,18 +21,18 @@ export default function useHistoricalRoutes({
   const [retryVersion, setRetryVersion] = useState(0);
   const retry = useCallback(async () => {
     try {
-      await retryHistoricalRepository();
+      await retryHistoricalRepository({ dataSource });
     } catch {
       // The hook exposes the safe repository error state below.
     }
     setRetryVersion((value) => value + 1);
-  }, []);
+  }, [dataSource]);
 
   useEffect(() => {
     if (!enabled) return undefined;
     const controller = new AbortController();
     const currentRequest = ++requestId.current;
-    getHistoricalRepository()
+    getHistoricalRepository({ dataSource })
       .then((repository) => {
         setState((current) => ({
           ...current,
@@ -67,7 +68,7 @@ export default function useHistoricalRoutes({
         }));
       });
     return () => controller.abort();
-  }, [enabled, language, retryVersion, year]);
+  }, [dataSource, enabled, language, retryVersion, year]);
 
   return { ...state, retry };
 }

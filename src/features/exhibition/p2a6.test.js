@@ -26,11 +26,11 @@ import {
 describe("P2A.6 historical basemap purity", () => {
   it("contains only a neutral background and no modern base data", () => {
     const style = createHistoricalBasemapStyle("#d7d9dc");
-    expect(style.name).toBe("Qazaq Heritage Neutral Historical Base");
+    expect(style.name).toBe("Qazaq Heritage Historical Canvas");
     expect(style.sources).toEqual({});
     expect(style.layers).toEqual([
       expect.objectContaining({
-        id: "historical-neutral-background",
+        id: "historical-background",
         type: "background",
         paint: { "background-color": "#d7d9dc" },
       }),

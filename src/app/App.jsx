@@ -6,6 +6,7 @@ import SiteLayout from "../components/layout/SiteLayout.jsx";
 import ErrorBoundary from "../components/ui/ErrorBoundary.jsx";
 
 const MapExperience = lazy(() => import("../features/map/MapExperience.jsx"));
+const AtlasPage = lazy(() => import("../features/atlas/AtlasPage.jsx"));
 const TimelinePage = lazy(() => import("../pages/TimelinePage.jsx"));
 const CatalogPage = lazy(() => import("../pages/CatalogPage.jsx"));
 const EventPage = lazy(() => import("../pages/EventPage.jsx"));
@@ -62,6 +63,13 @@ function RouteContent() {
 
 function AppRoutes() {
   const { path } = useRoute();
+  if (path === "/atlas") {
+    return (
+      <Suspense fallback={<MapRouteLoading />}>
+        <ErrorBoundary name="atlas"><AtlasPage /></ErrorBoundary>
+      </Suspense>
+    );
+  }
   if (
     path === "/exhibition/diagnostics" ||
     path === "/demo/diagnostics"

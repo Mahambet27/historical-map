@@ -3,6 +3,19 @@ coverage
 node_modules
 playwright-report
 test-results
+# Generated releases, review exports, reports and third-party assets
+package-lock.json
+release-packages
+review-packages
+artifacts
+reports
+.lighthouseci
+.lighthouse-profile
+.p2a5
+.vercel
+public/vendor
+supabase/seed/p2a_seed_data.json
+supabase/seed/p2a_seed_report.json
 public/models
 public/images
 src/data

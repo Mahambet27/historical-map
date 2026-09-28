@@ -8,7 +8,11 @@ import AtlasMobileToolbar from "./components/AtlasMobileToolbar.jsx";
 import AtlasIcon from "./components/AtlasIcon.jsx";
 import { atlasLayers } from "./data/atlasDemoData.js";
 import { atlasEras, buildAtlasHistoricalSnapshot } from "./data/atlasHistoricalData.js";
-import { adaptAtlasSnapshot, filterAtlasObjects } from "./data/atlasSnapshotAdapter.js";
+import {
+  adaptAtlasSnapshot,
+  filterAtlasObjects,
+  atlasObjectsToGeoJSON,
+} from "./data/atlasSnapshotAdapter.js";
 import { atlasText } from "./data/atlasText.js";
 
 function useAtlasModal(ref, open, onClose) {
@@ -79,6 +83,10 @@ export default function AtlasShell() {
     setCardOpen(false);
   }
   const selected = objects.find((object) => object.id === selectedId);
+  const geojson = useMemo(
+    () => atlasObjectsToGeoJSON(layers.settlements ? objects : [], language, selectedId),
+    [objects, layers.settlements, language, selectedId]
+  );
 
   useEffect(() => {
     const previousTitle = document.title;
@@ -116,7 +124,10 @@ export default function AtlasShell() {
   };
   const closeCard = () => {
     setCardOpen(false);
-    document.getElementById(`atlas-marker-${selectedId}`)?.focus();
+    (
+      document.getElementById(`atlas-marker-${selectedId}`) ||
+      document.querySelector(".atlas-maplibre-container canvas")
+    )?.focus();
   };
   const sidebarProps = {
     currentEra: era,
@@ -159,7 +170,8 @@ export default function AtlasShell() {
             {text.objects}: {objects.length}
           </div>
           <AtlasCanvas
-            objects={objects.filter((object) => object.position)}
+            objects={objects}
+            geojson={geojson}
             selectedId={selectedId}
             onSelect={select}
             layers={layers}

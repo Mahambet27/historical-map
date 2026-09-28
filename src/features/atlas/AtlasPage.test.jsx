@@ -1,10 +1,13 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import AtlasPage from "./AtlasPage.jsx";
 import App from "../../app/App.jsx";
 import AtlasObjectCard from "./components/AtlasObjectCard.jsx";
 import { atlasText } from "./data/atlasText.js";
-import { adaptAtlasSnapshot, projectAtlasCoordinates } from "./data/atlasSnapshotAdapter.js";
+import { adaptAtlasSnapshot } from "./data/atlasSnapshotAdapter.js";
+import { mapInstances } from "./map/maplibreTestMock.js";
+import { ATLAS_PLACES_SOURCE } from "./map/atlasMapConfig.js";
+vi.mock("maplibre-gl", async () => (await import("./map/maplibreTestMock.js")).mockMapLibre);
 import { buildHistoricalSnapshot } from "../../domain/history/buildHistoricalSnapshot.js";
 
 afterEach(() => {
@@ -12,21 +15,21 @@ afterEach(() => {
   vi.useRealTimers();
   window.history.replaceState({}, "", "/");
 });
-const map = () => screen.getByRole("region", { name: "Карта" });
+const features = () => mapInstances[0].getSource(ATLAS_PLACES_SOURCE).data.features;
+const clickPoint = (id) =>
+  act(() => mapInstances[0].handlers.click({ features: [{ properties: { objectId: id } }] }));
 describe("isolated atlas prototype", () => {
   it("updates markers/count and closes an expired selection permanently", () => {
     render(<AtlasPage />);
     fireEvent.change(screen.getByRole("slider"), { target: { value: "1200" } });
-    fireEvent.click(screen.getByRole("button", { name: "Выбранный объект: Баласагун" }));
+    clickPoint("balasagun");
     expect(screen.getByRole("heading", { name: "Баласагун" })).toBeInTheDocument();
     expect(screen.getByText("Объекты: 8")).toBeInTheDocument();
     fireEvent.change(screen.getByRole("slider"), { target: { value: "1465" } });
     expect(
       screen.queryByRole("complementary", { name: "Карточка объекта" })
     ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", { name: "Выбранный объект: Баласагун" })
-    ).not.toBeInTheDocument();
+    expect(features().some((feature) => feature.id === "balasagun")).toBe(false);
     expect(screen.getByText("Объекты: 6")).toBeInTheDocument();
     fireEvent.change(screen.getByRole("slider"), { target: { value: "1200" } });
     expect(
@@ -35,10 +38,13 @@ describe("isolated atlas prototype", () => {
   });
   it("renders snapshot coordinates, source and confidence in the card", () => {
     render(<AtlasPage />);
-    const marker = screen.getByRole("button", { name: "Выбранный объект: Отырар" });
-    const [x, y] = projectAtlasCoordinates([68.3, 42.85]);
-    expect(marker).toHaveStyle({ left: `${x / 12}%`, top: `${y / 8}%` });
-    fireEvent.click(marker);
+
+    expect(
+      mapInstances[0]
+        .getSource(ATLAS_PLACES_SOURCE)
+        .data.features.find((feature) => feature.id === "otrar").geometry.coordinates
+    ).toEqual([68.3, 42.85]);
+    clickPoint("otrar");
     expect(screen.getByText("The Silk Roads Programme")).toBeInTheDocument();
     expect(screen.getByText("low")).toBeInTheDocument();
     expect(screen.getByText(/42.85° N/)).toBeInTheDocument();
@@ -92,28 +98,22 @@ describe("isolated atlas prototype", () => {
     render(<AtlasPage />);
     const search = screen.getByRole("searchbox");
     fireEvent.change(search, { target: { value: "Sayram" } });
-    expect(
-      within(map()).getByRole("button", { name: "Выбранный объект: Сайрам" })
-    ).toBeInTheDocument();
-    expect(
-      within(map()).queryByRole("button", { name: "Выбранный объект: Отырар" })
-    ).not.toBeInTheDocument();
+    expect(features().map((feature) => feature.id)).toEqual(["sayram"]);
+    expect(features().some((feature) => feature.id === "otrar")).toBe(false);
     fireEvent.change(search, { target: { value: "xyz123" } });
     expect(screen.getByText("Ничего не найдено")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Очистить поиск" }));
-    expect(
-      within(map()).getByRole("button", { name: "Выбранный объект: Отырар" })
-    ).toBeInTheDocument();
+    expect(features().some((feature) => feature.id === "otrar")).toBe(true);
   });
   it("selects a marker and closes its object card", () => {
     render(<AtlasPage />);
-    fireEvent.click(within(map()).getByRole("button", { name: "Выбранный объект: Сайрам" }));
+    clickPoint("sayram");
     expect(screen.getByRole("heading", { name: "Сайрам" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Закрыть: Сайрам" }));
     expect(
       screen.queryByRole("complementary", { name: "Карточка объекта" })
     ).not.toBeInTheDocument();
-    expect(within(map()).getByRole("button", { name: "Выбранный объект: Сайрам" })).toHaveFocus();
+    expect(mapInstances[0].getCanvas()).toHaveFocus();
   });
   it("changes the year and era including BCE", () => {
     render(<AtlasPage />);
@@ -126,13 +126,9 @@ describe("isolated atlas prototype", () => {
   it("toggles visible layers and category markers", () => {
     render(<AtlasPage />);
     fireEvent.click(screen.getByRole("switch", { name: "Населённые пункты" }));
-    expect(
-      within(map()).queryByRole("button", { name: "Выбранный объект: Сайрам" })
-    ).not.toBeInTheDocument();
+    expect(features()).toEqual([]);
 
-    expect(
-      within(map()).queryByRole("button", { name: "Выбранный объект: Сайрам" })
-    ).not.toBeInTheDocument();
+    expect(features()).toEqual([]);
     expect(screen.getByRole("switch", { name: "3D объекты" })).toBeDisabled();
   });
   it("switches language and closes the about dialog with Escape", () => {

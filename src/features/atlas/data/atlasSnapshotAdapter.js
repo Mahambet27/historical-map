@@ -28,6 +28,26 @@ export const validAtlasCoordinates = (coordinates) =>
   Math.abs(coordinates[0]) <= 180 &&
   Math.abs(coordinates[1]) <= 90;
 
+/** WGS84 GeoJSON, independent of MapLibre and the retired sketch projection. */
+export function atlasObjectsToGeoJSON(objects, language, selectedId = null) {
+  return {
+    type: "FeatureCollection",
+    features: objects
+      .filter((object) => validAtlasCoordinates(object.coordinates))
+      .map((object) => ({
+        type: "Feature",
+        id: object.id,
+        geometry: { type: "Point", coordinates: [...object.coordinates] },
+        properties: {
+          selected: object.id === selectedId,
+          objectId: object.id,
+          name: atlasLocal(object.name, language) || object.id,
+          category: object.category || "",
+        },
+      })),
+  };
+}
+
 /** NON-GIS visual projection into the existing 1200x800 placeholder.
  * Linear screen mapping only: not a geographic projection or accurate boundary fit.
  * Out-of-frame coordinates remain searchable but are not placed on the sketch.

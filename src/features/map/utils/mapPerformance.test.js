@@ -29,13 +29,25 @@ describe("map performance mode", () => {
   });
 
   it("selects balanced for tablets and high for capable desktops", () => {
-    expect(selectQualityMode({ requested: "auto", width: 900 })).toBe("balanced");
+    expect(
+      selectQualityMode({
+        requested: "auto",
+        width: 900,
+        deviceMemory: 16,
+        hardwareConcurrency: 8,
+        reducedMotion: false,
+        saveData: false,
+        effectiveType: "4g",
+      })
+    ).toBe("balanced");
     expect(
       selectQualityMode({
         requested: "auto",
         width: 1440,
         deviceMemory: 16,
         hardwareConcurrency: 12,
+        reducedMotion: false,
+        saveData: false,
         effectiveType: "4g",
       })
     ).toBe("high");

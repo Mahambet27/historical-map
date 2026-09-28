@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { atlasLocal, atlasCategories } from "../data/atlasDemoData.js";
+import { atlasLocal } from "../data/atlasDemoData.js";
 import AtlasIcon from "./AtlasIcon.jsx";
 
 export default function AtlasSearch({ query, onQuery, results, onSelect, language, text }) {
@@ -78,11 +78,8 @@ export default function AtlasSearch({ query, onQuery, results, onSelect, languag
                 <span>
                   <strong>{atlasLocal(object.name, language)}</strong>
                   <small>
-                    {atlasLocal(
-                      atlasCategories.find((category) => category.id === object.category).name,
-                      language
-                    )}{" "}
-                    · {atlasLocal(object.era, language)}
+                    {atlasLocal(object.categoryLabel, language)} ·{" "}
+                    {atlasLocal(object.era, language)}
                   </small>
                 </span>
                 <AtlasIcon name="arrow" size={16} />

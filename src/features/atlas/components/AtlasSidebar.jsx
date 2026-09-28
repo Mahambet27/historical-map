@@ -1,8 +1,10 @@
-import { atlasCategories, atlasEras, atlasLocal } from "../data/atlasDemoData.js";
+import { atlasLocal } from "../data/atlasDemoData.js";
 import AtlasIcon from "./AtlasIcon.jsx";
 import AtlasLayerControl from "./AtlasLayerControl.jsx";
 export default function AtlasSidebar({
   currentEra,
+  atlasCategories,
+  atlasEras,
   onEra,
   categories,
   onCategory,
@@ -32,7 +34,7 @@ export default function AtlasSidebar({
         <section aria-label={text.epochs}>
           <h3 className="atlas-section-title">
             {text.epochs}
-            <span>08</span>
+            <span>{atlasEras.length}</span>
           </h3>
           <div className="atlas-epochs">
             {atlasEras.map((era) => (
@@ -56,7 +58,7 @@ export default function AtlasSidebar({
               <label key={category.id} className="atlas-category">
                 <input
                   type="checkbox"
-                  checked={categories.includes(category.id)}
+                  checked={!categories.includes(category.id)}
                   onChange={() => onCategory(category.id)}
                 />
                 <span aria-hidden="true">{category.symbol}</span>

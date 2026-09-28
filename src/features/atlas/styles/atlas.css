@@ -407,6 +407,15 @@
   grid-template-columns: minmax(0, 1fr);
   background: #101d25;
 }
+.atlas-object-count {
+  position: absolute;
+  left: 32px;
+  top: 112px;
+  z-index: 3;
+  color: #c4ceca;
+  font-size: 10px;
+  pointer-events: none;
+}
 .atlas-main-with-card {
   grid-template-columns: minmax(0, 1fr) 302px;
 }

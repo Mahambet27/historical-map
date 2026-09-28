@@ -1,4 +1,4 @@
-﻿import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import AtlasHeader from "./components/AtlasHeader.jsx";
 import AtlasSidebar from "./components/AtlasSidebar.jsx";
 import AtlasCanvas from "./components/AtlasCanvas.jsx";
@@ -6,13 +6,9 @@ import AtlasTimeline from "./components/AtlasTimeline.jsx";
 import AtlasObjectCard from "./components/AtlasObjectCard.jsx";
 import AtlasMobileToolbar from "./components/AtlasMobileToolbar.jsx";
 import AtlasIcon from "./components/AtlasIcon.jsx";
-import {
-  atlasCategories,
-  atlasDemoObjects,
-  atlasEraAtYear,
-  atlasLayers,
-  filterAtlasObjects,
-} from "./data/atlasDemoData.js";
+import { atlasLayers } from "./data/atlasDemoData.js";
+import { atlasEras, buildAtlasHistoricalSnapshot } from "./data/atlasHistoricalData.js";
+import { adaptAtlasSnapshot, filterAtlasObjects } from "./data/atlasSnapshotAdapter.js";
 import { atlasText } from "./data/atlasText.js";
 
 function useAtlasModal(ref, open, onClose) {
@@ -55,14 +51,12 @@ export default function AtlasShell() {
   const [language, setLanguage] = useState("ru");
   const [year, setYear] = useState(1465);
   const [query, setQuery] = useState("");
-  const [categories, setCategories] = useState(() =>
-    atlasCategories.map((category) => category.id)
-  );
+  const [categories, setCategories] = useState([]);
   const [layers, setLayers] = useState(() =>
     Object.fromEntries(atlasLayers.map((layer) => [layer.id, layer.on]))
   );
-  const [selectedId, setSelectedId] = useState("otrar");
-  const [cardOpen, setCardOpen] = useState(true);
+  const [selectedId, setSelectedId] = useState(null);
+  const [cardOpen, setCardOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [playing, setPlaying] = useState(false);
@@ -73,8 +67,17 @@ export default function AtlasShell() {
   useAtlasModal(aboutRef, aboutOpen, closeAbout);
   useAtlasModal(drawerRef, sidebarOpen, closeDrawer);
   const text = atlasText[language];
-  const era = atlasEraAtYear(year);
-  const objects = filterAtlasObjects(query, categories);
+  const snapshot = useMemo(() => buildAtlasHistoricalSnapshot(year), [year]);
+  const view = useMemo(() => adaptAtlasSnapshot(snapshot), [snapshot]);
+  const { era } = view;
+  const objects = useMemo(
+    () => filterAtlasObjects(view.objects, query, categories),
+    [view, query, categories]
+  );
+  if (selectedId && !view.objects.some((object) => object.id === selectedId)) {
+    setSelectedId(null);
+    setCardOpen(false);
+  }
   const selected = objects.find((object) => object.id === selectedId);
 
   useEffect(() => {
@@ -103,7 +106,7 @@ export default function AtlasShell() {
   };
   const resetFilters = () => {
     setQuery("");
-    setCategories(atlasCategories.map((category) => category.id));
+    setCategories([]);
   };
   const select = (id) => {
     setSelectedId(id);
@@ -117,6 +120,8 @@ export default function AtlasShell() {
   };
   const sidebarProps = {
     currentEra: era,
+    atlasEras,
+    atlasCategories: view.categories,
     onEra: chooseYear,
     categories,
     onCategory: (id) =>
@@ -150,8 +155,11 @@ export default function AtlasShell() {
           <AtlasSidebar {...sidebarProps} />
         </div>
         <main className={`atlas-main ${selected && cardOpen ? "atlas-main-with-card" : ""}`}>
+          <div className="atlas-object-count" role="status">
+            {text.objects}: {objects.length}
+          </div>
           <AtlasCanvas
-            objects={objects}
+            objects={objects.filter((object) => object.position)}
             selectedId={selectedId}
             onSelect={select}
             layers={layers}
@@ -206,12 +214,12 @@ export default function AtlasShell() {
           setSidebarOpen(false);
         }}
         onObject={() => {
-          if (!selected && atlasDemoObjects[0]) {
+          if (!selected && view.objects[0]) {
             resetFilters();
-            select(atlasDemoObjects[0].id);
+            select(view.objects[0].id);
           } else setCardOpen(true);
         }}
-        hasObject={Boolean(selected || atlasDemoObjects.length)}
+        hasObject={Boolean(selected || view.objects.length)}
       />
       {sidebarOpen && (
         <div className="atlas-modal-backdrop" onClick={closeDrawer}>

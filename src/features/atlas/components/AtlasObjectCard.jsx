@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { atlasCategories, atlasLocal } from "../data/atlasDemoData.js";
+import { atlasLocal } from "../data/atlasDemoData.js";
 import AtlasIcon from "./AtlasIcon.jsx";
 export default function AtlasObjectCard({ object, onClose, language, text }) {
   const [expanded, setExpanded] = useState(false);
-  const category = atlasCategories.find((item) => item.id === object.category);
+  const category = { symbol: "◇", name: object.categoryLabel };
   return (
     <aside className="atlas-object-card" aria-label={text.focusCard}>
       <div className="atlas-card-topline">
@@ -53,19 +53,23 @@ export default function AtlasObjectCard({ object, onClose, language, text }) {
           <span>{text.confidence}</span>
           <strong>
             <i />
-            {text.review}
+            {object.confidence ?? text.unknownConfidence}
           </strong>
         </div>
         <div className="atlas-object-sources">
           <AtlasIcon name="book" size={17} />
           <div>
             <strong>{text.sources}</strong>
-            <p>{text.sourceNotice}</p>
+            <p>
+              {object.sources.length
+                ? object.sources.map((source) => source.title || source.id).join("; ")
+                : text.sourceNotice}
+            </p>
           </div>
         </div>
         {expanded && (
           <p id="atlas-object-details" className="atlas-detail-notice">
-            {text.detailNotice}
+            {object.verificationStatus || text.unknownConfidence}
           </p>
         )}
         <button
@@ -81,13 +85,20 @@ export default function AtlasObjectCard({ object, onClose, language, text }) {
           <AtlasIcon name="cube" size={16} />
           {text.threeD}
         </button>
-        <div className="atlas-object-coordinates">
-          <AtlasIcon name="pin" size={14} />
-          <span>
-            {object.coordinates[1].toFixed(2)}° N, {object.coordinates[0].toFixed(2)}° E
-            <small>{text.coordinates} · UI demo</small>
-          </span>
-        </div>
+        {object.coordinates && (
+          <div className="atlas-object-coordinates">
+            <AtlasIcon name="pin" size={14} />
+            <span>
+              {Math.abs(object.coordinates[1]).toFixed(2)}° {object.coordinates[1] < 0 ? "S" : "N"},{" "}
+              {Math.abs(object.coordinates[0]).toFixed(2)}° {object.coordinates[0] < 0 ? "W" : "E"}
+              <small>
+                {object.coordinatePrecision === "approximate"
+                  ? text.coordinates
+                  : object.coordinatePrecision || ""}
+              </small>
+            </span>
+          </div>
+        )}
       </div>
     </aside>
   );

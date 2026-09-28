@@ -4,37 +4,45 @@ import { mapInstances, mockSettings } from "./maplibreTestMock.js";
 import {
   ATLAS_PLACES_SOURCE,
   ATLAS_PLACES_LAYER,
-  ATLAS_BASEMAP_STYLE_URL,
+  resolveAtlasBasemapConfig,
 } from "./atlasMapConfig.js";
 import AtlasPage from "../AtlasPage.jsx";
 import { adaptAtlasSnapshot, atlasObjectsToGeoJSON } from "../data/atlasSnapshotAdapter.js";
 import { buildAtlasHistoricalSnapshot } from "../data/atlasHistoricalData.js";
 vi.mock("maplibre-gl", async () => (await import("./maplibreTestMock.js")).mockMapLibre);
-afterEach(cleanup);
-
-it("creates a Kazakhstan GIS canvas and updates the same source/map when year changes", () => {
-  const { container, unmount } = render(<AtlasPage />);
-  expect(container.querySelector("canvas.maplibregl-canvas")).toBeInTheDocument();
-  const map = mapInstances[0];
-  expect(map.options).toMatchObject({
-    center: [67, 48],
-    style: ATLAS_BASEMAP_STYLE_URL,
-    maxPitch: 65,
-  });
-  const source = map.getSource(ATLAS_PLACES_SOURCE);
-  expect(source.data.features).toHaveLength(6);
-  fireEvent.change(screen.getByRole("slider"), { target: { value: "1200" } });
-  expect(source.setData).toHaveBeenLastCalledWith(
-    expect.objectContaining({ features: expect.any(Array) })
-  );
-  expect(source.data.features).toHaveLength(8);
-  fireEvent.change(screen.getByRole("slider"), { target: { value: "-550" } });
-  expect(source.data.features).toEqual([]);
-  expect(mapInstances).toHaveLength(1);
-  expect(map.addSource).toHaveBeenCalledTimes(1);
-  unmount();
-  expect(map.remove).toHaveBeenCalledTimes(1);
+afterEach(() => {
+  cleanup();
+  vi.unstubAllEnvs();
 });
+
+it.each(["remote", "self-hosted"])(
+  "creates a %s GIS canvas and updates the same source/map when year changes",
+  (mode) => {
+    vi.stubEnv("VITE_ATLAS_BASEMAP_MODE", mode);
+    vi.stubEnv("VITE_ATLAS_STYLE_URL", "/maps/style.json");
+    const { container, unmount } = render(<AtlasPage />);
+    expect(container.querySelector("canvas.maplibregl-canvas")).toBeInTheDocument();
+    const map = mapInstances[0];
+    expect(map.options).toMatchObject({
+      center: [67, 48],
+      style: resolveAtlasBasemapConfig({ VITE_ATLAS_BASEMAP_MODE: mode }).styleUrl,
+      maxPitch: 65,
+    });
+    const source = map.getSource(ATLAS_PLACES_SOURCE);
+    expect(source.data.features).toHaveLength(6);
+    fireEvent.change(screen.getByRole("slider"), { target: { value: "1200" } });
+    expect(source.setData).toHaveBeenLastCalledWith(
+      expect.objectContaining({ features: expect.any(Array) })
+    );
+    expect(source.data.features).toHaveLength(8);
+    fireEvent.change(screen.getByRole("slider"), { target: { value: "-550" } });
+    expect(source.data.features).toEqual([]);
+    expect(mapInstances).toHaveLength(1);
+    expect(map.addSource).toHaveBeenCalledTimes(1);
+    unmount();
+    expect(map.remove).toHaveBeenCalledTimes(1);
+  }
+);
 it("selects a GeoJSON feature through the map click handler", () => {
   render(<AtlasPage />);
   act(() => mapInstances[0].handlers.click({ features: [{ properties: { objectId: "otrar" } }] }));
@@ -99,14 +107,18 @@ it("flies to search selection without DOM markers or a Mapbox token", () => {
   vi.unstubAllEnvs();
 });
 
-it("disposes failed GIS and preserves selectable snapshot objects in the placeholder", () => {
-  mockSettings.autoLoad = false;
-  const { container } = render(<AtlasPage />);
-  act(() => mapInstances[0].handlers.error());
-  expect(mapInstances[0].remove).toHaveBeenCalledTimes(1);
-  expect(container.querySelector(".atlas-map-fallback")).toBeInTheDocument();
-  fireEvent.click(screen.getByRole("button", { name: "Выбранный объект: Отырар" }));
-  expect(screen.getByRole("heading", { name: "Отырар" })).toBeInTheDocument();
-  fireEvent.change(screen.getByRole("slider"), { target: { value: "-550" } });
-  expect(container.querySelectorAll(".atlas-marker")).toHaveLength(0);
-});
+it.each(["remote", "self-hosted"])(
+  "disposes failed %s GIS and preserves selectable snapshot objects in the placeholder",
+  (mode) => {
+    vi.stubEnv("VITE_ATLAS_BASEMAP_MODE", mode);
+    mockSettings.autoLoad = false;
+    const { container } = render(<AtlasPage />);
+    act(() => mapInstances[0].handlers.error());
+    expect(mapInstances[0].remove).toHaveBeenCalledTimes(1);
+    expect(container.querySelector(".atlas-map-fallback")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Выбранный объект: Отырар" }));
+    expect(screen.getByRole("heading", { name: "Отырар" })).toBeInTheDocument();
+    fireEvent.change(screen.getByRole("slider"), { target: { value: "-550" } });
+    expect(container.querySelectorAll(".atlas-marker")).toHaveLength(0);
+  }
+);

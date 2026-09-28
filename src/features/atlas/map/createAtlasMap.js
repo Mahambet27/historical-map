@@ -1,7 +1,7 @@
 ﻿import { Map as LibreMap, NavigationControl, setWorkerUrl } from "maplibre-gl";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import {
-  ATLAS_BASEMAP_STYLE_URL,
+  getAtlasBasemapConfig,
   ATLAS_MAP_VIEW,
   ATLAS_PLACES_SOURCE,
   ATLAS_PLACES_LAYER,
@@ -12,9 +12,10 @@ const empty = { type: "FeatureCollection", features: [] };
 
 /** GeoJSON renderer only. No knowledge of historical datasets or temporal rules. */
 export function createAtlasMap(container, onStatus) {
+  const { styleUrl } = getAtlasBasemapConfig();
   const map = new LibreMap({
     container,
-    style: ATLAS_BASEMAP_STYLE_URL,
+    style: styleUrl,
     ...ATLAS_MAP_VIEW,
     maxPitch: 65,
     renderWorldCopies: false,

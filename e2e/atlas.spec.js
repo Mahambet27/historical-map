@@ -1,6 +1,9 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { ATLAS_BASEMAP_STYLE_URL } from "../src/features/atlas/map/atlasMapConfig.js";
+import process from "node:process";
+import { resolveAtlasBasemapConfig } from "../src/features/atlas/map/atlasMapConfig.js";
+const basemap = resolveAtlasBasemapConfig(process.env);
+const ATLAS_BASEMAP_STYLE_URL = basemap.styleUrl;
 
 // Network-independent GIS regression: real WebGL + workers + snapshot sources.
 // A separate live-provider test below checks the configured public basemap.
@@ -89,6 +92,10 @@ for (const [name, width, height] of [
 }
 
 test("Atlas uses a live open basemap without Mapbox requests", async ({ page }, testInfo) => {
+  test.skip(
+    basemap.mode !== "remote",
+    "The local style is intentionally not supplied until the tile-data phase."
+  );
   const mapboxRequests = [];
   page.on("request", (request) => {
     if (/mapbox\.com/.test(request.url())) mapboxRequests.push(request.url());
@@ -102,7 +109,13 @@ test("Atlas uses a live open basemap without Mapbox requests", async ({ page }, 
 });
 
 test("Atlas falls back to the preserved SVG if the style cannot load", async ({ page }) => {
-  await page.route(ATLAS_BASEMAP_STYLE_URL, (route) => route.abort());
+  const providerRequests = [];
+  page.on("request", (request) => {
+    if (/openfreemap\.org|mapbox\.com/.test(request.url())) providerRequests.push(request.url());
+  });
+  await page.route(ATLAS_BASEMAP_STYLE_URL, (route) =>
+    route.fulfill({ status: 404, body: "Style not deployed" })
+  );
   await page.goto("/atlas");
   await expect(page.locator(".atlas-map-fallback")).toBeVisible();
   await expect(page.locator(".atlas-geography")).toBeVisible();
@@ -110,4 +123,5 @@ test("Atlas falls back to the preserved SVG if the style cannot load", async ({ 
   await page.getByRole("searchbox").fill("Otrar");
   await page.getByRole("searchbox").press("Enter");
   await expect(page.getByRole("heading", { name: "Отырар" })).toBeVisible();
+  if (basemap.mode === "self-hosted") expect(providerRequests).toEqual([]);
 });

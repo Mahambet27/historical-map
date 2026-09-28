@@ -1784,6 +1784,12 @@ button, a, select, input { -webkit-tap-highlight-color: transparent; }
   gap: 0.35rem;
 }
 
+/* Timeline footer text sits on the dark dock, not the light page surface. */
+.ex-time-dock .ex-year-availability,
+.ex-time-dock label > span {
+  color: #e4eaf0;
+}
+
 .ex-year-availability::before {
   width: 0.55rem;
   height: 0.55rem;

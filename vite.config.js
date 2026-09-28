@@ -10,40 +10,32 @@ const p2a5LocalVerificationPlugin = () => ({
   name: "p2a5-local-verification",
   apply: "serve",
   configureServer(server) {
-    server.middlewares.use(
-      "/__p2a5/verification",
-      async (request, response) => {
-        if (request.method !== "GET") {
-          response.statusCode = 405;
-          response.end();
-          return;
-        }
-        response.setHeader("Content-Type", "application/json; charset=utf-8");
-        response.setHeader("Cache-Control", "no-store");
-        try {
-          const content = await readFile(
-            path.join(process.cwd(), ".p2a5", "verification.json"),
-            "utf8"
-          );
-          response.statusCode = 200;
-          response.end(content);
-        } catch {
-          response.statusCode = 404;
-          response.end('{"available":false,"sections":{}}');
-        }
+    server.middlewares.use("/__p2a5/verification", async (request, response) => {
+      if (request.method !== "GET") {
+        response.statusCode = 405;
+        response.end();
+        return;
       }
-    );
+      response.setHeader("Content-Type", "application/json; charset=utf-8");
+      response.setHeader("Cache-Control", "no-store");
+      try {
+        const content = await readFile(
+          path.join(process.cwd(), ".p2a5", "verification.json"),
+          "utf8"
+        );
+        response.statusCode = 200;
+        response.end(content);
+      } catch {
+        response.statusCode = 404;
+        response.end('{"available":false,"sections":{}}');
+      }
+    });
   },
 });
 
 export default defineConfig(({ mode }) => ({
   optimizeDeps: {
-    include: [
-      "@turf/difference",
-      "@turf/helpers",
-      "@turf/intersect",
-      "@turf/union",
-    ],
+    include: ["@turf/difference", "@turf/helpers", "@turf/intersect", "@turf/union"],
   },
   plugins: [
     react(),
@@ -51,11 +43,7 @@ export default defineConfig(({ mode }) => ({
     VitePWA({
       registerType: "prompt",
       cacheId: "qazaq-heritage-map",
-      includeAssets: [
-        "icons/*.svg",
-        "offline.html",
-        "models/exhibition/posters/*.webp",
-      ],
+      includeAssets: ["icons/*.svg", "offline.html", "models/exhibition/posters/*.webp"],
       manifest: false,
       workbox: {
         cleanupOutdatedCaches: true,
@@ -67,6 +55,7 @@ export default defineConfig(({ mode }) => ({
           "**/stats.html",
           "**/assets/MapView-*.js",
           "**/assets/MapView-*.css",
+          "**/assets/AtlasPage-*.js",
           "**/assets/mapbox-gl-*.js",
           "**/assets/model-viewer-*.js",
           "**/assets/supabase-*.js",
@@ -75,6 +64,16 @@ export default defineConfig(({ mode }) => ({
         ],
         navigateFallback: "/index.html",
         runtimeCaching: [
+          {
+            urlPattern: ({ url }) =>
+              url.origin === self.location.origin &&
+              /\/assets\/AtlasPage-[^/]+\.js$/.test(url.pathname),
+            handler: "CacheFirst",
+            options: {
+              cacheName: "qhm-atlas-js-v1",
+              expiration: { maxEntries: 2, maxAgeSeconds: 365 * 24 * 60 * 60 },
+            },
+          },
           {
             urlPattern: ({ url }) =>
               url.origin === self.location.origin && url.pathname.endsWith(".json"),

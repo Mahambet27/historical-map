@@ -1,19 +1,11 @@
-import { allHistoricalEntities } from "../../data/exhibition/entities.js";
-import { getEntityLabelsAtYear } from "../../data/exhibition/entityLabels.js";
+import { projectExhibitionCoordinate } from "./mapDataUtils.js";
 import {
-  getFallbackEntitiesAtYear,
-  projectExhibitionCoordinate,
-} from "./mapDataUtils.js";
-import {
-  buildEnvironmentCollection,
-  buildHistoricalPlaceCollections,
-  buildHydrologyCollection,
-  buildRouteCollections,
-} from "./p1bMapDataUtils.js";
+  buildExhibitionSnapshot,
+  createFallbackViewModel,
+  snapshotTerritories,
+} from "./exhibitionSnapshot.js";
 import { getUncertaintyStyle } from "./uncertaintyStyleRegistry.js";
-import { isRecordAllowedInOfficialDemo } from "./officialDemoMode.js";
 
-const entityById = new Map(allHistoricalEntities.map((entity) => [entity.id, entity]));
 const local = (value, language) => value?.[language] || value?.ru || "";
 
 const polygonPath = (coordinates, offsetY = 0) =>
@@ -56,22 +48,16 @@ export default function ExhibitionMapFallback({
   effectiveQuality = "auto",
   officialDemo = false,
 }) {
-  const territories = getFallbackEntitiesAtYear(selectedYear)
-    .filter(
-      ({ geometry }) =>
-        !officialDemo || isRecordAllowedInOfficialDemo(geometry)
-    )
-    .sort(
-    (a, b) => Number(a.entity.id === selectedEntityId) - Number(b.entity.id === selectedEntityId)
-    );
-  const labels = getEntityLabelsAtYear(selectedYear);
+  const snapshot = buildExhibitionSnapshot(selectedYear, p1bData);
+  const { territories, labels, entityById, environment, hydrology, places, routes } =
+    createFallbackViewModel(snapshot, { language, selectedEntityId, officialDemo });
   const comparisonTerritories = comparison
     ? [
-        ...getFallbackEntitiesAtYear(comparison.firstYear).map((entry) => ({
+        ...snapshotTerritories(buildExhibitionSnapshot(comparison.firstYear)).map((entry) => ({
           ...entry,
           comparisonRole: "first",
         })),
-        ...getFallbackEntitiesAtYear(comparison.secondYear).map((entry) => ({
+        ...snapshotTerritories(buildExhibitionSnapshot(comparison.secondYear)).map((entry) => ({
           ...entry,
           comparisonRole: "second",
         })),
@@ -90,27 +76,6 @@ export default function ExhibitionMapFallback({
     activeLayers
       ? activeLayers.includes(id)
       : Boolean(layerState?.[id]);
-  const environment = p1bData
-    ? buildEnvironmentCollection(p1bData.environmentSnapshots, selectedYear, language)
-    : { features: [] };
-  const hydrology = p1bData
-    ? buildHydrologyCollection(p1bData.hydrologySnapshots, selectedYear, language)
-    : { features: [] };
-  const places = p1bData
-    ? buildHistoricalPlaceCollections(
-        p1bData.historicalSettlements,
-        selectedYear,
-        language
-      )
-    : { places: { features: [] }, archaeology: { features: [] } };
-  const routes = p1bData
-    ? buildRouteCollections(
-        p1bData.historicalRoutes,
-        p1bData.routeSegments,
-        selectedYear,
-        language
-      )
-    : { trade: { features: [] }, nomadic: { features: [] }, military: { features: [] } };
 
   return (
     <div className="ex-map-fallback" role="group" aria-label={`${text.mapLabel}. ${text.mapUnavailable}`}>

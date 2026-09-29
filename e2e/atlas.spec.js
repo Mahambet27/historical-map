@@ -11,6 +11,18 @@ const ATLAS_BASEMAP_STYLE_URL = basemap.styleUrl;
 const localStyle = JSON.parse(
   readFileSync(new URL("../public/maps/style.json", import.meta.url), "utf8")
 );
+// Test-only observation of the actual MapLibre instance; no terrain/source mocks.
+async function observeAtlasMap(page) {
+  await page.route("**/src/features/atlas/map/createAtlasMap.js*", async (route) => {
+    const response = await route.fetch();
+    const body = await response.text();
+    expect(body).toContain("map.addControl(");
+    await route.fulfill({
+      response,
+      body: body.replace("map.addControl(", "window.__atlasTestMap = map; map.addControl("),
+    });
+  });
+}
 async function useTestBasemap(page) {
   const response = await page.request.get("/maps/style.json");
   expect(response.ok()).toBe(true);
@@ -188,4 +200,93 @@ test("Atlas renders real local tiles and keeps the historical overlay interactiv
   await page.screenshot({ path: testInfo.outputPath("atlas-real-self-hosted.png") });
   expect(external).toEqual([]);
   expect(failedAssets).toEqual([]);
+});
+
+test("Atlas retains basemap and cards when optional DEM is unavailable", async ({ page }) => {
+  test.skip(process.env.VITE_ATLAS_TERRAIN_ENABLED !== "true", "Requires enabled terrain");
+  let requested = false;
+  await page.route("**/maps/terrain/terrain.json", (route) => {
+    requested = true;
+    return route.fulfill({ status: 404, body: "DEM not provisioned" });
+  });
+  await page.goto("/atlas");
+  await expect.poll(() => requested).toBe(true);
+  await expect(page.locator(".atlas-gis-canvas")).toHaveAttribute("data-map-status", "ready");
+  await expect(page.locator(".maplibregl-canvas")).toBeVisible();
+  await expect(page.locator(".atlas-map-fallback")).toHaveCount(0);
+  await page.getByRole("searchbox").fill("Otrar");
+  await page.getByRole("searchbox").press("Enter");
+  await expect(page.locator(".atlas-object-card")).toBeVisible();
+});
+
+test("Atlas renders local NASA SRTM terrain and hillshade with real elevations", async ({
+  page,
+}, testInfo) => {
+  test.skip(process.env.VITE_ATLAS_TERRAIN_ENABLED !== "true", "Requires enabled terrain");
+  test.setTimeout(120000);
+  await observeAtlasMap(page);
+  const demTiles = new Set(),
+    failures = [],
+    external = [];
+  page.on("request", (request) => {
+    const url = new URL(request.url());
+    if (["http:", "https:"].includes(url.protocol) && url.origin !== "http://127.0.0.1:4173")
+      external.push(url.href);
+  });
+  page.on("response", (response) => {
+    if (/\/maps\/terrain\/.*\.png/.test(response.url())) {
+      if (response.ok()) demTiles.add(response.url());
+      else failures.push(response.url());
+    }
+  });
+  await page.goto("/atlas");
+  await expect
+    .poll(() => page.evaluate(() => window.__atlasTestMap?.getTerrain()?.source))
+    .toBe("atlas-local-dem");
+  expect(
+    await page.evaluate(() => window.__atlasTestMap.getLayer("atlas-local-hillshade").type)
+  ).toBe("hillshade");
+  await expect.poll(() => demTiles.size).toBeGreaterThan(3);
+  await page.evaluate(() =>
+    window.__atlasTestMap.jumpTo({ center: [77.08, 43.08], zoom: 9, pitch: 55 })
+  );
+  await expect
+    .poll(
+      () => page.evaluate(() => window.__atlasTestMap.queryTerrainElevation([77.08, 43.08]) ?? 0),
+      { timeout: 60000 }
+    )
+    .toBeGreaterThan(1500);
+  await page.screenshot({ path: testInfo.outputPath("atlas-srtm-tian-shan.png") });
+  await page.getByRole("slider").focus();
+  await page.keyboard.press("Home");
+  expect(await page.evaluate(() => window.__atlasTestMap.getTerrain().source)).toBe(
+    "atlas-local-dem"
+  );
+  expect(
+    await page.evaluate(() => Boolean(window.__atlasTestMap.getLayer("atlas-local-hillshade")))
+  ).toBe(true);
+  expect(failures).toEqual([]);
+  expect(external).toEqual([]);
+});
+
+test("Atlas removes terrain and hillshade after a DEM tile failure", async ({ page }) => {
+  test.skip(process.env.VITE_ATLAS_TERRAIN_ENABLED !== "true", "Requires enabled terrain");
+  await observeAtlasMap(page);
+  let failed = 0;
+  await page.route("**/maps/terrain/**/*.png", (route) => {
+    failed++;
+    return route.fulfill({ status: 404, body: "Test-only missing DEM tile" });
+  });
+  await page.goto("/atlas");
+  await expect.poll(() => failed).toBeGreaterThan(0);
+  await expect
+    .poll(() => page.evaluate(() => Boolean(window.__atlasTestMap?.getTerrain())))
+    .toBe(false);
+  expect(
+    await page.evaluate(() => Boolean(window.__atlasTestMap.getLayer("atlas-local-hillshade")))
+  ).toBe(false);
+  await expect(page.locator(".atlas-gis-canvas")).toHaveAttribute("data-map-status", "ready");
+  await page.getByRole("searchbox").fill("Otrar");
+  await page.getByRole("searchbox").press("Enter");
+  await expect(page.locator(".atlas-object-card")).toBeVisible();
 });

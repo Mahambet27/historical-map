@@ -1,4 +1,5 @@
-﻿import { Map as LibreMap, NavigationControl, setWorkerUrl } from "maplibre-gl";
+import { attachAtlasTerrain, terrainEnabled } from "./atlasTerrain.js";
+import { Map as LibreMap, NavigationControl, setWorkerUrl } from "maplibre-gl";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import {
   getAtlasBasemapConfig,
@@ -25,6 +26,7 @@ export function createAtlasMap(container, onStatus) {
   map.addControl(new NavigationControl({ visualizePitch: true }), "top-right");
   let state = { geojson: empty, selectedId: null, onSelect: () => {} };
   let ready = false;
+  let disposeTerrain = () => {};
   let disposed = false;
   let lastData = null;
   let lastSelected = null;
@@ -76,6 +78,7 @@ export function createAtlasMap(container, onStatus) {
     ready = true;
     flyToSelection();
     onStatus("ready");
+    disposeTerrain = attachAtlasTerrain(map, terrainEnabled(import.meta.env));
   };
   const click = (event) => {
     const id = event.features?.[0]?.properties?.objectId;
@@ -120,6 +123,7 @@ export function createAtlasMap(container, onStatus) {
     },
     dispose() {
       disposed = true;
+      disposeTerrain();
       window.clearTimeout(timeout);
       resize?.disconnect();
       map.off("load", load);

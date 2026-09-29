@@ -45,3 +45,9 @@ public/maps/data-manifest.json
 *.mbtiles
 *.pmtiles
 *.osm.pbf
+
+# Generated local DEM artifacts
+public/maps/terrain/**
+!public/maps/terrain/.gitkeep
+!public/maps/terrain/README.md
+__pycache__/

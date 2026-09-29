@@ -75,7 +75,11 @@
     "maps:generate": "node scripts/maps/generate.mjs",
     "maps:import": "node scripts/maps/import.mjs",
     "maps:glyphs": "node scripts/maps/glyphs.mjs",
-    "maps:validate": "node scripts/maps/validate.mjs"
+    "maps:validate": "node scripts/maps/validate.mjs",
+    "maps:terrain:fetch": "node scripts/maps/terrain-fetch.mjs",
+    "maps:terrain:prepare": "node scripts/maps/terrain-python.mjs scripts/maps/terrain-prepare.py",
+    "maps:terrain:generate": "node scripts/maps/terrain-python.mjs scripts/maps/terrain-generate.py",
+    "maps:terrain:validate": "node scripts/maps/terrain-validate.mjs"
   },
   "dependencies": {
     "@google/model-viewer": "^4.3.1",

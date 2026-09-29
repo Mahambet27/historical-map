@@ -122,3 +122,8 @@ remain. No labels were transliterated or dropped to pass validation.
 The supplied generator JAR reports Planetiler 0.10.2, build
 0e5588c4a6e8c29a270a33afe8df62027d889604. The actual bytes are recorded in the local
 inputs.lock.json. The prior 0.10.1 reference is not the version used for this run.
+
+## Optional local DEM terrain (Phase 5B)
+
+See [terrain preparation and validation](../../public/maps/terrain/README.md).
+Commands: see the terrain README for NASA SRTMGL1 v3 download, mosaic, generation and validation.

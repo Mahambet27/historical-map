@@ -1,3 +1,5 @@
+import localStyle from "../../../../public/maps/style.json";
+import { validateStyleMin } from "@maplibre/maplibre-gl-style-spec";
 import { afterEach, expect, it, vi } from "vitest";
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { mapInstances, mockSettings } from "./maplibreTestMock.js";
@@ -122,3 +124,22 @@ it.each(["remote", "self-hosted"])(
     expect(container.querySelectorAll(".atlas-marker")).toHaveLength(0);
   }
 );
+
+it("appends a valid historical GeoJSON overlay above every local basemap layer", () => {
+  vi.stubEnv("VITE_ATLAS_BASEMAP_MODE", "self-hosted");
+  render(<AtlasPage />);
+  const map = mapInstances[0];
+  const [overlay, beforeId] = map.addLayer.mock.calls[0];
+  expect(beforeId).toBeUndefined();
+  expect(overlay.source).toBe(ATLAS_PLACES_SOURCE);
+  const combined = {
+    ...localStyle,
+    sources: {
+      ...localStyle.sources,
+      [ATLAS_PLACES_SOURCE]: { type: "geojson", data: map.getSource(ATLAS_PLACES_SOURCE).data },
+    },
+    layers: [...localStyle.layers, overlay],
+  };
+  expect(combined.layers.at(-1).id).toBe(ATLAS_PLACES_LAYER);
+  expect(validateStyleMin(combined)).toEqual([]);
+});

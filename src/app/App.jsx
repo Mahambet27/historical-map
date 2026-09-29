@@ -63,7 +63,7 @@ function RouteContent() {
 
 function AppRoutes() {
   const { path } = useRoute();
-  if (path === "/atlas") {
+  if (path === "/atlas" || path === "/") {
     return (
       <Suspense fallback={<MapRouteLoading />}>
         <ErrorBoundary name="atlas"><AtlasPage /></ErrorBoundary>

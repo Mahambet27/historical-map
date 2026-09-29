@@ -5,6 +5,9 @@ import { eraRegistry } from "../../../data/exhibition/eraRegistry.js";
 import { historicalSources } from "../../../data/exhibition/sources.js";
 import { entityGeometries } from "../../../data/exhibition/entityGeometries.js";
 import { allHistoricalEntities } from "../../../data/exhibition/entities.js";
+import { historicalRoutes } from "../../../data/exhibition/historicalRoutes.js";
+import { routeSegments } from "../../../data/exhibition/routeSegments.js";
+import { historicalEvents } from "../../../data/exhibition/events.js";
 
 // Local source boundary: no copied records and no changes to the domain contract.
 export const atlasSourceData = {
@@ -13,6 +16,9 @@ export const atlasSourceData = {
   territories: entityGeometries,
   borders: entityGeometries,
   entities: allHistoricalEntities,
+  routes: historicalRoutes,
+  routeSegments,
+  events: historicalEvents,
 };
 export const atlasEras = eraRegistry.map((era) => ({
   ...era,

@@ -15,6 +15,8 @@ import {
 } from "./data/atlasSnapshotAdapter.js";
 import { atlasText } from "./data/atlasText.js";
 import { atlasHistoricalGeometry, atlasTerritoryCards } from "./data/atlasHistoricalGeometry.js";
+import { atlasHistoricalOverlays, atlasOverlayCards } from "./data/atlasHistoricalOverlays.js";
+import { atlasYearFromSearch, atlasSearchForYear } from "./data/atlasLocation.js";
 
 function useAtlasModal(ref, open, onClose) {
   useEffect(() => {
@@ -54,7 +56,7 @@ function useAtlasModal(ref, open, onClose) {
 
 export default function AtlasShell() {
   const [language, setLanguage] = useState("ru");
-  const [year, setYear] = useState(1465);
+  const [year, setYear] = useState(() => atlasYearFromSearch(window.location.search));
   const [query, setQuery] = useState("");
   const [categories, setCategories] = useState([]);
   const [layers, setLayers] = useState(() =>
@@ -62,6 +64,7 @@ export default function AtlasShell() {
   );
   const [selectedId, setSelectedId] = useState(null);
   const [selectedEntityId, setSelectedEntityId] = useState(null);
+  const [selectedOverlayId, setSelectedOverlayId] = useState(null);
   const [cardOpen, setCardOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -75,7 +78,10 @@ export default function AtlasShell() {
   const text = atlasText[language];
   const snapshot = useMemo(() => buildAtlasHistoricalSnapshot(year), [year]);
   const view = useMemo(() => adaptAtlasSnapshot(snapshot), [snapshot]);
-  const historical = useMemo(() => atlasHistoricalGeometry(snapshot), [snapshot]);
+  const historical = useMemo(() => ({
+    ...atlasHistoricalGeometry(snapshot), ...atlasHistoricalOverlays(snapshot),
+  }), [snapshot]);
+  const overlayCards = useMemo(() => atlasOverlayCards(snapshot, historical), [snapshot, historical]);
   const territoryCards = useMemo(
     () => atlasTerritoryCards(snapshot, historical.territories),
     [snapshot, historical]
@@ -93,7 +99,11 @@ export default function AtlasShell() {
     setSelectedEntityId(null);
     setCardOpen(false);
   }
-  const selected = selectedEntityId
+  if (selectedOverlayId && !overlayCards.some((object) => object.id === selectedOverlayId)) {
+    setSelectedOverlayId(null);
+    setCardOpen(false);
+  }
+  const selected = selectedOverlayId ? overlayCards.find((object) => object.id === selectedOverlayId) : selectedEntityId
     ? territoryCards.find((object) => object.entityId === selectedEntityId)
     : objects.find((object) => object.id === selectedId);
   const geojson = useMemo(
@@ -101,6 +111,19 @@ export default function AtlasShell() {
     [objects, layers.settlements, language, selectedId]
   );
 
+  useEffect(() => {
+    const onLocation = () => {
+      setYear(atlasYearFromSearch(window.location.search));
+      setPlaying(false);
+    };
+    window.addEventListener("popstate", onLocation);
+    return () => window.removeEventListener("popstate", onLocation);
+  }, []);
+  useEffect(() => {
+    const search = atlasSearchForYear(window.location.search, year);
+    if (search !== window.location.search)
+      window.history.replaceState(window.history.state, "", `${window.location.pathname}${search}${window.location.hash}`);
+  }, [year]);
   useEffect(() => {
     const previousTitle = document.title;
     document.title = "Qazaq Historical Atlas · Prototype";
@@ -130,6 +153,7 @@ export default function AtlasShell() {
     setCategories([]);
   };
   const select = (id) => {
+    setSelectedOverlayId(null);
     setSelectedEntityId(null);
     setSelectedId(id);
     setCardOpen(true);
@@ -139,7 +163,16 @@ export default function AtlasShell() {
   const selectEntity = (id) => {
     if (!territoryCards.some((object) => object.entityId === id)) return;
     setSelectedId(null);
+    setSelectedOverlayId(null);
     setSelectedEntityId(id);
+    setCardOpen(true);
+    setSidebarOpen(false);
+  };
+  const selectOverlay = (id) => {
+    if (!overlayCards.some((object) => object.id === id)) return;
+    setSelectedId(null);
+    setSelectedEntityId(null);
+    setSelectedOverlayId(id);
     setCardOpen(true);
     setSidebarOpen(false);
   };
@@ -164,6 +197,7 @@ export default function AtlasShell() {
     language,
     text,
     layers,
+    historical,
     onToggle: (id) => setLayers((current) => ({ ...current, [id]: !current[id] })),
     onClose: closeDrawer,
   };
@@ -195,6 +229,7 @@ export default function AtlasShell() {
             geojson={geojson}
             historical={historical}
             onSelectEntity={selectEntity}
+            onSelectOverlay={selectOverlay}
             selectedId={selectedId}
             onSelect={select}
             layers={layers}

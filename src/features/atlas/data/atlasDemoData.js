@@ -15,9 +15,10 @@ export const atlasLayers = [
   {
     id: "trade",
     name: tr("Торговые пути", "Сауда жолдары", "Trade routes"),
-    on: false,
-    future: true,
+    on: true,
   },
+  { id: "events", name: tr("События и сражения", "Оқиғалар мен шайқастар", "Events and battles"), on: true },
+  { id: "labels", name: tr("Подписи территорий", "Аумақ атаулары", "Territory labels"), on: true },
   {
     id: "modern",
     name: tr("Современные границы", "Қазіргі шекаралар", "Modern borders"),

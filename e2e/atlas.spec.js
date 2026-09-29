@@ -64,7 +64,7 @@ test("atlas desktop interaction, keyboard and accessibility", async ({ page }, t
   await page.getByRole("searchbox").press("Enter");
   await expect(page.getByRole("heading", { name: "Отырар" })).toBeVisible();
   await page.getByRole("button", { name: "Очистить поиск" }).click();
-  await expect(page.getByRole("switch", { name: "Торговые пути" })).toBeDisabled();
+  await expect(page.getByRole("switch", { name: "Торговые пути" })).toBeEnabled();
   await expect(page.getByTestId("atlas-trade-layer")).toHaveCount(0);
   await page.getByRole("button", { name: "Сакская эпоха", exact: true }).click();
   await expect(page.getByRole("slider")).toHaveValue("-550");
@@ -82,6 +82,53 @@ test("atlas desktop interaction, keyboard and accessibility", async ({ page }, t
   expect(accessibility.violations).toEqual([]);
   expect(errors).toEqual([]);
 });
+
+for (const path of ["/", "/atlas"]) {
+  test(`Atlas Phase 7 deep link, labels and overlay synchronization on ${path}`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await observeAtlasMap(page);
+    await useTestBasemap(page);
+    await page.goto(`${path}?era=saka&year=1510&lang=kk`);
+    await expect(page.locator(".atlas-gis-canvas")).toHaveAttribute("data-map-status", "ready");
+    await expect(page.getByRole("slider")).toHaveValue("1510");
+    await expect(page.getByRole("button", { name: "Казахское ханство", exact: true })).toHaveAttribute("aria-pressed", "true");
+    await expect(page).toHaveURL(/era=kazakh-khanate/);
+    await expect(page.getByRole("region", { name: "Достоверность и реконструкция" })).toBeVisible();
+    await expect(page.getByText("Для этого года нет проверенной геометрии маршрутов.", { exact: true })).toBeVisible();
+    await page.evaluate(() => {
+      window.__phase7Map = window.__atlasTestMap;
+      window.__phase7Sources = ["territories", "borders", "routes", "events"].map((key) =>
+        window.__atlasTestMap.getSource(`atlas-historical-${key}`));
+    });
+    await expect.poll(() => page.evaluate(() => window.__atlasTestMap.queryRenderedFeatures({
+      layers: ["atlas-historical-territory-labels"],
+    }).length)).toBeGreaterThan(0);
+    for (const [label, layer] of [
+      ["Торговые пути", "atlas-historical-routes-line"],
+      ["События и сражения", "atlas-historical-events-point"],
+      ["Подписи территорий", "atlas-historical-territory-labels"],
+    ]) {
+      await page.getByRole("switch", { name: label }).uncheck();
+      await expect.poll(() => page.evaluate((id) => window.__atlasTestMap.getLayoutProperty(id, "visibility"), layer)).toBe("none");
+      await page.getByRole("switch", { name: label }).check();
+      await expect.poll(() => page.evaluate((id) => window.__atlasTestMap.getLayoutProperty(id, "visibility"), layer)).toBe("visible");
+    }
+    await page.getByRole("button", { name: "Сакская эпоха", exact: true }).click();
+    await expect(page.getByRole("slider")).toHaveValue("-550");
+    await expect(page).toHaveURL(/era=saka&year=-550/);
+    await expect.poll(() => page.evaluate(async () => {
+      const data = await window.__atlasTestMap.getSource("atlas-historical-territories").getData();
+      return data.features.map((f) => f.id);
+    })).toEqual(["saka-550"]);
+    expect(await page.evaluate(async () => {
+      const sources = ["territories", "borders", "routes", "events"].map((key) => window.__atlasTestMap.getSource(`atlas-historical-${key}`));
+      const routeData = await sources[2].getData(), eventData = await sources[3].getData();
+      return window.__phase7Map === window.__atlasTestMap &&
+        sources.every((source, index) => source === window.__phase7Sources[index]) &&
+        routeData.features.length === 0 && eventData.features.length === 0;
+    })).toBe(true);
+  });
+}
 
 for (const [name, width, height] of [
   ["mobile", 390, 844],
@@ -277,7 +324,8 @@ test("Atlas removes terrain and hillshade after a DEM tile failure", async ({ pa
   let failed = 0;
   await page.route("**/maps/terrain/**/*.png", (route) => {
     failed++;
-    return route.fulfill({ status: 404, body: "Test-only missing DEM tile" });
+    // MapLibre treats 404 tiles as absent coverage and suppresses their errors.
+    return route.fulfill({ status: 500, body: "Test-only DEM source failure" });
   });
   await page.goto("/atlas");
   await expect.poll(() => failed).toBeGreaterThan(0);

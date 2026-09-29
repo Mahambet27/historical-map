@@ -9,6 +9,7 @@ export default function AtlasCanvas(props) {
     geojson,
     historical,
     onSelectEntity,
+    onSelectOverlay,
     objects,
     selectedId,
     onSelect,
@@ -48,16 +49,18 @@ export default function AtlasCanvas(props) {
       selectedId,
       onSelect,
       onSelectEntity,
+      onSelectOverlay,
+      language,
       text,
     });
-  }, [geojson, historical, layers, selectedId, onSelect, onSelectEntity, text, failed]);
+  }, [geojson, historical, layers, selectedId, onSelect, onSelectEntity, onSelectOverlay, language, text, failed]);
   if (failed)
     return (
       <div className="atlas-map-fallback" data-map-status="error">
         <AtlasPlaceholderCanvas
           {...props}
           objects={objects.filter((object) => object.position)}
-          layers={{ ...layers, territories: false, borders: false }}
+          layers={{ ...layers, territories: false, borders: false, trade: false, events: false, labels: false }}
           text={{ ...text, pending: text.mapError }}
         />
       </div>

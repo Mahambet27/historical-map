@@ -1,6 +1,7 @@
 import { atlasLocal } from "../data/atlasDemoData.js";
 import AtlasIcon from "./AtlasIcon.jsx";
 import AtlasLayerControl from "./AtlasLayerControl.jsx";
+import AtlasLegend from "./AtlasLegend.jsx";
 export default function AtlasSidebar({
   currentEra,
   atlasCategories,
@@ -12,6 +13,7 @@ export default function AtlasSidebar({
   language,
   text,
   onClose,
+  historical,
   ...layerProps
 }) {
   return (
@@ -68,6 +70,7 @@ export default function AtlasSidebar({
           </div>
         </fieldset>
         <AtlasLayerControl {...layerProps} language={language} text={text} />
+        <AtlasLegend language={language} historical={historical} layers={layerProps.layers} />
         <button className="atlas-reset-filters" onClick={onReset}>
           ↺ {text.reset}
         </button>

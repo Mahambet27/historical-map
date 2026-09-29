@@ -49,6 +49,9 @@ export default function AtlasObjectCard({ object, onClose, language, text }) {
           {atlasLocal(object.date, language)}
         </p>
         <p className="atlas-object-description">{atlasLocal(object.description, language)}</p>
+        {object.reconstruction && <p className="atlas-detail-notice">{
+          { ru: "Реконструкция по источникам", kk: "Дереккөздер бойынша реконструкция", en: "Source-based reconstruction" }[language]
+        }</p>}
         <div className="atlas-confidence">
           <span>{text.confidence}</span>
           <strong>

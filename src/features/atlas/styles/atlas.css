@@ -1405,3 +1405,8 @@
     transition: none !important;
   }
 }
+.atlas-legend { margin-top: 20px; color: #d0d6d8; font-size: 12px; line-height: 1.6; }
+.atlas-legend ul { list-style: none; padding: 0; }
+.atlas-legend li { display: flex; align-items: center; gap: 9px; margin: 6px 0; }
+.atlas-legend i { display: inline-block; width: 24px; height: 16px; border: 1px solid #a88751; }
+.atlas-legend p { margin: 8px 0; }

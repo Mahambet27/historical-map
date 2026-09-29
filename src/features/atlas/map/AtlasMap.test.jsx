@@ -16,10 +16,14 @@ import {
   BORDERS_SOURCE,
   TERRITORIES_LAYER,
   BORDERS_LAYER,
+  LABELS_LAYER,
+  ROUTES_LAYER,
+  EVENTS_LAYER,
 } from "./atlasHistoricalLayers.js";
 vi.mock("maplibre-gl", async () => (await import("./maplibreTestMock.js")).mockMapLibre);
 afterEach(() => {
   cleanup();
+  window.history.replaceState({}, "", "/");
   vi.unstubAllEnvs();
 });
 
@@ -46,7 +50,7 @@ it.each(["remote", "self-hosted"])(
     fireEvent.change(screen.getByRole("slider"), { target: { value: "-550" } });
     expect(source.data.features).toEqual([]);
     expect(mapInstances).toHaveLength(1);
-    expect(map.addSource).toHaveBeenCalledTimes(3);
+    expect(map.addSource).toHaveBeenCalledTimes(5);
     unmount();
     expect(map.remove).toHaveBeenCalledTimes(1);
   }
@@ -166,20 +170,20 @@ it("updates reviewed territories and borders in place, clears absent years and p
   expect(territories.data.features).toEqual([]);
   expect(borders.data.features).toEqual([]);
   expect(mapInstances).toHaveLength(1);
-  expect(map.addSource).toHaveBeenCalledTimes(3);
-  expect(map.addLayer).toHaveBeenCalledTimes(3);
+  expect(map.addSource).toHaveBeenCalledTimes(5);
+  expect(map.addLayer).toHaveBeenCalledTimes(6);
   for (const [name, layer] of [
     ["Исторические территории", TERRITORIES_LAYER],
     ["Исторические границы", BORDERS_LAYER],
   ]) {
     fireEvent.click(screen.getByRole("switch", { name }));
-    expect(map.setLayoutProperty).toHaveBeenLastCalledWith(layer, "visibility", "none");
+    expect(map.setLayoutProperty).toHaveBeenCalledWith(layer, "visibility", "none");
     fireEvent.click(screen.getByRole("switch", { name }));
-    expect(map.setLayoutProperty).toHaveBeenLastCalledWith(layer, "visibility", "visible");
+    expect(map.setLayoutProperty).toHaveBeenCalledWith(layer, "visibility", "visible");
   }
   expect(
     map.setLayoutProperty.mock.calls.every(([id]) =>
-      [TERRITORIES_LAYER, BORDERS_LAYER].includes(id)
+      [TERRITORIES_LAYER, BORDERS_LAYER, LABELS_LAYER, ROUTES_LAYER, EVENTS_LAYER].includes(id)
     )
   ).toBe(true);
   const combined = {

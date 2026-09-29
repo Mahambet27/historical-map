@@ -28,6 +28,7 @@ function validGeometry(geometry, borders) {
 
 /** Preserve reviewed source coordinates, holes and metadata; never interpolate years. */
 export function atlasHistoricalGeometry(snapshot) {
+  const entities = new Map((snapshot.entities || []).map((entity) => [entity.id, entity]));
   const convert = (records = [], borders = false) =>
     collection(
       records.flatMap((record) => {
@@ -43,6 +44,7 @@ export function atlasHistoricalGeometry(snapshot) {
         const metadata = { ...record };
         delete metadata.geojson;
         delete metadata.geometry;
+        const entity = entities.get(record.entityId);
         return [
           {
             type: "Feature",
@@ -53,6 +55,9 @@ export function atlasHistoricalGeometry(snapshot) {
               ...metadata,
               recordId: record.id,
               entityId: record.entityId ?? feature?.properties?.entityId ?? null,
+              ...Object.fromEntries(["ru", "kk", "en"].map((lang) => [
+                `name_${lang}`, entity?.names?.[lang] || entity?.names?.ru || "",
+              ])),
             }),
           },
         ];
@@ -92,6 +97,7 @@ export function atlasTerritoryCards(snapshot, territories) {
         confidence:
           metadata.confidenceLevel ?? metadata.confidence ?? entity.confidenceLevel ?? null,
         verificationStatus: metadata.verificationStatus,
+        reconstruction: metadata.reconstruction === true || metadata.geometryType === "reconstruction",
         sources: [...new Set([...(entity.sourceIds || []), ...(metadata.sourceIds || [])])].map(
           (id) => sources.get(id) || { id, title: id }
         ),

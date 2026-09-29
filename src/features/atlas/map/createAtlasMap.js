@@ -2,10 +2,11 @@ import { attachAtlasTerrain, terrainEnabled } from "./atlasTerrain.js";
 import { Map as LibreMap, NavigationControl, setWorkerUrl } from "maplibre-gl";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import {
-  TERRITORIES_SOURCE,
-  BORDERS_SOURCE,
   TERRITORIES_LAYER,
-  BORDERS_LAYER,
+  ROUTES_LAYER,
+  EVENTS_LAYER,
+  LABELS_LAYER,
+  historicalSources,
   historicalLayers,
 } from "./atlasHistoricalLayers.js";
 import {
@@ -39,12 +40,10 @@ export function createAtlasMap(container, onStatus) {
   let lastSelected = null;
   const lastHistorical = new Map();
   const visibility = new Map();
+  let labelLanguage = null;
   const historicalData = (key) => state.historical?.[key] || empty;
   const syncHistorical = () => {
-    for (const [key, source, layer] of [
-      ["territories", TERRITORIES_SOURCE, TERRITORIES_LAYER],
-      ["borders", BORDERS_SOURCE, BORDERS_LAYER],
-    ]) {
+    for (const [key, source, layer, toggle] of historicalSources) {
       const data = historicalData(key);
       if (lastHistorical.get(source) !== data) {
         map
@@ -55,11 +54,21 @@ export function createAtlasMap(container, onStatus) {
           });
         lastHistorical.set(source, data);
       }
-      const next = state.layers?.[key] ? "visible" : "none";
+      const next = state.layers?.[toggle] ? "visible" : "none";
       if (visibility.get(layer) !== next) {
         map.setLayoutProperty(layer, "visibility", next);
         visibility.set(layer, next);
       }
+    }
+    const labelsVisible = state.layers?.territories && state.layers?.labels ? "visible" : "none";
+    if (visibility.get(LABELS_LAYER) !== labelsVisible) {
+      map.setLayoutProperty(LABELS_LAYER, "visibility", labelsVisible);
+      visibility.set(LABELS_LAYER, labelsVisible);
+    }
+    const language = state.language || "ru";
+    if (labelLanguage !== language) {
+      map.setLayoutProperty(LABELS_LAYER, "text-field", ["get", `name_${language}`]);
+      labelLanguage = language;
     }
   };
   const timeout = window.setTimeout(() => {
@@ -95,10 +104,7 @@ export function createAtlasMap(container, onStatus) {
   const load = () => {
     if (disposed) return;
     window.clearTimeout(timeout);
-    for (const [key, id] of [
-      ["territories", TERRITORIES_SOURCE],
-      ["borders", BORDERS_SOURCE],
-    ]) {
+    for (const [key, id] of historicalSources) {
       map.addSource(id, { type: "geojson", data: historicalData(key) });
       lastHistorical.set(id, historicalData(key));
     }
@@ -133,7 +139,7 @@ export function createAtlasMap(container, onStatus) {
   const territoryClick = (event) => {
     if (!state.layers?.territories) return;
     // Place selection wins where point and territory layers overlap.
-    if (map.queryRenderedFeatures(event.point, { layers: [ATLAS_PLACES_LAYER] }).length) return;
+    if (map.queryRenderedFeatures(event.point, { layers: [ATLAS_PLACES_LAYER, EVENTS_LAYER, ROUTES_LAYER] }).length) return;
     const id = event.features?.[0]?.properties?.entityId;
     if (
       id &&
@@ -141,6 +147,15 @@ export function createAtlasMap(container, onStatus) {
     )
       state.onSelectEntity?.(id);
   };
+  const overlayClick = (key, toggle, higherLayers) => (event) => {
+    if (!state.layers?.[toggle]) return;
+    if (map.queryRenderedFeatures(event.point, { layers: higherLayers }).length) return;
+    const id = event.features?.[0]?.properties?.objectId;
+    if (id && historicalData(key).features.some((f) => f.properties.objectId === id))
+      state.onSelectOverlay?.(id);
+  };
+  const routeClick = overlayClick("routes", "trade", [ATLAS_PLACES_LAYER, EVENTS_LAYER]);
+  const eventClick = overlayClick("events", "events", [ATLAS_PLACES_LAYER]);
   const enter = () => {
     map.getCanvas().style.cursor = "pointer";
   };
@@ -155,6 +170,11 @@ export function createAtlasMap(container, onStatus) {
   map.on("click", TERRITORIES_LAYER, territoryClick);
   map.on("mouseenter", TERRITORIES_LAYER, enter);
   map.on("mouseleave", TERRITORIES_LAYER, leave);
+  for (const [layer, handler] of [[ROUTES_LAYER, routeClick], [EVENTS_LAYER, eventClick]]) {
+    map.on("click", layer, handler);
+    map.on("mouseenter", layer, enter);
+    map.on("mouseleave", layer, leave);
+  }
   map.on("click", ATLAS_PLACES_LAYER, click);
   map.on("mouseenter", ATLAS_PLACES_LAYER, enter);
   map.on("mouseleave", ATLAS_PLACES_LAYER, leave);
@@ -188,6 +208,11 @@ export function createAtlasMap(container, onStatus) {
       map.off("click", TERRITORIES_LAYER, territoryClick);
       map.off("mouseenter", TERRITORIES_LAYER, enter);
       map.off("mouseleave", TERRITORIES_LAYER, leave);
+      for (const [layer, handler] of [[ROUTES_LAYER, routeClick], [EVENTS_LAYER, eventClick]]) {
+        map.off("click", layer, handler);
+        map.off("mouseenter", layer, enter);
+        map.off("mouseleave", layer, leave);
+      }
       map.off("mouseenter", ATLAS_PLACES_LAYER, enter);
       map.off("mouseleave", ATLAS_PLACES_LAYER, leave);
       map.getCanvas().removeEventListener("webglcontextlost", contextLost);

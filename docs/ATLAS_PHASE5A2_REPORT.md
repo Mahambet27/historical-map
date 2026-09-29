@@ -9,13 +9,13 @@ Full validation and browser regression results are recorded below after completi
 
 ## Input identity
 
-| Input | Bytes | SHA-256 |
-| --- | ---: | --- |
-| planetiler.jar | 93278824 | f310bd0413e2e4512b27f4046d418664e8e1d3bf31603c2a70e23de06c167e4d |
-| kazakhstan.osm.pbf | 223683662 | 65e13bd7a87cf1c4db82d8ed0b704de2f773d18e79f8a49486e0382e1604538b |
-| water-polygons-split-3857.zip | 931028007 | 8111fc684c5443cfb00c2fc8ca12d1e4416fb607873167bdeccdd7647d8726e4 |
+| Input                           |     Bytes | SHA-256                                                          |
+| ------------------------------- | --------: | ---------------------------------------------------------------- |
+| planetiler.jar                  |  93278824 | f310bd0413e2e4512b27f4046d418664e8e1d3bf31603c2a70e23de06c167e4d |
+| kazakhstan.osm.pbf              | 223683662 | 65e13bd7a87cf1c4db82d8ed0b704de2f773d18e79f8a49486e0382e1604538b |
+| water-polygons-split-3857.zip   | 931028007 | 8111fc684c5443cfb00c2fc8ca12d1e4416fb607873167bdeccdd7647d8726e4 |
 | natural_earth_vector.sqlite.zip | 434210731 | 375da61836d4779dffa8b87887bc4faa94dac77745ba0ee3914bd7cbedf40a02 |
-| lake_centerline.shp.zip | 80906805 | 6c900507c88fc9f5b5a386f90fd0a42d0495e8755a03d075538fb9a6801a3192 |
+| lake_centerline.shp.zip         |  80906805 | 6c900507c88fc9f5b5a386f90fd0a42d0495e8755a03d075538fb9a6801a3192 |
 
 ## Artifact locations
 
@@ -56,13 +56,13 @@ Installed glyph codepoints: 11415. Errors: zero.
 Country/admin boundaries, settlement/road/water layers and required z0-14 coverage
 checks passed. Counts below include repetitions across tiles/zoom levels:
 
-| Layer | Tile features |
-| --- | ---: |
-| boundary | 194524 |
-| place | 423733 |
-| transportation | 632065 |
-| waterway | 305654 |
-| water | 446581 |
+| Layer          | Tile features |
+| -------------- | ------------: |
+| boundary       |        194524 |
+| place          |        423733 |
+| transportation |        632065 |
+| waterway       |        305654 |
+| water          |        446581 |
 
 Filesystem allocation can exceed logical bytes due to small-file overhead.
 MBTiles: 491921408 bytes; XYZ: 578213466 bytes in 924650 files.

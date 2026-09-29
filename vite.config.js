@@ -50,7 +50,8 @@ const separateTerrainArtifacts = () => {
         if (path.resolve(source) === terrain) return;
         mkdirSync(destination, { recursive: true });
         for (const entry of readdirSync(source, { withFileTypes: true })) {
-          const from = path.join(source, entry.name), to = path.join(destination, entry.name);
+          const from = path.join(source, entry.name),
+            to = path.join(destination, entry.name);
           if (entry.isDirectory()) copy(from, to);
           else copyFileSync(from, to);
         }

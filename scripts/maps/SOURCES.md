@@ -13,13 +13,13 @@ settlements, roads, waterways and inland water polygons. Separate city/road/hydr
 imports are unnecessary. The current Planetiler OpenMapTiles profile additionally
 requires water polygons, Natural Earth and lake centerlines; retain that profile.
 
-| File in .maps-data/inputs/ | Source and selected date/version | License and self-hosted use |
-| --- | --- | --- |
-| kazakhstan.osm.pbf | [Geofabrik Kazakhstan dated extract](https://download.geofabrik.de/asia/kazakhstan-260927.osm.pbf), 2026-09-27 snapshot; HEAD confirmed 223683662 bytes, Last-Modified 2026-09-27T23:01:23Z; rename locally to kazakhstan.osm.pbf and preserve SHA-256 | ODbL 1.0, OSM contributors; local processing and self-hosted distribution permitted subject to attribution and applicable share-alike/database obligations |
-| water-polygons-split-3857.zip | [OSM water polygons](https://osmdata.openstreetmap.de/data/water-polygons.html), Mercator split download; observed Last-Modified 2026-09-28T03:43:24Z, 931028007 bytes | ODbL, OSM contributors; same attribution/database obligations |
-| natural_earth_vector.sqlite.zip | [Natural Earth SQLite package](https://naciscdn.org/naturalearth/packages/natural_earth_vector.sqlite.zip), observed Last-Modified 2022-05-14T05:28:19Z, 434210731 bytes; upstream vector release v5.1.2 | Public domain; local/self-hosted use permitted. Archive identity must be locked by SHA-256; release number alone does not identify this mutable package URL |
-| lake_centerline.shp.zip | [osm-lakelines v12](https://github.com/acalcutt/osm-lakelines/releases/download/v12/lake_centerline.shp.zip), asset updated 2022-05-06T01:36:11Z, 80906805 bytes | Derived from OSM: retain ODbL data obligations. Repository MIT license covers the generation software, not a waiver of upstream OSM database rights |
-| planetiler.jar | [Planetiler v0.10.1](https://github.com/onthegomap/planetiler/releases/tag/v0.10.1), tool version pin, not a geographic dataset | Apache-2.0 tool; no map-provider API involved |
+| File in .maps-data/inputs/      | Source and selected date/version                                                                                                                                                                                                                       | License and self-hosted use                                                                                                                                 |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| kazakhstan.osm.pbf              | [Geofabrik Kazakhstan dated extract](https://download.geofabrik.de/asia/kazakhstan-260927.osm.pbf), 2026-09-27 snapshot; HEAD confirmed 223683662 bytes, Last-Modified 2026-09-27T23:01:23Z; rename locally to kazakhstan.osm.pbf and preserve SHA-256 | ODbL 1.0, OSM contributors; local processing and self-hosted distribution permitted subject to attribution and applicable share-alike/database obligations  |
+| water-polygons-split-3857.zip   | [OSM water polygons](https://osmdata.openstreetmap.de/data/water-polygons.html), Mercator split download; observed Last-Modified 2026-09-28T03:43:24Z, 931028007 bytes                                                                                 | ODbL, OSM contributors; same attribution/database obligations                                                                                               |
+| natural_earth_vector.sqlite.zip | [Natural Earth SQLite package](https://naciscdn.org/naturalearth/packages/natural_earth_vector.sqlite.zip), observed Last-Modified 2022-05-14T05:28:19Z, 434210731 bytes; upstream vector release v5.1.2                                               | Public domain; local/self-hosted use permitted. Archive identity must be locked by SHA-256; release number alone does not identify this mutable package URL |
+| lake_centerline.shp.zip         | [osm-lakelines v12](https://github.com/acalcutt/osm-lakelines/releases/download/v12/lake_centerline.shp.zip), asset updated 2022-05-06T01:36:11Z, 80906805 bytes                                                                                       | Derived from OSM: retain ODbL data obligations. Repository MIT license covers the generation software, not a waiver of upstream OSM database rights         |
+| planetiler.jar                  | [Planetiler v0.10.1](https://github.com/onthegomap/planetiler/releases/tag/v0.10.1), tool version pin, not a geographic dataset                                                                                                                        | Apache-2.0 tool; no map-provider API involved                                                                                                               |
 
 Licensing evidence: [OSM copyright](https://www.openstreetmap.org/copyright),
 [OSM attribution guidance](https://osmfoundation.org/wiki/Licence/Attribution_Guidelines),
@@ -40,15 +40,15 @@ The old lake-centerline archive is a labeling helper, not current lake geometry.
 
 ## Feature mapping and coverage acceptance
 
-| Requirement | Primary OSM input | Rendered source layer |
-| --- | --- | --- |
-| Country boundary | boundary=administrative, admin_level=2 | boundary |
-| Regional boundaries | administrative relations below country level | boundary |
-| Cities/towns/villages | place features | place |
-| Main roads | highway ways | transportation |
-| Rivers | waterway ways | waterway |
-| Lakes/reservoirs | water polygons/multipolygons | water |
-| Land/sea background | background plus coastline polygons and low-zoom Natural Earth | background / water |
+| Requirement           | Primary OSM input                                             | Rendered source layer |
+| --------------------- | ------------------------------------------------------------- | --------------------- |
+| Country boundary      | boundary=administrative, admin_level=2                        | boundary              |
+| Regional boundaries   | administrative relations below country level                  | boundary              |
+| Cities/towns/villages | place features                                                | place                 |
+| Main roads            | highway ways                                                  | transportation        |
+| Rivers                | waterway ways                                                 | waterway              |
+| Lakes/reservoirs      | water polygons/multipolygons                                  | water                 |
+| Land/sea background   | background plus coastline polygons and low-zoom Natural Earth | background / water    |
 
 The unchanged style is configured for z0-14 and bounds [45,39,90,57]. This bounding
 box encloses Kazakhstan; it does not prove that data covers every area. Preserve

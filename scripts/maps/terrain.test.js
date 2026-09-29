@@ -1,4 +1,5 @@
-﻿import { expect, it } from "vitest";
+﻿import { Buffer } from "node:buffer";
+import { expect, it } from "vitest";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";

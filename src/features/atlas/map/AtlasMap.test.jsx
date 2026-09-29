@@ -11,6 +11,12 @@ import {
 import AtlasPage from "../AtlasPage.jsx";
 import { adaptAtlasSnapshot, atlasObjectsToGeoJSON } from "../data/atlasSnapshotAdapter.js";
 import { buildAtlasHistoricalSnapshot } from "../data/atlasHistoricalData.js";
+import {
+  TERRITORIES_SOURCE,
+  BORDERS_SOURCE,
+  TERRITORIES_LAYER,
+  BORDERS_LAYER,
+} from "./atlasHistoricalLayers.js";
 vi.mock("maplibre-gl", async () => (await import("./maplibreTestMock.js")).mockMapLibre);
 afterEach(() => {
   cleanup();
@@ -40,7 +46,7 @@ it.each(["remote", "self-hosted"])(
     fireEvent.change(screen.getByRole("slider"), { target: { value: "-550" } });
     expect(source.data.features).toEqual([]);
     expect(mapInstances).toHaveLength(1);
-    expect(map.addSource).toHaveBeenCalledTimes(1);
+    expect(map.addSource).toHaveBeenCalledTimes(3);
     unmount();
     expect(map.remove).toHaveBeenCalledTimes(1);
   }
@@ -129,7 +135,9 @@ it("appends a valid historical GeoJSON overlay above every local basemap layer",
   vi.stubEnv("VITE_ATLAS_BASEMAP_MODE", "self-hosted");
   render(<AtlasPage />);
   const map = mapInstances[0];
-  const [overlay, beforeId] = map.addLayer.mock.calls[0];
+  const [overlay, beforeId] = map.addLayer.mock.calls.find(
+    ([layer]) => layer.id === ATLAS_PLACES_LAYER
+  );
   expect(beforeId).toBeUndefined();
   expect(overlay.source).toBe(ATLAS_PLACES_SOURCE);
   const combined = {
@@ -142,4 +150,70 @@ it("appends a valid historical GeoJSON overlay above every local basemap layer",
   };
   expect(combined.layers.at(-1).id).toBe(ATLAS_PLACES_LAYER);
   expect(validateStyleMin(combined)).toEqual([]);
+});
+
+it("updates reviewed territories and borders in place, clears absent years and preserves modern style", () => {
+  render(<AtlasPage />);
+  const map = mapInstances[0];
+  const territories = map.getSource(TERRITORIES_SOURCE),
+    borders = map.getSource(BORDERS_SOURCE);
+  expect(territories.data.features.map((f) => f.id)).toEqual(["khanate-1465"]);
+  expect(borders.data.features).toEqual(territories.data.features);
+  fireEvent.change(screen.getByRole("slider"), { target: { value: "1510" } });
+  expect(territories.data.features.map((f) => f.id)).toEqual(["khanate-1510"]);
+  expect(borders.setData).toHaveBeenCalled();
+  fireEvent.change(screen.getByRole("slider"), { target: { value: "1522" } });
+  expect(territories.data.features).toEqual([]);
+  expect(borders.data.features).toEqual([]);
+  expect(mapInstances).toHaveLength(1);
+  expect(map.addSource).toHaveBeenCalledTimes(3);
+  expect(map.addLayer).toHaveBeenCalledTimes(3);
+  for (const [name, layer] of [
+    ["Исторические территории", TERRITORIES_LAYER],
+    ["Исторические границы", BORDERS_LAYER],
+  ]) {
+    fireEvent.click(screen.getByRole("switch", { name }));
+    expect(map.setLayoutProperty).toHaveBeenLastCalledWith(layer, "visibility", "none");
+    fireEvent.click(screen.getByRole("switch", { name }));
+    expect(map.setLayoutProperty).toHaveBeenLastCalledWith(layer, "visibility", "visible");
+  }
+  expect(
+    map.setLayoutProperty.mock.calls.every(([id]) =>
+      [TERRITORIES_LAYER, BORDERS_LAYER].includes(id)
+    )
+  ).toBe(true);
+  const combined = {
+    ...localStyle,
+    sources: {
+      ...localStyle.sources,
+      ...Object.fromEntries(
+        Object.entries(map.sources).map(([id, source]) => [
+          id,
+          { type: "geojson", data: source.data },
+        ])
+      ),
+    },
+    layers: [...localStyle.layers, ...map.addLayer.mock.calls.map(([layer]) => layer)],
+  };
+  expect(validateStyleMin(combined)).toEqual([]);
+});
+
+it("opens the existing entity card, gives points priority and clears stale territory selection", () => {
+  render(<AtlasPage />);
+  const map = mapInstances[0];
+  const click = () =>
+    map.handlers[`click:${TERRITORIES_LAYER}`]({
+      point: { x: 0, y: 0 },
+      features: [{ properties: { entityId: "kazakh-khanate" } }],
+    });
+  map.queryRenderedFeatures.mockReturnValueOnce([{}]);
+  act(click);
+  expect(
+    screen.queryByRole("heading", { level: 2, name: "Казахское ханство" })
+  ).not.toBeInTheDocument();
+  act(click);
+  expect(screen.getByRole("heading", { level: 2, name: "Казахское ханство" })).toBeInTheDocument();
+  expect(map.flyTo).not.toHaveBeenCalled();
+  fireEvent.change(screen.getByRole("slider"), { target: { value: "1522" } });
+  expect(screen.queryByRole("complementary", { name: "Карточка объекта" })).not.toBeInTheDocument();
 });

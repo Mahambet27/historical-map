@@ -2,6 +2,13 @@ import { attachAtlasTerrain, terrainEnabled } from "./atlasTerrain.js";
 import { Map as LibreMap, NavigationControl, setWorkerUrl } from "maplibre-gl";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import {
+  TERRITORIES_SOURCE,
+  BORDERS_SOURCE,
+  TERRITORIES_LAYER,
+  BORDERS_LAYER,
+  historicalLayers,
+} from "./atlasHistoricalLayers.js";
+import {
   getAtlasBasemapConfig,
   ATLAS_MAP_VIEW,
   ATLAS_PLACES_SOURCE,
@@ -30,6 +37,31 @@ export function createAtlasMap(container, onStatus) {
   let disposed = false;
   let lastData = null;
   let lastSelected = null;
+  const lastHistorical = new Map();
+  const visibility = new Map();
+  const historicalData = (key) => state.historical?.[key] || empty;
+  const syncHistorical = () => {
+    for (const [key, source, layer] of [
+      ["territories", TERRITORIES_SOURCE, TERRITORIES_LAYER],
+      ["borders", BORDERS_SOURCE, BORDERS_LAYER],
+    ]) {
+      const data = historicalData(key);
+      if (lastHistorical.get(source) !== data) {
+        map
+          .getSource(source)
+          .setData(data)
+          ?.catch?.(() => {
+            if (!disposed) onStatus("error");
+          });
+        lastHistorical.set(source, data);
+      }
+      const next = state.layers?.[key] ? "visible" : "none";
+      if (visibility.get(layer) !== next) {
+        map.setLayoutProperty(layer, "visibility", next);
+        visibility.set(layer, next);
+      }
+    }
+  };
   const timeout = window.setTimeout(() => {
     if (!ready && !disposed) onStatus("error");
   }, 20000);
@@ -48,6 +80,7 @@ export function createAtlasMap(container, onStatus) {
   };
   const sync = () => {
     if (!ready || disposed) return;
+    syncHistorical();
     if (lastData !== state.geojson) {
       lastData = state.geojson;
       map
@@ -62,6 +95,14 @@ export function createAtlasMap(container, onStatus) {
   const load = () => {
     if (disposed) return;
     window.clearTimeout(timeout);
+    for (const [key, id] of [
+      ["territories", TERRITORIES_SOURCE],
+      ["borders", BORDERS_SOURCE],
+    ]) {
+      map.addSource(id, { type: "geojson", data: historicalData(key) });
+      lastHistorical.set(id, historicalData(key));
+    }
+    for (const layer of historicalLayers) map.addLayer(layer);
     map.addSource(ATLAS_PLACES_SOURCE, { type: "geojson", data: state.geojson });
     map.addLayer({
       id: ATLAS_PLACES_LAYER,
@@ -76,6 +117,7 @@ export function createAtlasMap(container, onStatus) {
     });
     lastData = state.geojson;
     ready = true;
+    syncHistorical();
     flyToSelection();
     onStatus("ready");
     disposeTerrain = attachAtlasTerrain(map, terrainEnabled(import.meta.env));
@@ -88,6 +130,17 @@ export function createAtlasMap(container, onStatus) {
   const error = () => {
     if (!disposed && !ready) onStatus("error");
   };
+  const territoryClick = (event) => {
+    if (!state.layers?.territories) return;
+    // Place selection wins where point and territory layers overlap.
+    if (map.queryRenderedFeatures(event.point, { layers: [ATLAS_PLACES_LAYER] }).length) return;
+    const id = event.features?.[0]?.properties?.entityId;
+    if (
+      id &&
+      historicalData("territories").features.some((feature) => feature.properties.entityId === id)
+    )
+      state.onSelectEntity?.(id);
+  };
   const enter = () => {
     map.getCanvas().style.cursor = "pointer";
   };
@@ -99,6 +152,9 @@ export function createAtlasMap(container, onStatus) {
   };
   map.on("load", load);
   map.on("error", error);
+  map.on("click", TERRITORIES_LAYER, territoryClick);
+  map.on("mouseenter", TERRITORIES_LAYER, enter);
+  map.on("mouseleave", TERRITORIES_LAYER, leave);
   map.on("click", ATLAS_PLACES_LAYER, click);
   map.on("mouseenter", ATLAS_PLACES_LAYER, enter);
   map.on("mouseleave", ATLAS_PLACES_LAYER, leave);
@@ -129,6 +185,9 @@ export function createAtlasMap(container, onStatus) {
       map.off("load", load);
       map.off("error", error);
       map.off("click", ATLAS_PLACES_LAYER, click);
+      map.off("click", TERRITORIES_LAYER, territoryClick);
+      map.off("mouseenter", TERRITORIES_LAYER, enter);
+      map.off("mouseleave", TERRITORIES_LAYER, leave);
       map.off("mouseenter", ATLAS_PLACES_LAYER, enter);
       map.off("mouseleave", ATLAS_PLACES_LAYER, leave);
       map.getCanvas().removeEventListener("webglcontextlost", contextLost);

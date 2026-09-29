@@ -14,6 +14,7 @@ class MockMap {
     this.canvas.tabIndex = 0;
     this.container.append(this.canvas);
     this.sources = {};
+    this.layers = {};
     this.handlers = {};
     this.addSource = vi.fn((id, source) => {
       this.sources[id] = {
@@ -23,8 +24,20 @@ class MockMap {
         }),
       };
     });
-    this.addLayer = vi.fn();
+    this.addLayer = vi.fn((layer) => {
+      this.layers[layer.id] = layer;
+    });
+    this.getLayer = (id) => this.layers[id];
+    this.removeLayer = vi.fn((id) => {
+      delete this.layers[id];
+    });
+    this.removeSource = vi.fn((id) => {
+      delete this.sources[id];
+    });
+    this.setTerrain = vi.fn();
     this.setPaintProperty = vi.fn();
+    this.setLayoutProperty = vi.fn();
+    this.queryRenderedFeatures = vi.fn(() => []);
     this.flyTo = vi.fn();
     this.resize = vi.fn();
     this.remove = vi.fn(() => this.canvas.remove());
@@ -32,6 +45,7 @@ class MockMap {
   }
   on(event, layerOrHandler, handler) {
     this.handlers[event] = handler || layerOrHandler;
+    if (handler) this.handlers[`${event}:${layerOrHandler}`] = handler;
     if (event === "load" && mockSettings.autoLoad) this.handlers[event]();
     return this;
   }

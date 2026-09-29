@@ -7,6 +7,8 @@ import AtlasPlaceholderCanvas from "./AtlasPlaceholderCanvas.jsx";
 export default function AtlasCanvas(props) {
   const {
     geojson,
+    historical,
+    onSelectEntity,
     objects,
     selectedId,
     onSelect,
@@ -39,15 +41,23 @@ export default function AtlasCanvas(props) {
     };
   }, [failed]);
   useEffect(() => {
-    renderer.current?.update({ geojson, selectedId, onSelect, text });
-  }, [geojson, selectedId, onSelect, text, failed]);
+    renderer.current?.update({
+      geojson,
+      historical,
+      layers,
+      selectedId,
+      onSelect,
+      onSelectEntity,
+      text,
+    });
+  }, [geojson, historical, layers, selectedId, onSelect, onSelectEntity, text, failed]);
   if (failed)
     return (
       <div className="atlas-map-fallback" data-map-status="error">
         <AtlasPlaceholderCanvas
           {...props}
           objects={objects.filter((object) => object.position)}
-          layers={layers}
+          layers={{ ...layers, territories: false, borders: false }}
           text={{ ...text, pending: text.mapError }}
         />
       </div>

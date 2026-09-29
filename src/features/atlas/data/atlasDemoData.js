@@ -4,14 +4,12 @@ export const atlasLayers = [
   {
     id: "territories",
     name: tr("Исторические территории", "Тарихи аумақтар", "Historical territories"),
-    on: false,
-    future: true,
+    on: true,
   },
   {
     id: "borders",
     name: tr("Исторические границы", "Тарихи шекаралар", "Historical borders"),
-    on: false,
-    future: true,
+    on: true,
   },
   { id: "settlements", name: tr("Населённые пункты", "Елді мекендер", "Settlements"), on: true },
   {

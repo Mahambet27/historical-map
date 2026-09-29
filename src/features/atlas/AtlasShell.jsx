@@ -14,6 +14,7 @@ import {
   atlasObjectsToGeoJSON,
 } from "./data/atlasSnapshotAdapter.js";
 import { atlasText } from "./data/atlasText.js";
+import { atlasHistoricalGeometry, atlasTerritoryCards } from "./data/atlasHistoricalGeometry.js";
 
 function useAtlasModal(ref, open, onClose) {
   useEffect(() => {
@@ -60,6 +61,7 @@ export default function AtlasShell() {
     Object.fromEntries(atlasLayers.map((layer) => [layer.id, layer.on]))
   );
   const [selectedId, setSelectedId] = useState(null);
+  const [selectedEntityId, setSelectedEntityId] = useState(null);
   const [cardOpen, setCardOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -73,6 +75,11 @@ export default function AtlasShell() {
   const text = atlasText[language];
   const snapshot = useMemo(() => buildAtlasHistoricalSnapshot(year), [year]);
   const view = useMemo(() => adaptAtlasSnapshot(snapshot), [snapshot]);
+  const historical = useMemo(() => atlasHistoricalGeometry(snapshot), [snapshot]);
+  const territoryCards = useMemo(
+    () => atlasTerritoryCards(snapshot, historical.territories),
+    [snapshot, historical]
+  );
   const { era } = view;
   const objects = useMemo(
     () => filterAtlasObjects(view.objects, query, categories),
@@ -82,7 +89,13 @@ export default function AtlasShell() {
     setSelectedId(null);
     setCardOpen(false);
   }
-  const selected = objects.find((object) => object.id === selectedId);
+  if (selectedEntityId && !territoryCards.some((object) => object.entityId === selectedEntityId)) {
+    setSelectedEntityId(null);
+    setCardOpen(false);
+  }
+  const selected = selectedEntityId
+    ? territoryCards.find((object) => object.entityId === selectedEntityId)
+    : objects.find((object) => object.id === selectedId);
   const geojson = useMemo(
     () => atlasObjectsToGeoJSON(layers.settlements ? objects : [], language, selectedId),
     [objects, layers.settlements, language, selectedId]
@@ -117,10 +130,18 @@ export default function AtlasShell() {
     setCategories([]);
   };
   const select = (id) => {
+    setSelectedEntityId(null);
     setSelectedId(id);
     setCardOpen(true);
     setSidebarOpen(false);
     setLayers((current) => ({ ...current, settlements: true }));
+  };
+  const selectEntity = (id) => {
+    if (!territoryCards.some((object) => object.entityId === id)) return;
+    setSelectedId(null);
+    setSelectedEntityId(id);
+    setCardOpen(true);
+    setSidebarOpen(false);
   };
   const closeCard = () => {
     setCardOpen(false);
@@ -172,6 +193,8 @@ export default function AtlasShell() {
           <AtlasCanvas
             objects={objects}
             geojson={geojson}
+            historical={historical}
+            onSelectEntity={selectEntity}
             selectedId={selectedId}
             onSelect={select}
             layers={layers}

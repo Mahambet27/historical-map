@@ -4,6 +4,8 @@ import process from "node:process";
 import { readFileSync } from "node:fs";
 import { Buffer } from "node:buffer";
 import { resolveAtlasBasemapConfig } from "../src/features/atlas/map/atlasMapConfig.js";
+import { buildAtlasHistoricalSnapshot } from "../src/features/atlas/data/atlasHistoricalData.js";
+import { atlasHistoricalGeometry } from "../src/features/atlas/data/atlasHistoricalGeometry.js";
 const basemap = resolveAtlasBasemapConfig(process.env);
 const ATLAS_BASEMAP_STYLE_URL = basemap.styleUrl;
 
@@ -289,4 +291,89 @@ test("Atlas removes terrain and hillshade after a DEM tile failure", async ({ pa
   await page.getByRole("searchbox").fill("Otrar");
   await page.getByRole("searchbox").press("Enter");
   await expect(page.locator(".atlas-object-card")).toBeVisible();
+});
+
+test("Atlas reviewed historical territories, borders, entity card and timeline updates", async ({
+  page,
+}, testInfo) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await observeAtlasMap(page);
+  await useTestBasemap(page);
+  await page.goto("/atlas");
+  await expect(page.locator(".atlas-gis-canvas")).toHaveAttribute("data-map-status", "ready");
+  const canvas = await page.locator(".maplibregl-canvas").elementHandle();
+  const data = (source) =>
+    page.evaluate((id) => window.__atlasTestMap.getSource(id).getData(), source);
+  const expected = atlasHistoricalGeometry(buildAtlasHistoricalSnapshot(1465));
+  await expect.poll(() => data("atlas-historical-territories")).toEqual(expected.territories);
+  expect(await data("atlas-historical-borders")).toEqual(expected.borders);
+  const modern = await page.evaluate(() =>
+    window.__atlasTestMap
+      .getStyle()
+      .layers.filter((l) => ["country-boundaries", "administrative-boundaries"].includes(l.id))
+  );
+  await page.evaluate(() => {
+    window.__atlasInitialMap = window.__atlasTestMap;
+    window.__atlasTerritorySource = window.__atlasTestMap.getSource("atlas-historical-territories");
+    window.__atlasBorderSource = window.__atlasTestMap.getSource("atlas-historical-borders");
+  });
+  const location = await page.evaluate(() => {
+    const p = window.__atlasTestMap.project([70, 46]);
+    const box = window.__atlasTestMap.getCanvas().getBoundingClientRect();
+    return { x: box.x + p.x, y: box.y + p.y };
+  });
+  await expect(async () => {
+    await page.mouse.click(location.x, location.y);
+    await expect(page.locator(".atlas-object-card h2")).toHaveText("Казахское ханство");
+  }).toPass();
+  await page.getByRole("button", { name: "Закрыть: Казахское ханство" }).click();
+  for (const [label, id] of [
+    ["Исторические территории", "atlas-historical-territories-fill"],
+    ["Исторические границы", "atlas-historical-borders-line"],
+  ]) {
+    const toggle = page.getByRole("switch", { name: label });
+    await toggle.uncheck();
+    await expect
+      .poll(() =>
+        page.evaluate((layer) => window.__atlasTestMap.getLayoutProperty(layer, "visibility"), id)
+      )
+      .toBe("none");
+    await toggle.check();
+    await expect
+      .poll(() =>
+        page.evaluate((layer) => window.__atlasTestMap.getLayoutProperty(layer, "visibility"), id)
+      )
+      .toBe("visible");
+  }
+  for (const year of [1510, 1522, 1200, -550]) {
+    await page.getByRole("slider").evaluate((input, value) => {
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set.call(
+        input,
+        String(value)
+      );
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    }, year);
+    const next = atlasHistoricalGeometry(buildAtlasHistoricalSnapshot(year));
+    await expect.poll(() => data("atlas-historical-territories")).toEqual(next.territories);
+    await expect.poll(() => data("atlas-historical-borders")).toEqual(next.borders);
+  }
+  expect(
+    await page.evaluate(
+      () =>
+        window.__atlasTestMap === window.__atlasInitialMap &&
+        window.__atlasTerritorySource ===
+          window.__atlasTestMap.getSource("atlas-historical-territories") &&
+        window.__atlasBorderSource === window.__atlasTestMap.getSource("atlas-historical-borders")
+    )
+  ).toBe(true);
+  expect(await canvas.evaluate((node) => node.isConnected)).toBe(true);
+  expect(
+    await page.evaluate(() =>
+      window.__atlasTestMap
+        .getStyle()
+        .layers.filter((l) => ["country-boundaries", "administrative-boundaries"].includes(l.id))
+    )
+  ).toEqual(modern);
+  await page.screenshot({ path: testInfo.outputPath("atlas-phase6-reviewed-territories.png") });
 });

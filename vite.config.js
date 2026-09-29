@@ -34,6 +34,12 @@ const p2a5LocalVerificationPlugin = () => ({
 });
 
 export default defineConfig(({ mode }) => ({
+  // Serve generated map artifacts without allocating a watcher per tile.
+  server: {
+    watch: {
+      ignored: ["**/.maps-data/**", "**/public/maps/tiles/**", "**/public/maps/fonts/**"],
+    },
+  },
   optimizeDeps: {
     include: ["@turf/difference", "@turf/helpers", "@turf/intersect", "@turf/union"],
   },

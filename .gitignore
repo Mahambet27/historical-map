@@ -37,3 +37,11 @@ coverage
 playwright-report
 test-results
 .p2a5
+# Local basemap inputs, generated tiles and glyphs (never commit datasets)
+.maps-data/
+public/maps/tiles/**/*.pbf
+public/maps/fonts/**/*.pbf
+public/maps/data-manifest.json
+*.mbtiles
+*.pmtiles
+*.osm.pbf

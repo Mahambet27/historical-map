@@ -70,7 +70,12 @@
     "3d:audit": "node scripts/3d/audit-models.mjs",
     "3d:optimize": "node scripts/3d/optimize-models.mjs",
     "3d:budget": "node scripts/3d/check-model-budget.mjs",
-    "lighthouse": "lhci autorun"
+    "lighthouse": "lhci autorun",
+    "maps:prepare": "node scripts/maps/prepare.mjs",
+    "maps:generate": "node scripts/maps/generate.mjs",
+    "maps:import": "node scripts/maps/import.mjs",
+    "maps:glyphs": "node scripts/maps/glyphs.mjs",
+    "maps:validate": "node scripts/maps/validate.mjs"
   },
   "dependencies": {
     "@google/model-viewer": "^4.3.1",

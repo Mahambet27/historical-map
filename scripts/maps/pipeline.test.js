@@ -9,17 +9,8 @@ import { gzipSync } from "node:zlib";
 import Pbf from "pbf";
 
 import { exportTiles } from "./import.mjs";
-import {
-  decodeTile,
-  glyphIds,
-  localAsset,
-  readJSON,
-  root,
-} from "./lib.mjs";
-import {
-  validateContract,
-  validateData,
-} from "./validate.mjs";
+import { decodeTile, glyphIds, localAsset, readJSON, root } from "./lib.mjs";
+import { validateContract, validateData } from "./validate.mjs";
 const temps = [];
 const temp = () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "atlas-maps-"));

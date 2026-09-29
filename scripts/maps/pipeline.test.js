@@ -1,13 +1,25 @@
-﻿import { afterEach, expect, it } from "vitest";
+﻿// @vitest-environment node
+
+import { afterEach, expect, it } from "vitest";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { gzipSync } from "node:zlib";
 import Pbf from "pbf";
+
 import { exportTiles } from "./import.mjs";
-import { decodeTile, glyphIds, localAsset, readJSON, root } from "./lib.mjs";
-import { validateContract, validateData } from "./validate.mjs";
+import {
+  decodeTile,
+  glyphIds,
+  localAsset,
+  readJSON,
+  root,
+} from "./lib.mjs";
+import {
+  validateContract,
+  validateData,
+} from "./validate.mjs";
 const temps = [];
 const temp = () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "atlas-maps-"));
